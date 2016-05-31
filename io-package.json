@@ -1,0 +1,72 @@
+{
+    "common": {
+        "name":                     "fhem",
+        "version":                  "0.1.0",
+        "title":                    "FHEM connectino for ioBroker",
+        "desc":                     {
+           "en": "FHEM Adapter",
+           "de": "FHEM Adapter",
+           "ru": "FHEM драйвер"
+	    },
+        "news": {
+          "0.1.0" :{
+            "en": "initial checkin",
+            "de": "initial checkin",
+            "ru": "initial checkin"
+          }
+        },
+        "platform":                 "Javascript/Node.js",
+        "mode":                     "daemon",
+        "icon":                     "fhem.png",
+        "enabled":                  true,
+	    "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.fhem/master/admin/fhem.png",
+	    "keywords":                 ["FHEM"],
+        "readme":                   "https://github.com/ioBroker/ioBroker.fhem/blob/master/README.md",
+	    "loglevel":                 "info",
+        "type":                     "communication"
+    },
+    "native": {
+      "port":                 7072,
+      "host":                 "127.0.0.1",
+      "reconnectTimeout":     30000
+    },
+    "objects": [
+
+    ],
+  "instanceObjects": [
+    {
+      "_id":  "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id":  "info.connection",
+      "type": "state",
+      "common": {
+        "role":  "indicator.connected",
+        "name":  "If connected to FHEM server",
+        "type":  "boolean",
+        "read":  true,
+        "write": false,
+        "def":   false
+      },
+      "native": {}
+    },
+    {
+      "_id":  "info.resync",
+      "type": "state",
+      "common": {
+        "role":  "state",
+        "name":  "read all states from FHEM anew",
+        "type":  "boolean",
+        "read":  true,
+        "write": true,
+        "def":   false
+      },
+      "native": {}
+    }
+  ]
+}
