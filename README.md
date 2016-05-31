@@ -2,6 +2,12 @@
 # ioBroker.fhem
 =================
 
+[![NPM version](http://img.shields.io/npm/v/iobroker.fhem.svg)](https://www.npmjs.com/package/iobroker.fhem)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.fhem.svg)](https://www.npmjs.com/package/iobroker.fhem)
+
+[![NPM](https://nodei.co/npm/iobroker.fhem.png?downloads=true)](https://nodei.co/npm/iobroker.fhem/)
+
+
 This adapter allows connect FHEM to ioBroker.
 
 To enable the connection the telnet must be enabled in FHEM. To enable it (enabled by default) check following settings in fhen.cfg:
