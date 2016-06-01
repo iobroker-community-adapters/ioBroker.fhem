@@ -48,8 +48,6 @@ adapter.on('stateChange', function (id, state) {
             queue.push({command: 'write', id: id, val: state.val});
             processQueue();
         }
-        
-        adapter.log.info('ack is not set!');
     }
 });
 
