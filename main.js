@@ -35,9 +35,6 @@ adapter.on('unload', function (callback) {
 
 // is called if a subscribed state changes
 adapter.on('stateChange', function (id, state) {
-    // Warning, state can be null if it was deleted
-    adapter.log.info('stateChange ' + id + ' ' + JSON.stringify(state));
-
     // you can use the ack flag to detect if it is status (true) or command (false)
     if (state && !state.ack) {
         if (!connected) {
@@ -121,7 +118,13 @@ function parseEvent(event) {
 
             adapter.setForeignState(id, {val: val, ack: true, ts: ts});
         } else {
-            adapter.log.warn('Unknown state "' + parts[1] + '.' + parts[2]);
+            if (event.indexOf(':') !== -1) {
+                adapter.log.debug('Found strange value for "' + id + '": ' + event);
+            } else {
+                adapter.log.info('Unknown state "' + parts[1] + '.' + parts[2]);
+                queue.push({command: 'meta', name: parts[1], attr: parts[2], val: event});
+                processQueue();
+            }
         }
     } else {
         adapter.log.warn('Unknown event "' + event + '"');
@@ -298,6 +301,9 @@ function parseObjects(objs, cb) {
                             obj.common.type = 'string';
                         }
                     }
+
+                    obj.common.role = 'state';
+
                     states.push({id: obj._id, val: val, ts: new Date(objs[i].Readings[attr].Time).getTime(), ack: true});
                     objects.push(obj);
                 }
@@ -335,7 +341,7 @@ function parseObjects(objs, cb) {
                 objects.push(obj);
                 //console.log('   ' + obj._id + ': ' + (parts[1] || ''));
             }
-        }
+        }*/
 
         if (objs[i].PossibleSets) {
             var attrs = objs[i].PossibleSets.split(' ');
@@ -366,11 +372,14 @@ function parseObjects(objs, cb) {
                     }
                 }
 
+                obj.common.type = obj.common.type || 'string';
+                obj.common.role = 'state';
+
                 objects.push(obj);
 
                 //console.log('   ' + obj._id + ': ' + (parts[1] || ''));
             }
-        }*/
+        }
 
         /*id = adapter.namespace + '.' + name + '.lastError';
         obj = {
@@ -452,20 +461,69 @@ function startSync(cb) {
 }
 
 function readValue(id, cb) {
-    adapter.log.error('readValue Not implemented');
-    if (cb) cb();
+    telnetOut.send('get ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute, function (err, result) {
+        if (err) adapter.log.error('writeValue: ' + err);
+        //MeinWetter city => Berlin
+        if (result) {
+            result = result.substring(fhemObjects[id].native.Name.length + fhemObjects[id].native.Attribute + 5);
+            if (result !== '') {
+                adapter.setForeignState(id, result, true);
+            }
+        }
+
+        if (cb) cb();
+    });
 }
 
 function writeValue(id, val, cb) {
-    adapter.log.error('readValue Not implemented');
-    if (cb) cb();
-    /*telnetOut.send('jsonlist2', function (err, result) {
+    if (val === undefined || val === null) val = '';
+
+    telnetOut.send('set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute + ' ' + val, function (err, result) {
+        if (err) adapter.log.error('writeValue: ' + err);
         if (cb) cb();
-    });*/
+    });
+}
+
+function requestMeta(name, attr, value, cb) {
+    if (cb) cb();
+    var _id =  adapter.namespace + '.' + name.replace(/\./g, '_') + '.' + attr.replace(/\./g, '_');
+    if (fhemObjects[_id]) {
+        parseEvent(name + ' ' + attr + ' ' + value);
+        if (cb) {
+            cb();
+            cb = null;
+        }
+    } else {
+        telnetOut.send('JsonList2 ' + name, function (err, result) {
+            var objects = null;
+            try {
+                objects = JSON.parse(result)
+            } catch (e) {
+                adapter.log.error('Cannot parse answer for jsonlist2: ' + e);
+            }
+            if (objects) {
+                parseObjects(objects.Results, function () {
+                    var id = adapter.namespace + '.' + name.replace(/\./g, '_') + '.' + attr.replace(/\./g, '_');
+                    if (fhemObjects[id]) {
+                        parseEvent(name + ' ' + attr + ' ' + value);
+                    } else {
+                        adapter.log.warn('Readings "' + attr + '" still not found in "' + name + '" after JsonList2');
+                    }
+                    if (cb) {
+                        cb();
+                        cb = null;
+                    }
+                });
+            } else if (cb) {
+                cb();
+                cb = null;
+            }
+        });
+    }
 }
 
 function processQueue() {
-    if (telnetOut.isCommandRunning()) return;
+    if (telnetOut.isCommandRunning() || !queue.length) return;
     var command = queue.shift();
     if (command.command === 'resync') {
         startSync(function () {
@@ -479,6 +537,13 @@ function processQueue() {
         writeValue(command.id, command.val, function () {
             setTimeout(processQueue, 0);
         });
+    } else if (command.command === 'meta') {
+        requestMeta(command.name, command.attr, command.val, function () {
+            setTimeout(processQueue, 0);
+        });
+    } else {
+        adapter.log.error('Unknown task: ' + command.command);
+        setTimeout(processQueue, 0);
     }
 }
 

@@ -18,9 +18,10 @@ Exactly same port and the IP address of FHEM host (or localhost if FHEM and ioBr
 
 ioBroker sends at the start "jsonlist2" command to get all "Readings" from the list.
 
-Write do not work at this moment.
-
 ## Changelog
+#### 0.2.0
+* (bluefox) implemented write
+* (bluefox) try to read meta information if unknown event received
 
 #### 0.1.0
 * (bluefox) initial release

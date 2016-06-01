@@ -1,14 +1,19 @@
 {
     "common": {
         "name":                     "fhem",
-        "version":                  "0.1.0",
-        "title":                    "FHEM connectino for ioBroker",
+        "version":                  "0.2.0",
+        "title":                    "FHEM connection for ioBroker",
         "desc":                     {
            "en": "FHEM Adapter",
            "de": "FHEM Adapter",
            "ru": "FHEM драйвер"
 	    },
         "news": {
+          "0.2.0" :{
+            "en": "implemented write\ntry to read meta information if unknown event received",
+            "de": "implemented write\ntry to read meta information if unknown event received",
+            "ru": "implemented write\ntry to read meta information if unknown event received"
+          },
           "0.1.0" :{
             "en": "initial checkin",
             "de": "initial checkin",
