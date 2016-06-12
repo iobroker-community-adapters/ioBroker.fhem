@@ -105,14 +105,9 @@ function parseEvent(event) {
         // first ignore
         var id = adapter.namespace + '.' + parts[1].replace(/\./g, '_') + '.' + parts[2].replace(/\./g, '_');
         if (fhemObjects[id]) {
-            var val;
-            if (fhemObjects[id].common.type === 'boolean') {
-                val = (event === 'true' || event === '1');
-            } else if (fhemObjects[id].common.type === 'number') {
-                val = parseFloat(event);
-            } else {
-                val = event;
-            }
+            var val = convertFhemValue(event);
+
+            if (fhemObjects[id].common.type === 'boolean') val = !!event;
 
             adapter.setForeignState(id, {val: val, ack: true, ts: ts});
         } else {
@@ -287,21 +282,9 @@ function parseObjects(objs, cb) {
                 };
 
                 if (objs[i].Readings[attr]) {
-                    var val = objs[i].Readings[attr].Value;
-                    if (val === 'true' || val === true || val === 'false' || val === false) {
-                        obj.common.type = 'boolean';
-                    } else {
-                        var f = parseFloat(val);
-                        if (f == val) {
-                            val = f;
-                            obj.common.type = 'number';
-                        } else {
-                            obj.common.type = 'string';
-                        }
-                    }
-
+                    var val = convertFhemValue(objs[i].Readings[attr].Value);
+                    obj.common.type = typeof val;
                     obj.common.role = 'state';
-
                     states.push({id: obj._id, val: val, ts: new Date(objs[i].Readings[attr].Time).getTime(), ack: true});
                     objects.push(obj);
                 }
@@ -373,6 +356,12 @@ function parseObjects(objs, cb) {
                 obj.common.type = obj.common.type || 'string';
                 obj.common.role = 'state';
 
+                if (parts[0].indexOf('RGB') !== -1) {
+                    obj.common.role = 'light.color.rgb';
+                }
+                if (parts[0].indexOf('HSV') !== -1) {
+                    obj.common.role = 'light.color.hsv';
+                }
                 objects.push(obj);
 
                 //console.log('   ' + obj._id + ': ' + (parts[1] || ''));
@@ -458,12 +447,26 @@ function startSync(cb) {
     }); 
 }
 
+function convertFhemValue(val) {
+    val = val.trim();
+    if (val === 'true')     return true;
+    if (val === 'false')    return false;
+    if (val === 'on')       return true;
+    if (val === 'off')      return false;
+    if (val === 'ok')       return 'ok'; // what can it be?
+    // May be RGB
+    if (typeof val === 'string' && val[0] === '#' && val.length > 3) return val.substring(1);
+    var f = parseFloat(val);
+    if (f == val) return f;
+    return val;
+}
+
 function readValue(id, cb) {
     telnetOut.send('get ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute, function (err, result) {
         if (err) adapter.log.error('writeValue: ' + err);
         //MeinWetter city => Berlin
         if (result) {
-            result = result.substring(fhemObjects[id].native.Name.length + fhemObjects[id].native.Attribute + 5);
+            result = convertFhemValue(result.substring(fhemObjects[id].native.Name.length + fhemObjects[id].native.Attribute + 5));
             if (result !== '') {
                 adapter.setForeignState(id, result, true);
             }

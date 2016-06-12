@@ -19,6 +19,9 @@ Exactly same port and the IP address of FHEM host (or localhost if FHEM and ioBr
 ioBroker sends at the start "jsonlist2" command to get all "Readings" from the list.
 
 ## Changelog
+#### 0.2.1 (2016-06-12)
+* (bluefox) support of RGB values for control
+
 #### 0.2.0
 * (bluefox) implemented write
 * (bluefox) try to read meta information if unknown event received

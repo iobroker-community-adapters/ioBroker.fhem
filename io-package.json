@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "fhem",
-        "version":                  "0.2.0",
+        "version":                  "0.2.1",
         "title":                    "FHEM connection for ioBroker",
         "desc":                     {
            "en": "FHEM Adapter",
@@ -9,6 +9,11 @@
            "ru": "FHEM драйвер"
 	    },
         "news": {
+          "0.2.1" :{
+            "en": "support of RGB values for control",
+            "de": "support of RGB values for control",
+            "ru": "support of RGB values for control"
+          },
           "0.2.0" :{
             "en": "implemented write\ntry to read meta information if unknown event received",
             "de": "implemented write\ntry to read meta information if unknown event received",
