@@ -238,61 +238,7 @@ function parseObjects(objs, cb) {
     var obj;
     var name;
     var ignoreStates = ['getConfig', 'getRegRaw', 'regBulk', 'regSet', 'deviceMsg', 'CommandAccepted'];
-
-    objs.push(
-            {
-                "Name":"wiga_licht",
-                "PossibleSets":"clear:readings,trigger,register,oldRegs,rssi,msgEvents,attack,all getConfig getRegRaw inhibit:on,off off on on-for-timer on-till peerBulk peerIODev press pressS:wiga_fb19_5,wiga_fb19_6,16B1A703,16B1A704,self01 pressL:wiga_fb19_5,wiga_fb19_6,16B1A703,16B1A704,self01 regBulk regSet sign:on,off statusRequest toggle",
-                "PossibleAttrs":"verbose:0,1,2,3,4,5 room group comment:textField-long alias eventMap userReadings:textField-long do_not_notify:1,0 showtime:1,0 rawToReadable unit expert:0_defReg,1_allReg,2_defReg+raw,3_allReg+raw,4_off,8_templ+default,12_templOnly,251_anything param actAutoTry:0_off,1_on aesCommReq:1,0 ignore:1,0 dummy:1,0 IODev IOList IOgrp rssiLog:1,0 actCycle hmKey hmKey2 hmKey3 serialNr firmware .stc .devInfo actStatus autoReadReg:0_off,1_restart,2_pon-restart,3_onChange,4_reqStatus,5_readMissing,8_stateOnly burstAccess:0_off,1_auto msgRepeat hmProtocolEvents:0_off,1_dump,2_dumpFull,3_dumpTrigger aesKey:5,4,3,2,1,0  repPeers peerIDs tempListTmpl levelRange levelMap event-on-change-reading event-on-update-reading event-aggregator event-min-interval stateFormat:textField-long timestamp-on-change-reading model:ASH550,ASH550I,CCU-FHEM,CMM,DORMA_BRC-H,DORMA_RC-H,DORMA_atent,HM-CC-RT-DN,HM-CC-RT-DN-BoM,HM-CC-SCD,HM-CC-TC,HM-CC-VD,HM-Dis-EP-WM55,HM-Dis-TD-T,HM-Dis-WM55,HM-ES-PMSw1-DR,HM-ES-PMSw1-Pl,HM-ES-PMSw1-Pl-DN-R1,HM-ES-PMSw1-Pl-DN-R2,HM-ES-PMSw1-Pl-DN-R3,HM-ES-PMSw1-Pl-DN-R4,HM-ES-PMSw1-Pl-DN-R5,HM-ES-PMSw1-SM,HM-ES-TX-WM,HM-LC-BL1-FM,HM-LC-BL1-PB-FM,HM-LC-BL1-SM,HM-LC-Bl1-FM-2,HM-LC-Bl1-SM-2,HM-LC-Bl1PBU-FM,HM-LC-DDC1-PCB,HM-LC-DIM1L-CV,HM-LC-DIM1L-PL,HM-LC-DIM1T-CV,HM-LC-DIM1T-FM,HM-LC-DIM1T-PL,HM-LC-DIM2L-CV,HM-LC-DIM2L-SM,HM-LC-DIM2T-SM,HM-LC-Dim1L-CV-2,HM-LC-Dim1L-CV-644,HM-LC-Dim1L-Pl-2,HM-LC-Dim1L-Pl-3,HM-LC-Dim1L-Pl-644,HM-LC-Dim1PWM-CV,HM-LC-Dim1PWM-CV-2,HM-LC-Dim1T-CV-2,HM-LC-Dim1T-CV-644,HM-LC-Dim1T-FM-2,HM-LC-Dim1T-FM-644,HM-LC-Dim1T-FM-LF,HM-LC-Dim1T-Pl-2,HM-LC-Dim1T-Pl-3,HM-LC-Dim1T-Pl-644,HM-LC-Dim1TPBU-FM,HM-LC-Dim1TPBU-FM-2,HM-LC-Dim2L-SM-2,HM-LC-Dim2L-SM-644,HM-LC-Dim2T-SM,HM-LC-Dim2T-SM-2,HM-LC-RGBW-WM,HM-LC-SW1-BA-PCB,HM-LC-SW1-FM,HM-LC-SW1-PB-FM,HM-LC-SW1-PL,HM-LC-SW1-PL-OM54,HM-LC-SW1-PL2,HM-LC-SW1-SM,HM-LC-SW1-SM-ATMEGA168,HM-LC-SW2-DR,HM-LC-SW2-FM,HM-LC-SW2-PB-FM,HM-LC-SW2-SM,HM-LC-SW4-BA-PCB,HM-LC-SW4-DR,HM-LC-SW4-PCB,HM-LC-SW4-SM,HM-LC-SW4-SM-ATMEGA168,HM-LC-SW4-WM,HM-LC-Sw1-DR,HM-LC-Sw1-FM-2,HM-LC-Sw1-PCB,HM-LC-Sw1-Pl-3,HM-LC-Sw1-Pl-CT-R1,HM-LC-Sw1-Pl-CT-R2,HM-LC-Sw1-Pl-CT-R3,HM-LC-Sw1-Pl-CT-R4,HM-LC-Sw1-Pl-CT-R5,HM-LC-Sw1-Pl-DN-R1,HM-LC-Sw1-Pl-DN-R2,HM-LC-Sw1-Pl-DN-R3,HM-LC-Sw1-Pl-DN-R4,HM-LC-Sw1-Pl-DN-R5,HM-LC-Sw1-SM-2,HM-LC-Sw1PBU-FM,HM-LC-Sw2-DR-2,HM-LC-Sw2-FM-2,HM-LC-Sw2PBU-FM,HM-LC-Sw4-DR-2,HM-LC-Sw4-PCB-2,HM-LC-Sw4-SM-2,HM-LC-Sw4-WM-2,HM-MOD-Em-8,HM-MOD-Re-8,HM-OU-CF-PL,HM-OU-CFM-PL,HM-OU-CFM-TW,HM-OU-CM-PCB,HM-OU-LED16,HM-PB-2-FM,HM-PB-2-WM,HM-PB-2-WM55,HM-PB-2-WM55-2,HM-PB-4-WM,HM-PB-4DIS-WM,HM-PB-4DIS-WM-2,HM-PB-6-WM55,HM-PBI-4-FM,HM-RC-12,HM-RC-12-B,HM-RC-12-SW,HM-RC-19,HM-RC-19-B,HM-RC-19-SW,HM-RC-2-PBU-FM,HM-RC-4,HM-RC-4-2,HM-RC-4-3,HM-RC-4-3-D,HM-RC-4-B,HM-RC-8,HM-RC-Dis-H-x-EU,HM-RC-KEY3,HM-RC-KEY3-B,HM-RC-Key4-2,HM-RC-Key4-3,HM-RC-P1,HM-RC-SEC3,HM-RC-SEC3-B,HM-RC-Sec4-2,HM-RC-Sec4-3,HM-SCI-3-FM,HM-SEC-KEY,HM-SEC-KEY-O,HM-SEC-KEY-S,HM-SEC-MDIR,HM-SEC-MDIR-2,HM-SEC-MDIR-3,HM-SEC-RHS,HM-SEC-RHS-2,HM-SEC-SC,HM-SEC-SC-2,HM-SEC-SCo,HM-SEC-SD,HM-SEC-SD-2,HM-SEC-SFA-SM,HM-SEC-TIS,HM-SEC-WDS,HM-SEC-WDS-2,HM-SEC-WIN,HM-SEN-EP,HM-SEN-MDIR-SM,HM-SWI-3-FM,HM-Sec-Cen,HM-Sec-Sir-WM,HM-Sen-DB-PCB,HM-Sen-LI-O,HM-Sen-MDIR-O,HM-Sen-MDIR-O-2,HM-Sen-MDIR-WM55,HM-Sen-RD-O,HM-Sen-Wa-Od,HM-Sys-sRP-Pl,HM-TC-IT-WM-W-EU,HM-WDC7000,HM-WDS10-TH-O,HM-WDS100-C6-O,HM-WDS100-C6-O-2,HM-WDS20-TH-O,HM-WDS30-OT2-SM,HM-WDS30-OT2-SM-2,HM-WDS30-T-O,HM-WDS40-TH-I,HM-WDS40-TH-I-2,HM-WS550,HM-WS550LCB,HM-WS550LCW,HM-WS550Tech,IS-WDS-TH-OD-S-R3,KFM-Display,KFM-Sensor,KS550,KS550LC,KS550TECH,KS888,OLIGO-smart-iq-HM,PS-Th-Sens,PS-switch,ROTO_ZEL-STG-RM-DWT-10,ROTO_ZEL-STG-RM-FDK,ROTO_ZEL-STG-RM-FEP-230V,ROTO_ZEL-STG-RM-FSA,ROTO_ZEL-STG-RM-FST-UP4,ROTO_ZEL-STG-RM-FWT,ROTO_ZEL-STG-RM-FZS,ROTO_ZEL-STG-RM-FZS-2,ROTO_ZEL-STG-RM-HS-4,ROTO_ZEL-STG-RM-WT-2,Roto_ZEL-STG-RM-FFK,Roto_ZEL-STG-RM-FSS-UP3,S550IA,Schueco_263-130,Schueco_263-131,Schueco_263-132,Schueco_263-133,Schueco_263-134,Schueco_263-135,Schueco_263-144,Schueco_263-145,Schueco_263-146,Schueco_263-147,Schueco_263-155,Schueco_263-157,Schueco_263-158,Schueco_263-160,Schueco_263-162,Schueco_263-167,Schueco_263-xxx,SensoTimer-ST-6,WDF-solar,WS888 subType:AlarmControl,KFM100,THSensor,blindActuator,blindActuatorSol,dimmer,keyMatic,motionAndBtn,motionDetector,outputUnit,powerMeter,powerSensor,pushButton,remote,repeater,rgb,senBright,sensRain,sensor,singleButton,siren,smokeDetector,swi,switch,thermostat,threeStateSensor,timer,tipTronic,virtual,winMatic cmdIcon devStateIcon devStateStyle icon sortby webCmd widgetOverride userattr",
-                "Internals": {
-                    "DEF": "192B1C01",
-                    "NAME": "wiga_licht",
-                    "NR": "31",
-                    "NTFY_ORDER": "50-wiga_licht",
-                    "STATE": "off",
-                    "TYPE": "CUL_HM",
-                    "chanNo": "01",
-                    "device": "wiga_sw_rechts",
-                    "peerList": "wiga_fb19_5,wiga_fb19_6,16B1A703,16B1A704,self01,"
-                },
-                "Readings": {
-                    "CommandAccepted": { "Value":"yes", "Time":"2016-06-17 19:55:19" },
-                    "R-16B1A703-lgActionType": { "Value":"jmpToTarget", "Time":"2016-05-21 21:26:22" },
-                    "R-16B1A703-shActionType": { "Value":"jmpToTarget", "Time":"2016-05-21 21:26:22" },
-                    "R-16B1A704-lgActionType": { "Value":"jmpToTarget", "Time":"2016-05-21 21:26:23" },
-                    "R-16B1A704-shActionType": { "Value":"jmpToTarget", "Time":"2016-05-21 21:26:23" },
-                    "R-self01-lgActionType": { "Value":"jmpToTarget", "Time":"2016-05-21 21:26:24" },
-                    "R-self01-shActionType": { "Value":"jmpToTarget", "Time":"2016-05-21 21:26:24" },
-                    "R-sign": { "Value":"off", "Time":"2016-05-21 21:26:18" },
-                    "R-wiga_fb19_5-lgActionType": { "Value":"jmpToTarget", "Time":"2016-05-21 21:26:20" },
-                    "R-wiga_fb19_5-shActionType": { "Value":"jmpToTarget", "Time":"2016-05-21 21:26:20" },
-                    "R-wiga_fb19_6-lgActionType": { "Value":"jmpToTarget", "Time":"2016-05-21 21:26:21" },
-                    "R-wiga_fb19_6-shActionType": { "Value":"jmpToTarget", "Time":"2016-05-21 21:26:21" },
-                    "RegL_01.": { "Value":"08:00 00:00", "Time":"2016-05-21 21:26:18" },
-                    "RegL_03.16B1A703": { "Value":"02:00 03:00 04:32 05:64 06:00 07:FF 08:00 09:FF 0A:01 0B:14 0C:63 82:00 83:00 84:32 85:64 86:00 87:FF 88:00 89:FF 8A:21 8B:14 8C:63 00:00", "Time":"2016-05-21 21:26:22" },
-                    "RegL_03.16B1A704": { "Value":"02:00 03:00 04:32 05:64 06:00 07:FF 08:00 09:FF 0A:01 0B:14 0C:63 82:00 83:00 84:32 85:64 86:00 87:FF 88:00 89:FF 8A:21 8B:14 8C:63 00:00", "Time":"2016-05-21 21:26:23" },
-                    "RegL_03.self01": { "Value":"02:00 03:00 04:32 05:64 06:00 07:FF 08:00 09:FF 0A:01 0B:14 0C:63 82:00 83:00 84:32 85:64 86:00 87:FF 88:00 89:FF 8A:21 8B:14 8C:63 00:00", "Time":"2016-05-21 21:26:24" },
-                    "RegL_03.wiga_fb19_5": { "Value":"02:00 03:00 04:32 05:64 06:00 07:FF 08:00 09:FF 0A:01 0B:14 0C:63 82:00 83:00 84:32 85:64 86:00 87:FF 88:00 89:FF 8A:21 8B:14 8C:63 00:00", "Time":"2016-05-21 21:26:20" },
-                    "RegL_03.wiga_fb19_6": { "Value":"02:00 03:00 04:32 05:64 06:00 07:FF 08:00 09:FF 0A:01 0B:14 0C:63 82:00 83:00 84:32 85:64 86:00 87:FF 88:00 89:FF 8A:21 8B:14 8C:63 00:00", "Time":"2016-05-21 21:26:21" },
-                    "deviceMsg": { "Value":"off (to HMLAN1)", "Time":"2016-06-17 19:55:19" },
-                    "level": { "Value":"0", "Time":"2016-06-17 19:55:19" },
-                    "pct": { "Value":"0", "Time":"2016-06-17 19:55:19" },
-                    "peerList": { "Value":"wiga_fb19_5,wiga_fb19_6,16B1A703,16B1A704,self01,", "Time":"2016-06-17 19:41:46" },
-                    "recentStateType": { "Value":"ack", "Time":"2016-06-17 19:55:19" },
-                    "state": { "Value":"off", "Time":"2016-06-17 19:55:19" },
-                    "timedOn": { "Value":"off", "Time":"2016-06-17 19:55:19" },
-                    "trigLast": { "Value":"wiga_fb19_6:short", "Time":"2016-06-01 21:52:02" },
-                    "trig_wiga_fb19_5": { "Value":"short", "Time":"2016-06-01 21:50:49" },
-                    "trig_wiga_fb19_6": { "Value":"short", "Time":"2016-06-01 21:52:02" }
-                },
-                "Attributes": {
-                    "model": "HM-LC-SW4-DR",
-                    "peerIDs": "00000000,1174FE05,1174FE06,16B1A703,16B1A704,192B1C01,",
-                    "room": "Wintergarten",
-                    "webCmd": "statusRequest:toggle:on:off"
-                }
-            });
-
+    
     for (var i = 0; i < objs.length; i++) {
         try {
             name = objs[i].Name.replace(/\./g, '_');
@@ -352,6 +298,7 @@ function parseObjects(objs, cb) {
              }*/
             var isOn  = false;
             var isOff = false;
+            var setStates = {};
 
             if (objs[i].PossibleSets) {
                 var attrs = objs[i].PossibleSets.split(' ');
@@ -362,7 +309,9 @@ function parseObjects(objs, cb) {
                     // ignore some useless "sets"
                     if (ignoreStates.indexOf(parts[0]) !== -1) continue;
 
-                    id = adapter.namespace + '.' + name + '.' + parts[0].replace(/\./g, '_');
+                    var stateName = parts[0].replace(/\./g, '_');
+                    id = adapter.namespace + '.' + name + '.' + stateName;
+
 
                     if (parts[0] === 'off') isOff = true;
                     if (parts[0] === 'on')  isOn  = true;
@@ -400,6 +349,7 @@ function parseObjects(objs, cb) {
                         obj.native.hsv = true;
                     }
                     objects.push(obj);
+                    setStates[stateName] = obj;
 
                     //console.log('   ' + obj._id + ': ' + (parts[1] || ''));
                 }
@@ -410,37 +360,56 @@ function parseObjects(objs, cb) {
                     // ignore some useless states
                     if (ignoreStates.indexOf(attr) !== -1) continue;
 
-                    id = adapter.namespace + '.' + name + '.' + attr.replace(/\./g, '_');
-                    obj = {
-                        _id:  id,
-                        type: 'state',
-                        common: {
-                            name:   objs[i].Name + ' ' + attr,
-                            read:   true,
-                            write:  false,
-                            unit:   getUnit(attr)
-                        },
-                        native: {
-                            Name: objs[i].Name,
-                            Attribute: attr
-                        }
-                    };
+                    var stateName = attr.replace(/\./g, '_');
+                    id = adapter.namespace + '.' + name + '.' + stateName;
+                    var combined = false;
+                    if (setStates[stateName]) {
+                        combined = true;
+                        obj = setStates[stateName];
+                        obj.common.read = true;
+                        obj.common.unit = getUnit(attr);
+                    } else {
+                        obj = {
+                            _id:  id,
+                            type: 'state',
+                            common: {
+                                name:   objs[i].Name + ' ' + attr,
+                                read:   true,
+                                write:  false,
+                                unit:   getUnit(attr)
+                            },
+                            native: {
+                                Name: objs[i].Name,
+                                Attribute: attr
+                            }
+                        };
+                    }
 
                     if (objs[i].Readings[attr]) {
                         var val = convertFhemValue(objs[i].Readings[attr].Value);
-                        obj.common.type = typeof val;
-                        obj.common.role = 'state';
-                        states.push({id: obj._id, val: val, ts: new Date(objs[i].Readings[attr].Time).getTime(), ack: true});
-                        objects.push(obj);
-                    }
-                    if (isOff && isOn && attr === 'state') {
-                        obj.common.write  = true;
-                        obj.native.onoff  = true;
-                        obj.common.role   = 'switch';
+                        obj.common.type = obj.common.type || typeof val;
+                        obj.common.role = obj.common.role || 'state';
+
+                        states.push({
+                            id:     obj._id, 
+                            val:    val, 
+                            ts:     objs[i].Readings[attr].Time ? new Date(objs[i].Readings[attr].Time).getTime() : new Date().getTime(), 
+                            ack:    true
+                        });
+
+                        // detect on/off state
+                        if (isOff && isOn && attr === 'state') {
+                            obj.common.write = true;
+                            obj.native.onoff = true;
+                            obj.common.role  = 'switch';
+                        }
+
+                        if (!combined) objects.push(obj);
                     }
                 }
                 delete objs[i].Readings;
             }
+            setStates = null;
 
             /*id = adapter.namespace + '.' + name + '.lastError';
              obj = {
@@ -540,7 +509,7 @@ function convertFhemValue(val) {
 
 function readValue(id, cb) {
     telnetOut.send('get ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute, function (err, result) {
-        if (err) adapter.log.error('writeValue: ' + err);
+        if (err) adapter.log.error('readValue: ' + err);
         //MeinWetter city => Berlin
         if (result) {
             result = convertFhemValue(result.substring(fhemObjects[id].native.Name.length + fhemObjects[id].native.Attribute + 5));
@@ -558,7 +527,7 @@ function writeValue(id, val, cb) {
     if (val === undefined || val === null) val = '';
 
     // May be RGB
-    if (typeof val === 'string' && val[0] === '#' && val.length > 3) return val.substring(1);
+    if (typeof val === 'string' && val[0] === '#' && val.length > 3) val = val.substring(1);
 
     if (fhemObjects[id].native.rgb) {
         // todo
