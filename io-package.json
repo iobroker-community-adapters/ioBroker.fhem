@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "fhem",
-        "version":                  "0.2.1",
+        "version":                  "0.2.2",
         "title":                    "FHEM connection for ioBroker",
         "desc":                     {
            "en": "FHEM Adapter",
@@ -9,6 +9,11 @@
            "ru": "FHEM драйвер"
 	    },
         "news": {
+          "0.2.2" :{
+            "en": "implement On/Off state and fix RGB\nadd debug output by control",
+            "de": "implement On/Off state and fix RGB\nadd debug output by control",
+            "ru": "implement On/Off state and fix RGB\nadd debug output by control"
+          },
           "0.2.1" :{
             "en": "support of RGB values for control",
             "de": "support of RGB values for control",
