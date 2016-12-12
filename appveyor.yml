@@ -37,7 +37,7 @@ install:
 
         cd ".\fhem";
 
-        $MyProcess = Start-Process perl fhem.pl fhem.cfg -PassThru;
+        $MyProcess = Start-Process "perl fhem.pl fhem.cfg" -PassThru;
 
         cd ..
 
