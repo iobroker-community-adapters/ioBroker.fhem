@@ -106,12 +106,12 @@ describe('Test ' + adapterShortName + ' adapter', function() {
         setTimeout(function () {
             states.getState('fhem.0.info.connection', function (err, state) {
                 if (err) console.error(err);
-                expect(err).to.be.undefined;
+                expect(err).to.be.not.ok;
                 expect(state).to.be.ok;
                 expect(state.val).to.be.true;
                 done();
             });
-        }, 5000);    
+        }, 5000);
     });
 
     after('Test ' + adapterShortName + ' adapter: Stop js-controller', function (done) {
