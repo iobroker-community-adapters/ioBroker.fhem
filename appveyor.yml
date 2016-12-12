@@ -25,18 +25,18 @@ install:
   - ps: >-
         Invoke-WebRequest "http://fhem.de/fhem-5.7.tar.gz" -OutFile .\fhem-5.7.tar.gz;
 
-        if (Test-Path .\fhem )
+        if (Test-Path .\fhem-5.7 )
 
         {
-            del .\fhem -Force -Recurse
+            del .\fhem-5.7 -Force -Recurse
         }
 
         md fhem;
 
         7z x .\fhem-5.7.tar.gz -r;
-        7z x .\fhem-5.7.tar -ofhem -r;
+        7z x .\fhem-5.7.tar -r;
 
-        cd ".\fhem";
+        cd ".\fhem-5.7";
 
         $MyProcess = Start-Process "perl fhem.pl fhem.cfg" -PassThru;
 
