@@ -31,7 +31,7 @@ before_script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo make install; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ls -la /opt/fhem/; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then perl /opt/fhem/fhem.pl /opt/fhem/fhem.cfg; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget --no-check-certificate -q https://debian.fhem.de/archive.key | sudo apt-key add -; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget --no-check-certificate -qO - https://debian.fhem.de/archive.key | sudo apt-key add -; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then source /etc/lsb-release; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo "deb https://debian.fhem.de/stable ./" | sudo tee -a /etc/apt/sources.list; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
