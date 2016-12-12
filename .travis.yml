@@ -28,8 +28,9 @@ before_script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo echo "define telnetPort telnet 7072 global" >> fhem.cfg; fi
   #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo make install; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then perl fhem.pl fhem.cfg; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then curl https://debian.fhem.de/archive.key | sudo apt-key add -; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo "deb https://debian.fhem.de/stable ./" | sudo tee -a /etc/apt/sources.list; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then curl -sL https://debian.fhem.de/archive.key | sudo apt-key add -; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then source /etc/lsb-release; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo "deb https://debian.fhem.de/stable ${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable" | sudo tee -a /etc/apt/sources.list; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install fhem -y; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo echo "define telnetPort telnet 7072 global" >> /opt/fhem/fhem.cfg; fi
