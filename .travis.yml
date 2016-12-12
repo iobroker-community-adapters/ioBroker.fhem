@@ -11,10 +11,8 @@ node_js:
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gcc48; fi
-
-before_script:
-  - npm install winston@2.3.0
-  - npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget --no-check-certificate https://debian.fhem.de/fhem.deb; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo dpkg -i fhem.deb; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo curl -L http://xrl.us/installperlosx | bash; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install Bundle::CPAN; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install Device::SerialPort; fi
@@ -30,8 +28,9 @@ before_script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo make install; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ls -la /opt/fhem/; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then perl /opt/fhem/fhem.pl /opt/fhem/fhem.cfg; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget --no-check-certificate https://debian.fhem.de/fhem.deb; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo dpkg -i fhem.deb; fi
+before_script:
+  - npm install winston@2.3.0
+  - npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production
 env:
   - CXX=g++-4.8
 addons:
