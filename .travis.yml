@@ -9,10 +9,9 @@ node_js:
   - "4"
   - "6"
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo wget -qO - https://debian.fhem.de/archive.key | apt-key add -; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo deb https://debian.fhem.de/stable ./'; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install fhem; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gcc48; fi
+
 before_script:
   - npm install winston@2.3.0
   - npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production
@@ -29,6 +28,10 @@ before_script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo echo "define telnetPort telnet 7072 global" >> fhem.cfg; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo make install; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then perl fhem.pl fhem.cfg; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo wget -qO - https://debian.fhem.de/archive.key | apt-key add -; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo deb https://debian.fhem.de/stable ./'; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install fhem; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo echo "define telnetPort telnet 7072 global" >> /opt/fhem/fhem.cfg; fi
 
 env:
