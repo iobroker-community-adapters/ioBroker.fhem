@@ -23,11 +23,12 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget http://fhem.de/fhem-5.7.tar.gz; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then tar -xvzf fhem-5.7.tar.gz; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd fhem-5.7; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then pwd; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ls -la; fi
+#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then pwd; fi
+#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ls -la; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo make install; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ls -la /opt/fhem/; fi
+#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ls -la /opt/fhem/; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then perl /opt/fhem/fhem.pl /opt/fhem/fhem.cfg; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd ..; fi
 before_script:
   - npm install winston@2.3.0
   - npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production
