@@ -4,62 +4,60 @@ os:
 sudo: required
 language: node_js
 node_js:
-  - "0.10"
-  - "0.12"
-  - "4"
-  - "6"
+  - '0.10'
+  - '0.12'
+  - '4'
+  - '6'
+  - '7'
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gcc48; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget --no-check-certificate https://debian.fhem.de/fhem.deb; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo dpkg -i fhem.deb; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo curl -L http://xrl.us/installperlosx | bash; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install Bundle::CPAN; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install Device::SerialPort; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install IO::Socket::SSL; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install Net::Telnet; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install Net::WebSocket::Server; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install XML::Simple; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget http://fhem.de/fhem-5.7.tar.gz; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then tar -xvzf fhem-5.7.tar.gz; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd fhem-5.7; fi
-#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then pwd; fi
-#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ls -la; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo make install; fi
-#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ls -la /opt/fhem/; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then perl /opt/fhem/fhem.pl /opt/fhem/fhem.cfg; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd ..; fi
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gcc48; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget --no-check-certificate https://debian.fhem.de/fhem.deb; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo dpkg -i fhem.deb; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo curl -L http://xrl.us/installperlosx | bash; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install Bundle::CPAN; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install Device::SerialPort; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install IO::Socket::SSL; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install Net::Telnet; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install Net::WebSocket::Server; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install XML::Simple; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget http://fhem.de/fhem-5.7.tar.gz; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then tar -xvzf fhem-5.7.tar.gz; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd fhem-5.7; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo make install; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then perl /opt/fhem/fhem.pl /opt/fhem/fhem.cfg; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd ..; fi'
 before_script:
   - npm install winston@2.3.0
-  - npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production
+  - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
 env:
   - CXX=g++-4.8
 addons:
   apt:
     sources:
-    - ubuntu-toolchain-r-test
+      - ubuntu-toolchain-r-test
     packages:
-    - g++-4.8
-    - libdevice-serialport-perl
-    - libwww-perl
-    - libio-socket-ssl-perl
-    - libcgi-pm-perl
-    - libjson-perl
-    - sqlite3
-    - libdbd-sqlite3-perl
-    - libtext-diff-perl
-    - libtimedate-perl
-    - libmail-imapclient-perl
-    - libgd-graph-perl
-    - libtext-csv-perl
-    - libxml-simple-perl
-    - liblist-moreutils-perl
-    - ttf-liberation
-    - libimage-librsvg-perl
-    - libgd-text-perl
-    - libsocket6-perl
-    - libio-socket-inet6-perl
-    - libmime-base64-perl
-    - libimage-info-perl
-    - libusb-1.0-0-dev
-    - libnet-server-perl
+      - g++-4.8
+      - libdevice-serialport-perl
+      - libwww-perl
+      - libio-socket-ssl-perl
+      - libcgi-pm-perl
+      - libjson-perl
+      - sqlite3
+      - libdbd-sqlite3-perl
+      - libtext-diff-perl
+      - libtimedate-perl
+      - libmail-imapclient-perl
+      - libgd-graph-perl
+      - libtext-csv-perl
+      - libxml-simple-perl
+      - liblist-moreutils-perl
+      - ttf-liberation
+      - libimage-librsvg-perl
+      - libgd-text-perl
+      - libsocket6-perl
+      - libio-socket-inet6-perl
+      - libmime-base64-perl
+      - libimage-info-perl
+      - libusb-1.0-0-dev
+      - libnet-server-perl
