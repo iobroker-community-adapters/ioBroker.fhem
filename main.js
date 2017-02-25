@@ -1,18 +1,20 @@
-/* jshint -W097 */// jshint strict:false
-/*jslint node: true */
-"use strict";
+/* jshint -W097 */
+/* jshint strict:false */
+/* jslint node: true */
 
-var utils   = require(__dirname + '/lib/utils'); 
-var Telnet  = require(__dirname + '/lib/telnet');
+'use strict';
+
+var utils = require(__dirname + '/lib/utils');
+var Telnet = require(__dirname + '/lib/telnet');
 
 var adapter = utils.adapter('fhem');
 
 // Telnet sessions
 var telnetOut = null; // read config and write values
-var telnetIn  = null; // receive events
+var telnetIn = null; // receive events
 
-var connected   = false;
-var queue       = [];
+var connected = false;
+var queue = [];
 var fhemObjects = {};
 
 // is called when adapter shuts down - callback has to be called under any circumstances!
@@ -44,7 +46,7 @@ adapter.on('stateChange', function (id, state) {
         if (id === adapter.namespace + '.' + '.info.resync') {
             queue.push({command: 'resync'});
             processQueue();
-        } else if (fhemObjects[id]){
+        } else if (fhemObjects[id]) {
             queue.push({command: 'write', id: id, val: state.val});
             processQueue();
         }
@@ -53,8 +55,8 @@ adapter.on('stateChange', function (id, state) {
 
 // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
 adapter.on('message', function (obj) {
-    if (typeof obj == 'object' && obj.message) {
-        if (obj.command == 'send') {
+    if (typeof obj === 'object' && obj.message) {
+        if (obj.command === 'send') {
             // e.g. send email or pushover or whatever
             console.log('send command');
 
@@ -96,31 +98,70 @@ function parseEvent(event) {
     if (event[4] === '-' && event[7] === '-') {
         ts = new Date(event.substring(0, 19)).getTime();
         event = event.substring(20);
+
     }
+    var name;
+    var id;
+    var parts;
+    var val;
+    var eventnew;
     var pos = event.indexOf(':');
+
     if (pos !== -1) {
-        var name = event.substring(0, pos);
-        event = event.substring(pos + 2);
-        var parts = name.split(' ');
+        name = event.substring(0, pos);
+        var event1 = event.substring(pos + 2);
+        parts = name.split(' ');
         // first ignore
-        var id = adapter.namespace + '.' + parts[1].replace(/\./g, '_') + '.' + parts[2].replace(/\./g, '_');
+        id = adapter.namespace + '.' + parts[1].replace(/\./g, '_') + '.' + parts[2].replace(/\./g, '_');
+        // adapter.log.info('DL"' + id + '"');
         if (fhemObjects[id]) {
-            var val = convertFhemValue(event);
+            val = convertFhemValue(event1);
 
-            if (fhemObjects[id].common.type === 'boolean') val = !!event;
-
+            if (fhemObjects[id].common.type === 'boolean') val = !!event1;
+            adapter.log.debug('=== "' + id + '.' + val + '"');
             adapter.setForeignState(id, {val: val, ack: true, ts: ts});
         } else {
-            if (event.indexOf(':') !== -1) {
-                adapter.log.debug('Found strange value for "' + id + '": ' + event);
-            } else {
-                adapter.log.info('Unknown state "' + parts[1] + '.' + parts[2]);
-                queue.push({command: 'meta', name: parts[1], attr: parts[2], val: event});
-                processQueue();
+            name = event;
+            parts = name.split(' ');
+            eventnew = name.substring(parts[0].length + parts[1].length + 2);
+            // first ignore
+            id = adapter.namespace + '.' + parts[1].replace(/\./g, '_') + '.' + 'state';
+            if (fhemObjects[id]) {
+                val = convertFhemValue(eventnew);
+
+                // if (fhemObjects[id].common.type === 'boolean') val = !!event;
+                adapter.setForeignState(id, {val: val, ack: true, ts: ts});
             }
+            // adapter.log.warn('Unknown event "' + event + '"'+ ' ==> "' + id + '.'+eventnew +'" ('+val+')');
+            adapter.log.info('>>> "' + id + '.' + eventnew + '"');
+            // adapter.log.info('DL"' + val + '"');
+            // edit end LausiD 21.02.17
+
+
+            //if (event.indexOf(':') !== -1) {
+            //    adapter.log.info('Found strange value for "' + id + '": ' + event);
+            //} else {
+            //    adapter.log.info('Unknown ---- state "' + parts[1] + '.' + parts[2]);
+            //    queue.push({command: 'meta', name: parts[1], attr: parts[2], val: event});
+            //    processQueue();
+            //}
         }
     } else {
-        adapter.log.warn('Unknown event "' + event + '"');
+        // edit LausiD 21.02.17
+        // adapter.log.warn('Unknown event"' + event + '"');
+        name = event;
+        parts = name.split(' ');
+        eventnew = name.substring(parts[0].length + parts[1].length + 2);
+        // first ignore
+        id = adapter.namespace + '.' + parts[1].replace(/\./g, '_') + '.' + 'state';
+        if (fhemObjects[id]) {
+            val = convertFhemValue(eventnew);
+
+            // if (fhemObjects[id].common.type === 'boolean') val = !!event;
+            adapter.setForeignState(id, {val: val, ack: true, ts: ts});
+        }
+        adapter.log.debug('s== "' + id + '.' + eventnew + '"');
+        // edit end LausiD 21.02.17
     }
 }
 
@@ -178,15 +219,13 @@ function syncRoom(room, members, cb) {
     adapter.getForeignObject('enum.rooms.' + room, function (err, obj) {
         if (!obj) {
             obj = {
-                _id:   'enum.rooms.' + room,
+                _id: 'enum.rooms.' + room,
                 type: 'enum',
                 common: {
-                    name:    room,
+                    name: room,
                     members: members
                 },
-                native: {
-
-                }
+                native: {}
             };
             adapter.log.debug('Update "' + obj._id + '"');
             adapter.setForeignObject(obj._id, obj, function (err) {
@@ -194,7 +233,7 @@ function syncRoom(room, members, cb) {
                 cb();
             });
         } else {
-            obj.common  = obj.common || {};
+            obj.common = obj.common || {};
             obj.common.members = obj.common.members || [];
             var changed = false;
             for (var m = 0; m < members.length; m++) {
@@ -231,14 +270,14 @@ function syncRooms(rooms, cb) {
 }
 
 function parseObjects(objs, cb) {
-    var rooms   = {};
+    var rooms = {};
     var objects = [];
-    var states  = [];
+    var states = [];
     var id;
     var obj;
     var name;
     var ignoreStates = ['getConfig', 'getRegRaw', 'regBulk', 'regSet', 'deviceMsg', 'CommandAccepted'];
-    
+
     for (var i = 0; i < objs.length; i++) {
         try {
             name = objs[i].Name.replace(/\./g, '_');
@@ -248,7 +287,7 @@ function parseObjects(objs, cb) {
             id = adapter.namespace + '.' + name;
 
             objects.push({
-                _id:  id,
+                _id: id,
                 type: 'channel',
                 common: {
                     name: objs[i].Name
@@ -296,7 +335,7 @@ function parseObjects(objs, cb) {
              //console.log('   ' + obj._id + ': ' + (parts[1] || ''));
              }
              }*/
-            var isOn  = false;
+            var isOn = false;
             var isOff = false;
             var setStates = {};
 
@@ -314,15 +353,15 @@ function parseObjects(objs, cb) {
 
 
                     if (parts[0] === 'off') isOff = true;
-                    if (parts[0] === 'on')  isOn  = true;
+                    if (parts[0] === 'on') isOn = true;
 
                     obj = {
-                        _id:  id,
+                        _id: id,
                         type: 'state',
                         common: {
-                            name:   objs[i].Name + ' ' + parts[0],
-                            read:   false,
-                            write:  true
+                            name: objs[i].Name + ' ' + parts[0],
+                            read: false,
+                            write: true
                         },
                         native: {
                             Name: objs[i].Name,
@@ -330,9 +369,9 @@ function parseObjects(objs, cb) {
                         }
                     };
                     if (parts[1]) {
-                        var states = parts[1].split(',');
-                        obj.common.states = JSON.stringify(states);
-                        if (parseFloat(states[0]) == states[0]) {
+                        var _states = parts[1].split(',');
+                        obj.common.states = JSON.stringify(_states);
+                        if (parseFloat(_states[0]) == _states[0]) {
                             obj.common.type = 'number';
                         }
                     }
@@ -357,6 +396,7 @@ function parseObjects(objs, cb) {
 
             if (objs[i].Readings) {
                 for (var attr in objs[i].Readings) {
+                    if (!objs[i].Readings.hasOwnProperty(attr)) continue;
                     // ignore some useless states
                     if (ignoreStates.indexOf(attr) !== -1) continue;
 
@@ -370,13 +410,13 @@ function parseObjects(objs, cb) {
                         obj.common.unit = getUnit(attr);
                     } else {
                         obj = {
-                            _id:  id,
+                            _id: id,
                             type: 'state',
                             common: {
-                                name:   objs[i].Name + ' ' + attr,
-                                read:   true,
-                                write:  false,
-                                unit:   getUnit(attr)
+                                name: objs[i].Name + ' ' + attr,
+                                read: true,
+                                write: false,
+                                unit: getUnit(attr)
                             },
                             native: {
                                 Name: objs[i].Name,
@@ -391,17 +431,17 @@ function parseObjects(objs, cb) {
                         obj.common.role = obj.common.role || 'state';
 
                         states.push({
-                            id:     obj._id, 
-                            val:    val, 
-                            ts:     objs[i].Readings[attr].Time ? new Date(objs[i].Readings[attr].Time).getTime() : new Date().getTime(), 
-                            ack:    true
+                            id: obj._id,
+                            val: val,
+                            ts: objs[i].Readings[attr].Time ? new Date(objs[i].Readings[attr].Time).getTime() : new Date().getTime(),
+                            ack: true
                         });
 
                         // detect on/off state
                         if (isOff && isOn && attr === 'state') {
                             obj.common.write = true;
                             obj.native.onoff = true;
-                            obj.common.role  = 'switch';
+                            obj.common.role = 'switch';
                         }
 
                         if (!combined) objects.push(obj);
@@ -468,7 +508,7 @@ function startSync(cb) {
             connected = true;
             adapter.setState('info.connection', true, true);
         }
-        
+
         if (result) {
             var objects = null;
             try {
@@ -492,7 +532,7 @@ function startSync(cb) {
             cb();
             cb = null;
         }
-    }); 
+    });
 }
 
 function convertFhemValue(val) {
@@ -510,7 +550,7 @@ function convertFhemValue(val) {
 function readValue(id, cb) {
     telnetOut.send('get ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute, function (err, result) {
         if (err) adapter.log.error('readValue: ' + err);
-        //MeinWetter city => Berlin
+        // MeinWetter city => Berlin
         if (result) {
             result = convertFhemValue(result.substring(fhemObjects[id].native.Name.length + fhemObjects[id].native.Attribute + 5));
             if (result !== '') {
@@ -530,9 +570,11 @@ function writeValue(id, val, cb) {
     if (typeof val === 'string' && val[0] === '#' && val.length > 3) val = val.substring(1);
 
     if (fhemObjects[id].native.rgb) {
-        // todo
+        // edit LausiD 24.02.17
+        // adapter.log.info('DL1');
     }
     if (fhemObjects[id].native.onoff) {
+        //   adapter.log.info('DL2');
         cmd = 'set ' + fhemObjects[id].native.Name + ' ';
         if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true) {
             cmd += 'on';
@@ -540,7 +582,12 @@ function writeValue(id, val, cb) {
             cmd += 'off';
         }
     } else {
+        // edit LausiD 21.02.17
+        //adapter.log.info('DL3');
         cmd = 'set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute + ' ' + val;
+        // cmd = 'setreading ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute + ' ' + val;
+
+        // edit end LausiD 21.02.17
     }
 
     adapter.log.debug('Control: "' + cmd + '"');
@@ -553,7 +600,7 @@ function writeValue(id, val, cb) {
 
 function requestMeta(name, attr, value, cb) {
     if (cb) cb();
-    var _id =  adapter.namespace + '.' + name.replace(/\./g, '_') + '.' + attr.replace(/\./g, '_');
+    var _id = adapter.namespace + '.' + name.replace(/\./g, '_') + '.' + attr.replace(/\./g, '_');
     if (fhemObjects[_id]) {
         parseEvent(name + ' ' + attr + ' ' + value);
         if (cb) {
@@ -623,21 +670,21 @@ function main() {
     adapter.subscribeStates('*');
 
     telnetIn = new Telnet({
-        host:               adapter.config.host,
-        port:               adapter.config.port,
-        reconnectTimeout:   adapter.config.reconnectTimeout,
-        readOnly:           true
+        host: adapter.config.host,
+        port: adapter.config.port,
+        reconnectTimeout: adapter.config.reconnectTimeout,
+        readOnly: true
     });
     telnetIn.on('data', function (data) {
         parseEvent(data);
     });
 
     telnetOut = new Telnet({
-        host:             adapter.config.host,
-        port:             adapter.config.port,
+        host: adapter.config.host,
+        port: adapter.config.port,
         reconnectTimeout: adapter.config.reconnectTimeout
     });
-    
+
     telnetOut.on('ready', function () {
         if (!connected) {
             startSync();

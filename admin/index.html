@@ -8,27 +8,24 @@
     <script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
     <script type="text/javascript" src="../../js/translate.js"></script>
     <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+    <script type="text/javascript" src="words.js"></script>
+
     <script type="text/javascript">
 
-        // Dictionary (systemDictionary is global variable from adapter-settings.js)
-        systemDictionary = {
-            "FHEM adapter settings":     {"de": "FHEM Adapter Einstellungen", "ru": "Настройки драйвера FHEM"}
-        };
-
-        // the function loadSettings has to exist ...
         function load(settings, onChange) {
             if (!settings) return;
 
+            if (settings.password === undefined) settings.password = '';
 
             $('.value').each(function () {
                 var key = $(this).attr('id');
-                // example: select elements with id=key and class=value and insert value
-                if ($('#' + key + '.value').attr('type') == 'checkbox') {
-                    $('#' + key + '.value').prop('checked', settings[key]).change(function() {
+                var $value = $('#' + key + '.value');
+                if ($value.attr('type') === 'checkbox') {
+                    $value.prop('checked', settings[key]).change(function() {
                         onChange();
                     });
                 } else {
-                    $('#' + key + '.value').val(settings[key]).change(function() {
+                    $value.val(settings[key]).change(function() {
                         onChange();
                     }).keyup(function() {
                         onChange();
@@ -44,9 +41,15 @@
         function save(callback) {
             // example: select elements with class=value and build settings object
             var obj = {};
+
+            if ($('#password').val() !== $('#passwordRepeat').val()) {
+                showMessage(_('Passwords missmatch!'), _('Warning'), 'alert');
+                return;
+            }
+
             $('.value').each(function () {
                 var $this = $(this);
-                if ($this.attr('type') == 'checkbox') {
+                if ($this.attr('type') === 'checkbox') {
                     obj[$this.attr('id')] = $this.prop('checked');
                 } else {
                     obj[$this.attr('id')] = $this.val();
@@ -64,8 +67,11 @@
             <td><h3 class="translate">FHEM adapter settings</h3></td>
         </tr></table>
         <table>
-            <tr><td class="translate">FHEM Telnet IP:</td><td>   <input class="value" id="host" /></td></tr>
-            <tr><td class="translate">FHEM Telnet Port:</td><td> <input class="value" id="port" size="5"  maxlength="5"/></td></tr>
+            <tr>
+                <td><label class="translate" for="host">FHEM Telnet IP:</label></td><td class="admin-icon"></td><td><input class="value" id="host" /></td></tr>
+            <tr><td><label class="translate" for="port">FHEM Telnet Port:</label></td><td class="admin-icon"></td><td><input class="value" id="port" size="5" maxlength="5"/></td></tr>
+            <tr><td><label class="translate" for="password">Password:</label></td><td class="admin-icon"></td><td><input class="value" id="password" type="password"/></td></tr>
+            <tr><td><label class="translate" for="passwordRepeat">Password repeat:</label></td><td class="admin-icon"></td><td><input type="password" id="passwordRepeat"/></td></tr>
         </table>
     </div>
 </body>

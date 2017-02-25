@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "fhem",
-        "version":                  "0.2.2",
+        "version":                  "0.3.0",
         "title":                    "FHEM connection for ioBroker",
         "desc":                     {
            "en": "FHEM Adapter",
@@ -9,6 +9,11 @@
            "ru": "FHEM драйвер"
 	    },
         "news": {
+          "0.3.0" :{
+            "en": "add password for telnet\nfix some types",
+            "de": "Passwordunterstützung hinzugefügt\nKorrigiere manche Typen",
+            "ru": "Добавлена поддержка пароля\nИсправлено несколько типов"
+          },
           "0.2.2" :{
             "en": "implement On/Off state and fix RGB\nadd debug output by control",
             "de": "implement On/Off state and fix RGB\nadd debug output by control",
@@ -43,7 +48,8 @@
     "native": {
       "port":                 7072,
       "host":                 "127.0.0.1",
-      "reconnectTimeout":     30000
+      "reconnectTimeout":     30000,
+      "password":             ""
     },
     "objects": [
 
