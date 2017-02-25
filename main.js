@@ -672,6 +672,7 @@ function main() {
     telnetIn = new Telnet({
         host: adapter.config.host,
         port: adapter.config.port,
+        password: adapter.config.password,
         reconnectTimeout: adapter.config.reconnectTimeout,
         readOnly: true
     });
@@ -682,6 +683,7 @@ function main() {
     telnetOut = new Telnet({
         host: adapter.config.host,
         port: adapter.config.port,
+        password: adapter.config.password,
         reconnectTimeout: adapter.config.reconnectTimeout
     });
 
