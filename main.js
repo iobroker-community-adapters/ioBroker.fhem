@@ -133,7 +133,7 @@ function parseEvent(event) {
                 adapter.setForeignState(id, {val: val, ack: true, ts: ts});
             }
             // adapter.log.warn('Unknown event "' + event + '"'+ ' ==> "' + id + '.'+eventnew +'" ('+val+')');
-            adapter.log.info('>>> "' + id + '.' + eventnew + '"');
+            adapter.log.debug('>>> "' + id + '.' + eventnew + '"');
             // adapter.log.info('DL"' + val + '"');
             // edit end LausiD 21.02.17
 
@@ -570,11 +570,8 @@ function writeValue(id, val, cb) {
     if (typeof val === 'string' && val[0] === '#' && val.length > 3) val = val.substring(1);
 
     if (fhemObjects[id].native.rgb) {
-        // edit LausiD 24.02.17
-        // adapter.log.info('DL1');
-    }
+            }
     if (fhemObjects[id].native.onoff) {
-        //   adapter.log.info('DL2');
         cmd = 'set ' + fhemObjects[id].native.Name + ' ';
         if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true) {
             cmd += 'on';
@@ -582,14 +579,19 @@ function writeValue(id, val, cb) {
             cmd += 'off';
         }
     } else {
-        // edit LausiD 21.02.17
-        //adapter.log.info('DL3');
-        cmd = 'set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute + ' ' + val;
-        // cmd = 'setreading ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute + ' ' + val;
-
-        // edit end LausiD 21.02.17
+        // edit LausiD 03.03.17
+        //cmd = 'set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute + ' ' + val;
+        if (fhemObjects[id].native.Attribute === 'state')  {
+            cmd = 'set ' + fhemObjects[id].native.Name + ' ' + val;
+            adapter.log.info(adapter.namespace + '.' + fhemObjects[id].native.Name + '.' + fhemObjects[id].native.Attribute + '.' + val + ' ==> ' + cmd);
+        }
+        else {
+            cmd = 'set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute + ' ' + val;
+            adapter.log.debug(adapter.namespace + '.'+ fhemObjects[id].native.Name + '.' + fhemObjects[id].native.Attribute + '.' + val + ' ==> ' + cmd);
+        } 
+       
+        // edit end LausiD 03.03.17
     }
-
     adapter.log.debug('Control: "' + cmd + '"');
 
     telnetOut.send(cmd, function (err, result) {
