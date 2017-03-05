@@ -116,39 +116,26 @@ function parseEvent(event) {
         // adapter.log.info('DL"' + id + '"');
         if (fhemObjects[id]) {
             val = convertFhemValue(event1);
-
+        // edit LausiD 05.03.17
+        // RGB ? insert #
+        if (parts[2] === 'rgb')  val = '#'+val;
             if (fhemObjects[id].common.type === 'boolean') val = !!event1;
             adapter.log.debug('=== "' + id + '.' + val + '"');
             adapter.setForeignState(id, {val: val, ack: true, ts: ts});
-        } else {
+           } else {
             name = event;
             parts = name.split(' ');
             eventnew = name.substring(parts[0].length + parts[1].length + 2);
             // first ignore
             id = adapter.namespace + '.' + parts[1].replace(/\./g, '_') + '.' + 'state';
-            if (fhemObjects[id]) {
-                val = convertFhemValue(eventnew);
-
-                // if (fhemObjects[id].common.type === 'boolean') val = !!event;
-                adapter.setForeignState(id, {val: val, ack: true, ts: ts});
-            }
-            // adapter.log.warn('Unknown event "' + event + '"'+ ' ==> "' + id + '.'+eventnew +'" ('+val+')');
-            adapter.log.debug('>>> "' + id + '.' + eventnew + '"');
-            // adapter.log.info('DL"' + val + '"');
-            // edit end LausiD 21.02.17
-
-
-            //if (event.indexOf(':') !== -1) {
-            //    adapter.log.info('Found strange value for "' + id + '": ' + event);
-            //} else {
-            //    adapter.log.info('Unknown ---- state "' + parts[1] + '.' + parts[2]);
-            //    queue.push({command: 'meta', name: parts[1], attr: parts[2], val: event});
-            //    processQueue();
-            //}
-        }
+               if (fhemObjects[id]) {
+               val = convertFhemValue(eventnew);
+               adapter.setForeignState(id, {val: val, ack: true, ts: ts});
+               }
+              // adapter.log.warn('Unknown event "' + event + '"'+ ' ==> "' + id + '.'+eventnew +'" ('+val+')');
+              adapter.log.debug('>>> "' + id + '.' + eventnew + '"');
+              }
     } else {
-        // edit LausiD 21.02.17
-        // adapter.log.warn('Unknown event"' + event + '"');
         name = event;
         parts = name.split(' ');
         eventnew = name.substring(parts[0].length + parts[1].length + 2);
@@ -156,12 +143,11 @@ function parseEvent(event) {
         id = adapter.namespace + '.' + parts[1].replace(/\./g, '_') + '.' + 'state';
         if (fhemObjects[id]) {
             val = convertFhemValue(eventnew);
-
             // if (fhemObjects[id].common.type === 'boolean') val = !!event;
             adapter.setForeignState(id, {val: val, ack: true, ts: ts});
         }
         adapter.log.debug('s== "' + id + '.' + eventnew + '"');
-        // edit end LausiD 21.02.17
+        // edit end LausiD 05.03.17
     }
 }
 
@@ -564,37 +550,29 @@ function readValue(id, cb) {
 
 function writeValue(id, val, cb) {
     var cmd;
+    var val_org=val;
     if (val === undefined || val === null) val = '';
-
+// edit LausiD 05.03.17
     // May be RGB
-    if (typeof val === 'string' && val[0] === '#' && val.length > 3) val = val.substring(1);
+     if (fhemObjects[id].native.Attribute === 'rgb')  val = val.substring(1);
 
-    if (fhemObjects[id].native.rgb) {
-            }
-    if (fhemObjects[id].native.onoff) {
-        cmd = 'set ' + fhemObjects[id].native.Name + ' ';
-        if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true) {
-            cmd += 'on';
-        } else {
-            cmd += 'off';
-        }
-    } else {
-        // edit LausiD 03.03.17
-        //cmd = 'set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute + ' ' + val;
+//    if (typeof val === 'string' && val[0] === '#' && val.length > 3) val = val.substring(1);
+//    if (fhemObjects[id].native.rgb) {
+//            }
+
         if (fhemObjects[id].native.Attribute === 'state')  {
-            cmd = 'set ' + fhemObjects[id].native.Name + ' ' + val;
-            adapter.log.info(adapter.namespace + '.' + fhemObjects[id].native.Name + '.' + fhemObjects[id].native.Attribute + '.' + val + ' ==> ' + cmd);
+          if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true) val = 'on';
+          if (val === '0' || val === 0 || val === 'off' || val === 'false' || val === false) val = 'off';
+         	cmd = 'set ' + fhemObjects[id].native.Name + ' ' + val;
+ 		 //        adapter.log.info(adapter.namespace + '.' + fhemObjects[id].native.Name + '.' + fhemObjects[id].native.Attribute + '.' + val_org + ' ==> ' + cmd);
         }
         else {
-            cmd = 'set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute + ' ' + val;
-            adapter.log.debug(adapter.namespace + '.'+ fhemObjects[id].native.Name + '.' + fhemObjects[id].native.Attribute + '.' + val + ' ==> ' + cmd);
+        cmd = 'set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute + ' ' + val;
         } 
-       
-        // edit end LausiD 03.03.17
-    }
-    adapter.log.debug('Control: "' + cmd + '"');
+      adapter.log.info(adapter.namespace + '.' + fhemObjects[id].native.Name + '.' + fhemObjects[id].native.Attribute + '.' + val_org + ' ==> writeFHEM: ' + cmd);
+	// edit end LausiD 05.03.17
 
-    telnetOut.send(cmd, function (err, result) {
+     telnetOut.send(cmd, function (err, result) {
         if (err) adapter.log.error('writeValue: ' + err);
         if (cb) cb();
     });
