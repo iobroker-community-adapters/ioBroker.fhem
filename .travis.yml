@@ -13,7 +13,8 @@ before_install:
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gcc48; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo curl -L http://xrl.us/installperlosx | bash; fi'
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo perl -MCPAN -Mlocal::lib=~/perl5 -e 'my $c = "CPAN::HandleConfig"; $c->load(doit => 1, autoconfig => 1); $c->edit(prerequisites_policy => "follow"); $c->edit(build_requires_install_policy => "yes"); $c->commit'; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git clone https://github.com/eserte/travis-helper-cpan-pm.git; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./travis-helper-cpan-pm/travis-helper-cpan-pm --distroprefs=https://github.com/eserte/srezic-cpan-distroprefs --enable-sysdeps; fi
   - sudo cpan install Bundle::CPAN
   - sudo cpan install Device::SerialPort
   - sudo cpan install IO::Socket::SSL
