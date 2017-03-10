@@ -13,20 +13,21 @@ before_install:
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gcc48; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo curl -L http://xrl.us/installperlosx | bash; fi'
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git clone https://github.com/eserte/travis-helper-cpan-pm.git; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./travis-helper-cpan-pm/travis-helper-cpan-pm --distroprefs=https://github.com/eserte/srezic-cpan-distroprefs --enable-sysdeps; fi
-  - sudo cpan install Bundle::CPAN
-  - sudo cpan install Device::SerialPort
-  - sudo cpan install IO::Socket::SSL
-  - sudo cpan install Net::Telnet
-  - sudo cpan install Net::WebSocket::Server
-  - sudo cpan install XML::Simple
-  - wget http://fhem.de/fhem-5.8.tar.gz
-  - tar -xvzf fhem-5.8.tar.gz
-  - cd fhem-5.8
-  - sudo make install
-  - perl /opt/fhem/fhem.pl /opt/fhem/fhem.cfg
-  - cd ..
+  - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget --no-check-certificate https://fhem.de/fhem-5.8.deb; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo dpkg -i fhem-5.8.deb; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo curl -L http://xrl.us/installperlosx | bash; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install Bundle::CPAN; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install Device::SerialPort; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install IO::Socket::SSL; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install Net::Telnet; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install Net::WebSocket::Server; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cpan install XML::Simple; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget http://fhem.de/fhem-5.8.tar.gz; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then tar -xvzf fhem-5.8.tar.gz; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd fhem-5.8; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo make install; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then perl /opt/fhem/fhem.pl /opt/fhem/fhem.cfg; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd ..; fi'
 before_script:
   - npm install winston@2.3.0
   - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
