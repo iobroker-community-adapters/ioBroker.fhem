@@ -16,6 +16,7 @@
             if (!settings) return;
 
             if (settings.password === undefined) settings.password = '';
+            if (settings.prompt === undefined)   settings.prompt = 'fhem>';
 
             $('.value').each(function () {
                 var key = $(this).attr('id');
@@ -67,11 +68,11 @@
             <td><h3 class="translate">FHEM adapter settings</h3></td>
         </tr></table>
         <table>
-            <tr>
-                <td><label class="translate" for="host">FHEM Telnet IP:</label></td><td class="admin-icon"></td><td><input class="value" id="host" /></td></tr>
+            <tr><td><label class="translate" for="host">FHEM Telnet IP:</label></td><td class="admin-icon"></td><td><input class="value" id="host" /></td></tr>
             <tr><td><label class="translate" for="port">FHEM Telnet Port:</label></td><td class="admin-icon"></td><td><input class="value" id="port" size="5" maxlength="5"/></td></tr>
             <tr><td><label class="translate" for="password">Password:</label></td><td class="admin-icon"></td><td><input class="value" id="password" type="password"/></td></tr>
             <tr><td><label class="translate" for="passwordRepeat">Password repeat:</label></td><td class="admin-icon"></td><td><input type="password" id="passwordRepeat"/></td></tr>
+            <tr><td><label class="translate" for="prompt">Prompt:</label></td><td class="admin-icon"></td><td><input class="value" id="prompt"/></td></tr>
         </table>
     </div>
 </body>

@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "fhem",
-        "version":                  "0.3.0",
+        "version":                  "0.4.0",
         "title":                    "FHEM connection for ioBroker",
         "desc":                     {
            "en": "FHEM Adapter",
@@ -9,6 +9,11 @@
            "ru": "FHEM драйвер"
 	    },
         "news": {
+          "0.4.0" :{
+            "en": "fix some types\ndefine custom prompt",
+            "de": "Korrigiere manche Typen\nMan kann Prompt definieren",
+            "ru": "Исправлено несколько типов\nМожно задать свой промпт"
+          },
           "0.3.0" :{
             "en": "add password for telnet\nfix some types",
             "de": "Passwordunterstützung hinzugefügt\nKorrigiere manche Typen",
@@ -49,7 +54,8 @@
       "port":                 7072,
       "host":                 "127.0.0.1",
       "reconnectTimeout":     30000,
-      "password":             ""
+      "password":             "",
+      "prompt":               "fhem>"
     },
     "objects": [
 

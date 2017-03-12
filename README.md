@@ -28,9 +28,13 @@ Actually only following attributes are supported:
 - on off state: If **on** and **off** exist in *PossibleSets* and **state** in *Readings*, it will be combined into on state under name **state**. It can be controlled with true and false and commands will be changed to ```set DEVICE on``` and ```set DEVICE off```.
 
 ## Changelog
-#### 0.3.0 (2017-02-25)
+#### 0.4.0 (2017-03-12)
 * (LausiD) fix some types
-* (bluefox) add password for telnet
+* (bluefox) define custom prompt
+
+#### 0.3.0 (2017-02-25)
+ * (LausiD) fix some types
+ * (bluefox) add password for telnet
 
 #### 0.2.2 (2016-06-17)
 * (bluefox) implement On/Off state and fix RGB
