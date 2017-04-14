@@ -28,6 +28,9 @@ Actually only following attributes are supported:
 - on off state: If **on** and **off** exist in *PossibleSets* and **state** in *Readings*, it will be combined into on state under name **state**. It can be controlled with true and false and commands will be changed to ```set DEVICE on``` and ```set DEVICE off```.
 
 ## Changelog
+#### 0.4.1 (2017-04-14)
+* (bluefox) add link to FHEM im admin
+
 #### 0.4.0 (2017-03-12)
 * (LausiD) fix some types
 * (bluefox) define custom prompt
