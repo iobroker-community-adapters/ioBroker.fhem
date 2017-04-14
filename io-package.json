@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "fhem",
-        "version":                  "0.4.0",
+        "version":                  "0.4.1",
         "title":                    "FHEM connection for ioBroker",
         "desc":                     {
            "en": "FHEM Adapter",
@@ -9,6 +9,11 @@
            "ru": "FHEM драйвер"
 	    },
         "news": {
+		"0.4.1" :{
+            "en": "add link to FHEM im admin",
+            "de": "Link zu FHEM im Admin hinzugefügt",
+            "ru": "Добавлена ссылка на FHEM в admin"
+          },
           "0.4.0" :{
             "en": "fix some types\ndefine custom prompt",
             "de": "Korrigiere manche Typen\nMan kann Prompt definieren",
