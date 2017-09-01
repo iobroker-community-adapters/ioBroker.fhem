@@ -15,7 +15,7 @@ before_install:
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo curl -L http://xrl.us/installperlosx | bash; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget --no-check-certificate https://fhem.de/fhem-5.8.deb; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo dpkg -i fhem-5.8.deb; fi'
-  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait sudo curl -L http://xrl.us/installperlosx | bash; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then curl -L http://xrl.us/installperlosx | travis_wait sudo bash; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait sudo cpan install Bundle::CPAN; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait sudo cpan install Device::SerialPort; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait sudo cpan install IO::Socket::SSL; fi'
