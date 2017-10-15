@@ -54,7 +54,10 @@
 	    "keywords":                 ["FHEM"],
         "readme":                   "https://github.com/ioBroker/ioBroker.fhem/blob/master/README.md",
 	    "loglevel":                 "info",
-        "type":                     "iot-systems"
+        "type":                     "iot-systems",
+	"authors": [
+            "bluefox <dogafox@gmail.com>"
+        ]
     },
     "native": {
       "port":                 7072,
