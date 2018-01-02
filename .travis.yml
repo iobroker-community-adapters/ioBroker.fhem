@@ -11,7 +11,7 @@ before_install:
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget --no-check-certificate https://fhem.de/fhem-5.8.deb; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo dpkg -i fhem-5.8.deb; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi'
-  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gcc48; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gcc48 || brew link --overwrite gcc@4.8; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then curl -L http://xrl.us/installperlosx > ./install_perl.sh; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then chmod ugo+x ./install_perl.sh; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait sudo ./install_perl.sh; fi'
