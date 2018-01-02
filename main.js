@@ -7,7 +7,7 @@
 var utils = require(__dirname + '/lib/utils');
 var Telnet = require(__dirname + '/lib/telnet');
 
-var adapter = utils.adapter('fhem');
+var adapter = utils.Adapter('fhem');
 
 // Telnet sessions
 var telnetOut = null; // read config and write values
