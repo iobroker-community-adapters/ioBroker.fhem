@@ -15,7 +15,7 @@ before_install:
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then curl -L http://xrl.us/installperlosx > ./install_perl.sh; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then chmod ugo+x ./install_perl.sh; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait sudo ./install_perl.sh; fi'
-  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 60 sudo cpan -T install Bundle::CPAN; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 90 sudo cpan -T install Bundle::CPAN; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait sudo cpan -T install Device::SerialPort; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait sudo cpan -T install IO::Socket::SSL; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait sudo cpan -T install Net::Telnet; fi'
