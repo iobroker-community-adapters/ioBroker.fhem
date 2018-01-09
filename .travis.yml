@@ -27,7 +27,7 @@ before_install:
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then tar -xvzf fhem-5.8.tar.gz; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd fhem-5.8; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait sudo make install; fi'
-  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then perl /opt/fhem/fhem.pl /opt/fhem/fhem.cfg; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then perl /opt/fhem/fhem.pl /opt/fhem/fhem.cfg &; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd ..; fi'
 before_script:
   - npm install winston@2.3.1
