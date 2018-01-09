@@ -16,6 +16,7 @@ before_install:
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then chmod ugo+x ./install_perl.sh; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait sudo ./install_perl.sh; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PERL_MM_USE_DEFAULT=true; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cpan install local::lib; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then perl -Mlocal::lib=./ >.setenv.csh; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then source .setenv.csh; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then curl -L http://cpanmin.us | perl - App::cpanminus; fi'
