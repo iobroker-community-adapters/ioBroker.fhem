@@ -8,6 +8,7 @@ node_js:
   - '6'
   - '8'
 before_install:
+  - cd ..
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget --no-check-certificate https://fhem.de/fhem-5.8.deb; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo dpkg -i fhem-5.8.deb; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi'
@@ -33,6 +34,7 @@ before_install:
       sudo perl /opt/fhem/fhem.pl /opt/fhem/fhem.cfg &
     fi
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd ..; fi'
+  - cd ioBroker/ioBroker.fhem/
 before_script:
   - npm install winston@2.3.1
   - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
