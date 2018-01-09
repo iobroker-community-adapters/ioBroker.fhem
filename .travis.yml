@@ -8,7 +8,7 @@ node_js:
   - '6'
   - '8'
 before_install:
-  - cd ..
+  - cd ../..
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget --no-check-certificate https://fhem.de/fhem-5.8.deb; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo dpkg -i fhem-5.8.deb; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi'
