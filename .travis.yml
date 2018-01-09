@@ -30,7 +30,7 @@ before_install:
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cat /opt/fhem/fhem.cfg; fi'
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      perl /opt/fhem/fhem.pl /opt/fhem/fhem.cfg &
+      sudo perl /opt/fhem/fhem.pl /opt/fhem/fhem.cfg &
     fi
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd ..; fi'
 before_script:
