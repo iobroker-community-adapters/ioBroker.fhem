@@ -3,8 +3,8 @@ systemDictionary = {
     "FHEM Telnet IP:":      {"de": "FHEM Telnet IP:",   "ru": "FHEM Telnet IP:"},
     "FHEM Telnet Port:":    {"en": "FHEM Telnet Port:", "de": "FHEM Telnet Port:",      "ru": "FHEM Telnet порт:"},
     "Password:":            {"en": "Password:",         "de": "Kennwort:",              "ru": "Пароль:"},
-    "Password repeat:":     {"en": "Password repeat:",  "de": "Kennwort-Woederholung:", "ru": "Подтверждение пароля:"},
-    "Passwords missmatch!": {"en": "Passwords missmatch!", "de": "Kennworte sind unterschiedlich!", "ru": "Пароли не совпадают!"},
+    "Password repeat:":     {"en": "Password repeat:",  "de": "Kennwort-Wiederholung:", "ru": "Подтверждение пароля:"},
+    "Passwords missmatch!": {"en": "Password mismatch!", "de": "Kennwörter sind unterschiedlich!", "ru": "Пароли не совпадают!"},
     "Prompt:":              {"en": "Prompt:",           "de": "Prompt:",                 "ru": "Промпт:"},
     "tooltip_password": {
         "en": "Optional. Only if FHEM requires password.",
