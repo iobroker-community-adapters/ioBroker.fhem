@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "fhem",
-        "version":                  "0.4.1",
+        "version":                  "0.4.2",
         "title":                    "FHEM connection for ioBroker",
         "desc":                     {
            "en": "FHEM Adapter",
@@ -9,7 +9,18 @@
            "ru": "FHEM драйвер"
 	    },
         "news": {
-		"0.4.1" :{
+            "0.4.2" :{
+              "en": "Fix wordings",
+              "de": "Fixe Formulierungen",
+              "ru": "Исправить формулировки",
+              "pt": "Corrigir formulações",
+              "nl": "Corrigeer formuleringen",
+              "fr": "Corriger les libellés",
+              "it": "Diciture fisse",
+              "es": "Reparar frases",
+              "pl": "Popraw tekst"
+            },
+          "0.4.1" :{
             "en": "add link to FHEM im admin",
             "de": "Link zu FHEM im Admin hinzugefügt",
             "ru": "Добавлена ссылка на FHEM в admin"

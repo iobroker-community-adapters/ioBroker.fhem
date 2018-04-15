@@ -21,13 +21,16 @@ ioBroker sends at the start "jsonlist2" command to get all "Readings" from the l
 ## Supported devices
 Normally all devices are supported. But some of them are better integrated.
 
-The problems appears especially by controlling of the states. 
+The problems appears especially by controlling of the states.
 Because there is no clear attributes structure ioBroker tries to guess which "PossibleSets" fields can be used.
 Actually only following attributes are supported:
 - RGB: If RGB exists in *PossibleSets* and in *Readings* it will be combined into one state that can be read and written. Values like ```#234567``` will be automatically converted to ```234567```.
 - on off state: If **on** and **off** exist in *PossibleSets* and **state** in *Readings*, it will be combined into on state under name **state**. It can be controlled with true and false and commands will be changed to ```set DEVICE on``` and ```set DEVICE off```.
 
 ## Changelog
+#### 0.4.2 (2018-04-15)
+* (TonyBostonTB) Fix wordings
+
 #### 0.4.1 (2017-04-14)
 * (bluefox) add link to FHEM im admin
 
