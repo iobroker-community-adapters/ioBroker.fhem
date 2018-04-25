@@ -111,7 +111,7 @@ describe('Test ' + adapterShortName + ' adapter', function() {
                 expect(state.val).to.be.true;
                 done();
             });
-        }, 5000);
+        }, 10000);
     });
 
     after('Test ' + adapterShortName + ' adapter: Stop js-controller', function (done) {
