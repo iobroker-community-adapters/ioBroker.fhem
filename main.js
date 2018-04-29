@@ -89,17 +89,17 @@ adapter.on('ready', function () {
 function getUnit(name) {
     name = name.toLowerCase();
     if (name.indexOf('temperature') !== -1) {
-        return 'Â°C';
+        return '°C';
     } else if (name.indexOf('measured-temp') !== -1) {
-        return 'Â°C';
+        return '°C';
     } else if (name.indexOf('desired-temp') !== -1) {
-        return 'Â°C';
+        return '°C';
     } else if (name.indexOf('humidity') !== -1) {
         return '%';
     } else if (name.indexOf('pressure') !== -1) {
         return 'hPa';
     } else if (name.indexOf('degrees') !== -1) {
-        return 'Â°';
+        return '°';
     } else if (name.indexOf('speed') !== -1) {
         return 'kmh';
     }
@@ -313,7 +313,7 @@ function parseObjects(objs, cb) {
     var suche ='nix';
 
     if (firstRun == true) {
-         adapter.log.info('last update: 22.04.18 ');
+         adapter.log.info('last update: 29.04.18 LausiD ');
          adapter.log.info('Settings: ignored PossibleSets: ' + ignorePossibleSets);
          adapter.log.info('Settings: role button PossibleSets: noArg');
          adapter.log.info('Settings: role level.xxx PossibleSets: slider');
@@ -494,7 +494,7 @@ function parseObjects(objs, cb) {
                         obj.common.min = '5';
                         obj.common.max = '30';
                         obj.common.role = 'level.temperature';
-                        obj.common.unit = 'Â°C';
+                        obj.common.unit = '°C';
                         if (adapter.namespace =='fhem.0') {
                             var smartN = {
                             'de':alias
@@ -776,46 +776,26 @@ function requestMeta(name, attr, value, event, cb) {
 
 //--------------------------------------------------------------------------------------
 function deleteChannel(name, cb) {
-
-    adapter.getForeignObject(name, function (err, result) {
-    if (err) {
-        adapter.log.error('[deleteChannel] ' + name + ' ' + err);
-    } else {
-         //adapter.log.debug('[deleteChannel] ' + name);
-         if  (result != null) adapter.deleteChannel (name, function (err) {
-            if (err) adapter.log.error('[deleteChannel] ' + name + ' ' + err);
-        });
-    }
+    adapter.deleteChannel (name, function (err) {
+    if (err) adapter.log.error('[deleteChannel] ' + name + ' ' + err);
     });
     if (cb) cb();
 }
 
 //--------------------------------------------------------------------------------------
 function deleteObject(name, cb) {
-    adapter.getForeignObject(name, function (err, result) {
-    if (err) {
-        adapter.log.error('[deleteObject] ' + name + ' ' + err);
-    } else {
-        adapter.log.debug('[deleteObject] ' + name);
-        if  (result != null) adapter.delForeignObject (name, function (err) {
-            if (err) adapter.log.error('[deleteObject] ' + name + ' ' + err);
-        });
-    }
+    adapter.log.debug('[deleteObject] ' + name);
+    adapter.delObject (name, function (err) {
+    if (err) adapter.log.error('[deleteObject] ' + name + ' ' + err);
     });
     if (cb) cb();
 }
 
 //--------------------------------------------------------------------------------------
 function deleteState(name, cb) {
-    adapter.getForeignObject(name, function (err, result) {
-    if (err) {
-        adapter.log.error('[deleteState] ' + name + ' ' + err);
-    } else {
-            adapter.log.debug('[deleteState] ' + name);
-            if  (result != null) adapter.delForeignState (name, function (err) {
-            if (err) adapter.log.error('[deleteState] ' + name + ' ' + err);
-        });
-    }
+    adapter.log.debug('[deleteState] ' + name);
+    adapter.delState (name, function (err) {
+    if (err) adapter.log.error('[deleteState] ' + name + ' ' + err);
     });
     if (cb) cb();
 }
@@ -829,7 +809,7 @@ function unusedObjects(check,cb) {
              adapter.log.error('[unusedObjects] ' + err);
          } else {
                  for (var id in states) {
-                      adapter.getForeignObject(id, function (err, obj) {
+                      adapter.getObject(id, function (err, obj) {
                       if (err) {
                           adapter.log.error('[unusedObjects] ' + err);
                       } else {
@@ -838,7 +818,7 @@ function unusedObjects(check,cb) {
                             if (check == '*') {
                                 if (obj.native.ts < ts_update || !obj.native.ts) {
                                     if (channelS[3] == 'Internals' && channelS[4] == 'TYPE') {
-                                        queueL.push({command: 'delChannel', name: adapter.namespace + '.' + channelS[2]});
+                                        queueL.push({command: 'delChannel', name: channelS[2]});
                                         processQueueL();
                                    }
                                    queueL.push({command: 'delObject', name: obj._id});
@@ -848,7 +828,7 @@ function unusedObjects(check,cb) {
                                }
                             } else {
                                     if (channelS[3] == 'Internals' && channelS[4] == 'TYPE') {
-                                        queueL.push({command: 'delChannel', name: adapter.namespace + '.' + channelS[2]});
+                                        queueL.push({command: 'delChannel', name: channelS[2]});
                                         processQueueL();
                                     }
                                     delete fhemObjects[obj._id];
@@ -967,20 +947,3 @@ function main() {
         }
     });
 }
-
-
-
-
-
-
-
-     
-             
-
-    
-
-  
-
-
-
-
