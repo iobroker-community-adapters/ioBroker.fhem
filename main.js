@@ -857,7 +857,7 @@ function unusedObjects(check, cb) {
                     } else {
                         if (!obj) return;
                         var channelS = obj._id.split('.');
-                        if (channelS[2] === 'info') continue;
+                        if (channelS[2] === 'info') return;
                         if (check == '*') {
                             if (obj.native.ts < ts_update || !obj.native.ts) {
                                 if (channelS[3] == 'Internals' && channelS[4] == 'TYPE') {
