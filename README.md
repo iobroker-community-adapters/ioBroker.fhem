@@ -12,7 +12,9 @@ This adapter allows connect FHEM to ioBroker.
 
 To enable the connection the telnet must be enabled in FHEM. To enable it (enabled by default) check following settings in fhen.cfg:
 
-```define telnetPort telnet 7072 global```
+```
+define telnetPort telnet 7072 global
+```
 
 Exactly same port and the IP address of FHEM host (or localhost if FHEM and ioBroker run on same PC) should be used for settings of adapter.
 
@@ -28,6 +30,9 @@ Actually only following attributes are supported:
 - on off state: If **on** and **off** exist in *PossibleSets* and **state** in *Readings*, it will be combined into on state under name **state**. It can be controlled with true and false and commands will be changed to ```set DEVICE on``` and ```set DEVICE off```.
 
 ## Changelog
+#### 0.5.0 (2018-04-29)
+* (LausiD) Several fixes and changes
+
 #### 0.4.2 (2018-04-15)
 * (TonyBostonTB) Fix wordings
 
