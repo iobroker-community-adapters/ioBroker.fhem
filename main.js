@@ -355,7 +355,7 @@ function parseObjects(objs, cb) {
     var suche = 'nix';
 
     if (firstRun == true) {
-        adapter.log.info('last update: 29.04.18 LausiD ');
+        adapter.log.info('last update: 06.05.18 LausiD ');
         adapter.log.info('Settings: ignored PossibleSets: ' + ignorePossibleSets);
         adapter.log.info('Settings: role button PossibleSets: noArg');
         adapter.log.info('Settings: role level.xxx PossibleSets: slider');
@@ -819,7 +819,7 @@ function requestMeta(name, attr, value, event, cb) {
 //--------------------------------------------------------------------------------------
 function deleteChannel(name, cb) {
     adapter.deleteChannel(name, function(err) {
-        if (err) adapter.log.error('[deleteChannel] ' + name + ' ' + err);
+        if (err) {if (err != 'Not exists') adapter.log.error('[deleteChannel] ' + name + ' ' + err)}
         if (cb) cb();
     });
 }
@@ -828,7 +828,7 @@ function deleteChannel(name, cb) {
 function deleteObject(name, cb) {
     adapter.log.debug('[deleteObject] ' + name);
     adapter.delObject(name, function(err) {
-        if (err) adapter.log.error('[deleteObject] ' + name + ' ' + err);
+        if (err) {if (err != 'Not exists') adapter.log.error('[deleteObject] ' + name + ' ' + err)}
         if (cb) cb();
     });
 }
@@ -837,7 +837,7 @@ function deleteObject(name, cb) {
 function deleteState(name, cb) {
     adapter.log.debug('[deleteState] ' + name);
     adapter.delState(name, function(err) {
-        if (err) adapter.log.error('[deleteState] ' + name + ' ' + err);
+        if (err) {if (err != 'Not exists') adapter.log.error('[deleteState] ' + name + ' ' + err)}
         if (cb) cb();
     });
 }
