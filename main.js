@@ -776,6 +776,8 @@ function writeValue(id, val, cb) {
         cmd = 'set ' + fhemObjects[id].native.Name + ' ' + val;
     } else {
         cmd = 'set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute + ' ' + val;
+        // button?
+        if (fhemObjects[id].common.role === 'button') {cmd = 'set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute}
     }
     adapter.log.info('Event ioBroker: ' + id + ' ' + val_org + ' ==> writeFHEM: ' + cmd);
     telnetOut.send(cmd, function(err, result) {
