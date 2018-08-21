@@ -365,12 +365,20 @@ function parseObjects(objs, cb) {
         adapter.log.info('Settings: ignored Readings: ' + ignoreReadings);
         adapter.log.info('Settings: allowed Internals: ' + allowedInternals);
         adapter.log.info('Settings: allowed attributes: ' + allowedAttributes);
+        adapter.log.info('Settings: channels found = ' + objs.length);
         for (var i = 0; i < objs.length; i++) {
-            if (objs[i].Attributes.room) suche = objs[i].Attributes.room;
-            if (suche.indexOf('ioBroker') != -1) iobroker = true;
+            try {
+                if (objs[i].Attributes.room) suche = objs[i].Attributes.room;
+                if (suche.indexOf('ioBroker') !== -1) {
+                    iobroker = true;
+                    continue;
+                }
+            } catch (err) {
+                adapter.log.error('[parseObjects] Cannot check room of object: ' + JSON.stringify(objs[i]));
+                adapter.log.error('[parseObjects] Cannot check room of object: ' + err);
+            }
         }
         adapter.log.info('Settings: room ioBroker = ' + iobroker);
-        adapter.log.info('Settings: channels found = ' + objs.length);
     }
 
     for (var i = 0; i < objs.length; i++) {
