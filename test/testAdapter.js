@@ -83,8 +83,6 @@ describe('Test ' + adapterShortName + ' adapter', function() {
             config.common.enabled  = true;
             config.common.loglevel = 'debug';
 
-            //config.native.dbtype   = 'sqlite';
-
             setup.setAdapterConfig(config.common, config.native);
 
             setup.startController(true, function(id, obj) {}, function (id, state) {
@@ -99,8 +97,8 @@ describe('Test ' + adapterShortName + ' adapter', function() {
     });
 
 /*
-    ENABLE THIS WHEN ADAPTER RUNS IN DEAMON MODE TO CHECK THAT IT HAS STARTED SUCCESSFULLY
-*/
+    ENABLE THIS WHEN ADAPTER RUNS IN DAEMON MODE TO CHECK THAT IT HAS STARTED SUCCESSFULLY
+
     it('Test ' + adapterShortName + ' adapter: Check if connected', function (done) {
         this.timeout(60000);
         setTimeout(function () {
@@ -113,7 +111,7 @@ describe('Test ' + adapterShortName + ' adapter', function() {
             });
         }, 10000);
     });
-
+*/
     after('Test ' + adapterShortName + ' adapter: Stop js-controller', function (done) {
         this.timeout(10000);
 
