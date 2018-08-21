@@ -1,14 +1,25 @@
 {
     "common": {
         "name":                     "fhem",
-        "version":                  "0.5.2",
-        "title":                    "FHEM connection for ioBroker",
+        "version":                  "0.5.3",
+        "title":                    "FHEM connection",
         "desc":                     {
-           "en": "FHEM Adapter",
-           "de": "FHEM Adapter",
-           "ru": "FHEM драйвер"
+           "en": "FHEM",
+           "de": "FHEM",
+           "ru": "FHEM"
 	    },
         "news": {
+            "0.5.3" :{
+                "en": "Several fixes and changes\nAdmin3 support",
+                "de": "Mehrere Korrekturen und Änderungen\nAdmin3-Unterstützung",
+                "ru": "Несколько исправлений и изменений\nПоддержка Admin3",
+                "pt": "Várias correções e mudanças\nSuporte Admin3",
+                "nl": "Verschillende oplossingen en wijzigingen\nAdmin3-ondersteuning",
+                "fr": "Plusieurs correctifs et modifications\nSupport Admin3",
+                "it": "Diverse correzioni e modifiche\nSupporto per Admin3",
+                "es": "Varias correcciones y cambios\nSoporte de Admin3",
+                "pl": "Kilka poprawek i zmian\nObsługa Admin3"
+            },
             "0.5.2" :{
                 "en": "Several fixes and changes",
                 "de": "Mehrere Korrekturen und Änderungen",
@@ -32,15 +43,15 @@
                 "pl": "Kilka poprawek i zmian"
             },
             "0.4.2" :{
-              "en": "Fix wordings",
-              "de": "Fixe Formulierungen",
-              "ru": "Исправить формулировки",
-              "pt": "Corrigir formulações",
-              "nl": "Corrigeer formuleringen",
-              "fr": "Corriger les libellés",
-              "it": "Diciture fisse",
-              "es": "Reparar frases",
-              "pl": "Popraw tekst"
+                "en": "Fix wordings",
+                "de": "Fixe Formulierungen",
+                "ru": "Исправить формулировки",
+                "pt": "Corrigir formulações",
+                "nl": "Corrigeer formuleringen",
+                "fr": "Corriger les libellés",
+                "it": "Diciture fisse",
+                "es": "Reparar frases",
+                "pl": "Popraw tekst"
             },
           "0.4.1" :{
             "en": "add link to FHEM im admin",
@@ -83,6 +94,7 @@
         "mode":                     "daemon",
         "icon":                     "fhem.png",
         "enabled":                  true,
+        "materialize":              true,
 	    "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.fhem/master/admin/fhem.png",
 	    "keywords":                 ["FHEM"],
         "readme":                   "https://github.com/ioBroker/ioBroker.fhem/blob/master/README.md",

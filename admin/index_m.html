@@ -1,12 +1,15 @@
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
+    <meta charset="UTF-8">
+    <!-- Materialze style -->
     <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
+    <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
 
-    <script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
-    <script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
+
     <script type="text/javascript" src="../../js/translate.js"></script>
+    <script type="text/javascript" src="../../lib/js/materialize.js"></script>
     <script type="text/javascript" src="../../js/adapter-settings.js"></script>
     <script type="text/javascript" src="words.js"></script>
 
@@ -59,18 +62,40 @@
 
 </head>
 <body>
-    <div id="adapter-container">
-        <table><tr>
-            <td><img src="fhem.png"/></td>
-            <td><h3 class="translate">FHEM adapter settings</h3></td>
-        </tr></table>
-        <table>
-            <tr><td><label class="translate" for="host">FHEM Telnet IP:</label></td><td class="admin-icon"></td><td><input class="value" id="host" /></td></tr>
-            <tr><td><label class="translate" for="port">FHEM Telnet Port:</label></td><td class="admin-icon"></td><td><input class="value" id="port" size="5" maxlength="5"/></td></tr>
-            <tr><td><label class="translate" for="password">Password:</label></td><td class="admin-icon"></td><td><input class="value" id="password" type="password"/></td></tr>
-            <tr><td><label class="translate" for="passwordRepeat">Password repeat:</label></td><td class="admin-icon"></td><td><input type="password" id="passwordRepeat"/></td></tr>
-            <tr><td><label class="translate" for="prompt">Prompt:</label></td><td class="admin-icon"></td><td><input class="value" id="prompt"/></td></tr>
-        </table>
+<div class="m adapter-container">
+    <div class="row">
+        <div class="row">
+            <div class="col s12 m4 l2">
+                <img src="fhem.png" class="logo">
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s8 m4">
+                <input class="value" id="host" type="text"/>
+                <label class="translate" for="host">FHEM Telnet IP:</label>
+            </div>
+            <div class="input-field col s4 m2">
+                <input class="value" id="port" type="number" min="0" max="65355"/>
+                <label class="translate" for="port">FHEM Telnet Port:</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s8 m4">
+                <input class="value" id="password" type="password"/>
+                <label class="translate" for="password">Password:</label>
+            </div>
+            <div class="input-field col s4 m4">
+                <input type="password" id="passwordRepeat"/>
+                <label class="translate" for="passwordRepeat">Password repeat:</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s10 m4">
+                <input class="value" id="prompt" type="text"/>
+                <label class="translate" for="prompt">Prompt:</label>
+            </div>
+        </div>
     </div>
+</div>
 </body>
 </html>

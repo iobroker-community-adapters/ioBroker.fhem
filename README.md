@@ -47,6 +47,10 @@ Actually only following attributes are supported:
 
 
 ## Changelog
+#### 0.5.3 (2018-08-21)
+* (LausiD) Several fixes and changes
+* (bluefox) Admin3
+
 #### 0.5.0 (2018-04-29)
 * (LausiD) Several fixes and changes
 
@@ -81,7 +85,7 @@ Actually only following attributes are supported:
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2016 bluefox <dogafox@gmail.com>
+Copyright (c) 2016-2018 bluefox <dogafox@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

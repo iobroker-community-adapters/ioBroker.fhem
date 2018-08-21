@@ -1,7 +1,6 @@
 version: 'test-{build}'
 environment:
   matrix:
-    - nodejs_version: '4'
     - nodejs_version: '6'
     - nodejs_version: '8'
     - nodejs_version: '10'
@@ -17,18 +16,6 @@ install:
   - npm install
   - npm install winston@2.3.1
   - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
-  - perl -v
-  - ps: |-
-      Invoke-WebRequest "http://fhem.de/fhem-5.8.tar.gz" -OutFile .\fhem-5.8.tar.gz;
-      if (Test-Path .\fhem-5.8 )
-      {
-          del .\fhem-5.8 -Force -Recurse
-      }
-      md fhem;
-      7z x .\fhem-5.8.tar.gz -r; 7z x .\fhem-5.8.tar -r;
-      cd ".\fhem-5.8";
-      $MyProcess = Start-Process -FilePath perl -ArgumentList ('fhem.pl','fhem.cfg') -PassThru;
-      cd ..
 test_script:
   - echo %cd%
   - node --version
