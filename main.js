@@ -656,8 +656,8 @@ function parseObjects(objs, cb) {
                         }
                         obj.native.ts = new Date().getTime(); // TEST
                         if (!combined) objects.push(obj);
+                        adapter.log.debug('[parseObjects] Readings: ' + obj._id + ' = ' + (val || ''));
                     }
-                    adapter.log.debug('[parseObjects] Readings: ' + obj._id + ' = ' + (val || ''));
                 }
 
                 delete objs[i].Readings;
