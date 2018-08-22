@@ -349,9 +349,11 @@ function parseObjects(objs, cb) {
     let obj;
     let name;
     let suche = 'nix';
+    let alias;
+    let val;
 
     if (firstRun) {
-        adapter.log.info('last update: 06.05.18 LausiD ');
+        adapter.log.info('last update: 22.08.18 LausiD ');
         adapter.log.info('Settings: ignored PossibleSets: ' + ignorePossibleSets);
         adapter.log.info('Settings: role button PossibleSets: noArg');
         adapter.log.info('Settings: role level.xxx PossibleSets: slider');
@@ -423,12 +425,12 @@ function parseObjects(objs, cb) {
             let setStates = {};
             //-----------------------------------------
             if (objs[i].Attributes) {
-                let alias = name;
+                alias = name;                                                                                                               //=============================
                 for (const attr in objs[i].Attributes) {
                     // only allowed Attributes
                     if (!objs[i].Attributes.hasOwnProperty(attr) || allowedAttributes.indexOf(attr) === -1) continue;
                     id = adapter.namespace + '.' + name + '.' + 'Attributes.' + attr.replace(/\./g, '_');
-                    const val = objs[i].Attributes[attr];
+                    val = objs[i].Attributes[attr];
                     if (attr === 'alias') {
                         alias = val;
                     }
@@ -468,7 +470,7 @@ function parseObjects(objs, cb) {
                     // only allowed Internals
                     if (!objs[i].Internals.hasOwnProperty(attr) || allowedInternals.indexOf(attr) === -1) continue;
                     id = adapter.namespace + '.' + name + '.' + 'Internals.' + attr.replace(/\./g, '_');
-                    const val = objs[i].Internals[attr];
+                    val = objs[i].Internals[attr];
                     obj = {
                         _id: id,
                         type: 'state',
@@ -631,7 +633,7 @@ function parseObjects(objs, cb) {
                     }
 
                     if (objs[i].Readings[attr]) {
-                        const val = convertFhemValue(objs[i].Readings[attr].Value);
+                        val = convertFhemValue(objs[i].Readings[attr].Value);                                                                       //=============================
                         obj.common.type = obj.common.type || typeof val;
                         obj.common.role = obj.common.role || 'value' + '.' + attr;
 
