@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "fhem",
-        "version":                  "0.5.4",
+        "version":                  "0.5.5",
         "title":                    "FHEM connection",
         "desc":                     {
            "en": "FHEM",
@@ -9,7 +9,7 @@
            "ru": "FHEM"
 	    },
         "news": {
-            "0.5.4" :{
+            "0.5.5" :{
                 "en": "Several fixes and changes\nAdmin3 support",
                 "de": "Mehrere Korrekturen und Änderungen\nAdmin3-Unterstützung",
                 "ru": "Несколько исправлений и изменений\nПоддержка Admin3",

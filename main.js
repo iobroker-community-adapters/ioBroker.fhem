@@ -380,6 +380,7 @@ function parseObjects(objs, cb) {
 
     for (let i = 0; i < objs.length; i++) {
         try {
+            let alias;
             name = objs[i].Name.replace(/\./g, '_');
             let searchRoom = 'no';
             if (objs[i].Attributes.room) {
@@ -423,7 +424,6 @@ function parseObjects(objs, cb) {
             let setStates = {};
             //-----------------------------------------
             if (objs[i].Attributes) {
-                let alias = name;
                 for (const attr in objs[i].Attributes) {
                     // only allowed Attributes
                     if (!objs[i].Attributes.hasOwnProperty(attr) || allowedAttributes.indexOf(attr) === -1) continue;

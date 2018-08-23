@@ -47,7 +47,7 @@ Actually only following attributes are supported:
 
 
 ## Changelog
-#### 0.5.4 (2018-08-22)
+#### 0.5.5 (2018-08-22)
 * (LausiD) Several fixes and changes
 * (bluefox) Admin3
 
