@@ -822,7 +822,7 @@ function parseObjects(objs, cb) {
                         obj.common.min = '5';
                         obj.common.max = '30';
                         obj.common.role = 'level.temperature';
-                        obj.common.unit = 'Â°C';
+                        obj.common.unit = '°C';
                         obj.native.level_temperature = true;
                         if (adapter.namespace === 'fhem.0') {
                             obj.common.smartName = {
