@@ -822,7 +822,7 @@ function parseObjects(objs, cb) {
                         obj.common.min = '5';
                         obj.common.max = '30';
                         obj.common.role = 'level.temperature';
-                        obj.common.unit = 'Â°C';
+                        obj.common.unit = '°C';
                         obj.native.level_temperature = true;
                         if (adapter.namespace === 'fhem.0') {
                             obj.common.smartName = {
@@ -1160,7 +1160,7 @@ function writeValue(id, val, cb) {
     } else {
         cmd = 'set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute + ' ' + val;
         // button?
-        if (fhemObjects[id].common.role === 'button') {cmd = 'set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute}
+        if(fhemObjects[id].common.role.indexOf('button') !== -1) {cmd = 'set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute}
     }
     //writeValueDo(id, val_org, cmd, 'iob');
     if (logEventIOB === true) adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + cmd);
