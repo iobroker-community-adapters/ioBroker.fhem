@@ -34,15 +34,16 @@ Actually only following attributes are supported:
 * If room "ioBroker" exist in FHEM, only this objects will be synchronized
 * After synchronization FHEM unused Objects will be automatically deleted.
 * Internals like TYPE, NAME, PORT, manufacturername, modelid, swversion will be synchronized (role=value.xxx)
-* Attributes like alias, disable, comment will be synchronized and it is possible to edit Attributes in ioBroker. (role=state.xxx)
+* Attributes like room, alias, disable, comment will be synchronized and it is possible to edit Attributes in ioBroker. (role=state.xxx)
 * Set role and other during synchronization
   * Readings xxx with any PossibleSets will be set role=state.xxx
   * Readings xxx without PossibleSets will be set role=value.xxx
-  * Readings xxx with PossibleSets "noArg" will be set role=button
+  * Readings xxx with PossibleSets "noArg" will be set role=button.xxx
   * Readings xxx with PossibleSets "slider" will be set role=level.xxx, min=slider(min), max=slider(max)
   * Readings "desired-temp" will be set role=level.temperature, min=5, max=35, unit=°C .
-  * Readings "pct, brightness,dim" will be set role=level.dim, min=0, max=100, unit=%
+  * Readings "pct, brightness,dim" will be set role=level.dimmer, min=0, max=100, unit=%
   * Readings "Volume, volume, GroupVolume" will be set role=level.volume, min=0, max=100, unit=%
+  * Readings "GroupVolume" will be set role=level.volume.group, min=0, max=100, unit=%
 * SmartName for Cloud Adapter will be set automatically with alias or name (only fhem.0 and objects with role = level.temperature, level.dim, level.volume)
 
 
