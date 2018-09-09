@@ -48,39 +48,42 @@ Actually only following attributes are supported:
 
 
 ## Changelog
-#### 0.5.5 (2018-08-22)
+### 0.5.6 (2018-09-09)
+* (LausiD) Some roles were updated
+
+### 0.5.5 (2018-08-22)
 * (LausiD) Several fixes and changes
 * (bluefox) Admin3
 
-#### 0.5.0 (2018-04-29)
+### 0.5.0 (2018-04-29)
 * (LausiD) Several fixes and changes
 
-#### 0.4.2 (2018-04-15)
+### 0.4.2 (2018-04-15)
 * (TonyBostonTB) Fix wordings
 
-#### 0.4.1 (2017-04-14)
+### 0.4.1 (2017-04-14)
 * (bluefox) add link to FHEM im admin
 
-#### 0.4.0 (2017-03-12)
+### 0.4.0 (2017-03-12)
 * (LausiD) fix some types
 * (bluefox) define custom prompt
 
-#### 0.3.0 (2017-02-25)
+### 0.3.0 (2017-02-25)
  * (LausiD) fix some types
  * (bluefox) add password for telnet
 
-#### 0.2.2 (2016-06-17)
+### 0.2.2 (2016-06-17)
 * (bluefox) implement On/Off state and fix RGB
 * (bluefox) add debug output by control
 
-#### 0.2.1 (2016-06-12)
+### 0.2.1 (2016-06-12)
 * (bluefox) support of RGB values for control
 
-#### 0.2.0
+### 0.2.0
 * (bluefox) implemented write
 * (bluefox) try to read meta information if unknown event received
 
-#### 0.1.0
+### 0.1.0
 * (bluefox) initial release
 
 ## License

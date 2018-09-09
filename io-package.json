@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "fhem",
-        "version":                  "0.5.5",
+        "version":                  "0.5.6",
         "title":                    "FHEM connection",
         "desc":                     {
            "en": "FHEM",
@@ -9,6 +9,17 @@
            "ru": "FHEM"
 	    },
         "news": {
+            "0.5.6" : {
+              "en": "Some roles were updated",
+              "de": "Einige Rollen wurden aktualisiert",
+              "ru": "Некоторые роли были обновлены",
+              "pt": "Algumas funções foram atualizadas",
+              "nl": "Sommige rollen zijn bijgewerkt",
+              "fr": "Certains rôles ont été mis à jour",
+              "it": "Alcuni ruoli sono stati aggiornati",
+              "es": "Algunos roles fueron actualizados",
+              "pl": "Niektóre role zostały zaktualizowane"
+            },
             "0.5.5" :{
                 "en": "Several fixes and changes\nAdmin3 support",
                 "de": "Mehrere Korrekturen und Änderungen\nAdmin3-Unterstützung",
