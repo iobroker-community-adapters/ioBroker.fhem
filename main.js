@@ -20,7 +20,7 @@ const fhemObjects = {};
 const functions = {};
 
 let lastNameQueue;
-let lastNameTS = '0';                                                                                  // <-----------------------------------------------
+let lastNameTS = '0';
 let iobroker = false;
 let firstRun = true;
 let synchro = true;
@@ -38,6 +38,9 @@ const Utemperature = ['temperature', 'measured-temp', 'desired-temp', 'degrees',
 const buttonPossibleSets = ['noArg'];
 const levelPossibleSets = ['slider'];
 const rgbPossibleSets = ['rgb'];
+const Rindicator = ['reachable','presence','battery','Activity'];
+let autoRole = false;
+let autoFunction = false;
 let logCheckObject = true;
 let logUpdateChannel = true;
 let logCreateChannel = true;
@@ -126,6 +129,18 @@ function getUnit(name) {
 }
 
 //--------------------------------------------------------------------------------------
+function checkID(event, val, name, attr, id) {
+   for (const f in fhemObjects) {
+       if (fhemObjects[f].native.Name === name && fhemObjects[f].native.Attribute === attr) {
+           adapter.log.debug ('[checkID] (FHEM) ' + event + ' > (ioBroker) ' + fhemObjects[f]._id + ' ' + val);
+           id = fhemObjects[f]._id;
+           continue;
+       }
+   }
+   return id;
+}
+
+//--------------------------------------------------------------------------------------
 function parseEvent(event,anz) {
     if (!event) return;
     if (logEventFHEM === true) adapter.log.info('event (FHEM) "' + event + '"');
@@ -185,6 +200,16 @@ function parseEvent(event,anz) {
               } else {
                   unusedObjects(parts[3] + '.Attributes.' + parts[4]);
               }
+           if (parts[4] === 'alias') {
+               queue.push({
+                   command: 'meta',
+                   name: parts[3],
+                   attr: 'no',
+                   val: parts[4],
+                   event: event
+               });
+               processQueue();
+           }
            return;
        }
        // Global global DELETED ?
@@ -204,11 +229,11 @@ function parseEvent(event,anz) {
        processQueue();
        return;
     }
-     
+
     // state?
     if (pos === -1) {
         val = convertFhemValue(event.substring(parts[0].length + parts[1].length + 2));
-        id = adapter.namespace + '.' + parts[1].replace(/\./g, '_') + '.state';
+        id = checkID(event, val, parts[1], 'state', id);
         if (fhemObjects[id]) {
             adapter.setForeignState(id, {
                 val: val,
@@ -250,24 +275,26 @@ function parseEvent(event,anz) {
             // special?
             if (parts[0] === 'at' && parts[2] === 'Next:' || parts[2] === 'T:' || parts[0] === 'FRITZBOX' && parts[2] === 'WLAN:' || parts[0] === 'CALVIEW' && parts[2] === 't:') {
             val = convertFhemValue(event.substring(parts[0].length + parts[1].length + 2));
-            id = adapter.namespace + '.' + parts[1].replace(/\./g, '_') + '.state';
+            id = checkID(event, val, parts[1], 'state', id);
             typ = 'state';
             } else {
             name = event.substring(0, pos);
             parts = name.split(' ');
-            id = adapter.namespace + '.' + parts[1].replace(/\./g, '_') + '.' + parts[2].replace(/\./g, '_');
             val = convertFhemValue(event.substring(parts[0].length + parts[1].length + parts[2].length + 4));
+            id = checkID(event, val, parts[1], parts[2], id);
             // rgb? insert #
             if (parts[2] === 'rgb') val = '#' + val;
             // temperature?
-            if (Utemperature.indexOf(parts[2]) !== -1) {val = parseFloat(val)}
+            if (Utemperature.indexOf(parts[2]) !== -1) val = parseFloat(val);
+            //indicator?
+            if (Rindicator.indexOf(parts[2]) !== -1) val = convertValueBol(val);
             typ = 'reading';
             }
         }
         // state
         if (stelle.indexOf(':') !== 0) {
             val = convertFhemValue(event.substring(parts[0].length + parts[1].length + 2));
-            id = adapter.namespace + '.' + parts[1].replace(/\./g, '_') + '.state';
+            id = checkID(event, val, parts[1], 'state', id);
             typ = 'state';
         }
         //
@@ -337,9 +364,10 @@ function syncObjects(objects, cb) {
                 setImmediate(syncObjects, objects, cb);
             });
         } else {
-            if (JSON.stringify(obj.native) !== JSON.stringify(oldObj.native || obj.common.name !== oldObj.common.name)) {
+            if (JSON.stringify(obj.native) !== JSON.stringify(oldObj.native) || obj.common.name !== oldObj.common.name || (autoRole === true && JSON.stringify(obj.common) !== JSON.stringify(oldObj.common))) {
                 oldObj.native = obj.native;
                 oldObj.common.name = obj.common.name;
+                if (autoRole === true) oldObj.common = obj.common;
                 if (obj.type === 'channel' && logUpdateChannel === true) adapter.log.info('Update channel ' + obj._id + ' | ' + oldObj.common.name);
                 adapter.setForeignObject(obj._id, oldObj, err => {
                     if (err) adapter.log.error('[syncObjects] ' + err);
@@ -476,8 +504,11 @@ function myObjects(cb) {
         // info.Info
         {id: 'Info.NumberObjects',name: 'Number of objects FHEM', type: 'number', read: true, write: false, role: 'value'},
         {id: 'Info.roomioBroker',name: 'Room ioBroker exist', type: 'boolean', read: true, write: false, role: 'value'},
-        /* coming soon
+
         // info.Configurations
+        {id: 'Configurations.autoRole',name: 'set role automatically (Adapter Material)', type: 'boolean', read: true, write: true, role: 'switch'},
+        {id: 'Configurations.autoFunction',name: 'set function automatically (Adapter Material)', type: 'boolean', read: true, write: true, role: 'switch'},
+        /* coming soon
         {id: 'Configurations.allowedAttributes',name: 'Allowed Attributes (need room)', type: 'string', read: true, write: true, role: 'state'},
         {id: 'Configurations.allowedInternals',name: 'Allowed Internals (need TYPE)', type: 'string', read: true, write: true, role: 'state'},
         {id: 'Configurations.ignoreReadings',name: 'Ignore Readings', type: 'string', read: true, write: true, role: 'state'},
@@ -542,9 +573,13 @@ function getSetting(id, setting, callback) {
 //--------------------------------------------------------------------------------------
 function getSettings(mode, cb) {
     adapter.log.debug ('[getSettings] ' + mode);
-    /* coming soon
+
     if (mode === 'config' || mode === 'all') {
           adapter.log.info('check ' + adapter.namespace + '.' + 'info.Configurations');
+          getSetting('info.Configurations.autoRole', autoRole, function (wert){autoRole=wert});
+          getSetting('info.Configurations.autoFunction', autoFunction, function (wert){autoFunction=wert});
+          /* coming soon
+          getSetting('info.Configurations.autoFunction', autoFunction, function (wert){autoFunction=wert});
           getSetting('info.Configurations.allowedAttributes', allowedAttributes, function(wert){allowedAttributes=JSON.parse(wert)});
           getSetting('info.Configurations.allowedInternals', allowedInternals, function (wert){allowedInternals=JSON.parse(wert)});;
           getSetting('info.Configurations.ignoreReadings', ignoreReadings, function (wert){ignoreReadings=JSON.parse(wert)});
@@ -558,8 +593,9 @@ function getSettings(mode, cb) {
           getSetting('info.Configurations.RlevelPossibleSets', levelPossibleSets, function (wert){levelPossibleSets=JSON.parse(wert)});
           getSetting('info.Configurations.RbuttonPossibleSets', buttonPossibleSets, function (wert){buttonPossibleSets=JSON.parse(wert)});
           getSetting('info.Configurations.Utemperature', Utemperature, function (wert){Utemperature=JSON.parse(wert)});
+          */
     }
-    */
+
     if (mode === 'settings' || mode === 'all') {
          adapter.log.info('check ' + adapter.namespace + '.' + 'info.Settings');
          getSetting('info.Settings.logCheckObject', logCheckObject, function (wert){logCheckObject=wert});
@@ -581,7 +617,6 @@ function getSettings(mode, cb) {
 function parseObjects(objs, cb) {
     adapter.log.debug ('[parseObjects]');
     const rooms = {};
-    //
     const objects = [];
     const states = [];
     let id;
@@ -623,6 +658,7 @@ function parseObjects(objs, cb) {
         adapter.log.info('> RlevelPossibleSets = ' + levelPossibleSets);
         adapter.log.info('> RbuttonPossibleSets = ' + buttonPossibleSets);
         adapter.log.info('> Utemperature = ' + Utemperature);
+        adapter.log.info('> Rindicator = ' + Rindicator);
     }
     
     for (let i = 0; i < objs.length; i++) {
@@ -647,6 +683,7 @@ function parseObjects(objs, cb) {
             let searchRoom = 'no';
             let alias =  objs[i].Name;
             let Funktion = 'no';
+
             name = objs[i].Name.replace(/\./g, '_');
             id = adapter.namespace + '.' + name;
             
@@ -659,34 +696,43 @@ function parseObjects(objs, cb) {
             if (objs[i].Attributes && objs[i].Attributes.alias) {
                 alias =  objs[i].Attributes.alias;
             }
-            
-            objects.push({
+
+            obj = {
                 _id: id,
                 type: 'channel',
                 common: {
                     name: alias
                 },
-                native: objs[i]
-            });
-            
+                    native:  objs[i]
+            };
+
             //Function?
             if (objs[i].Internals.TYPE === 'HUEDevice') {
                 Funktion =  'light';
             }
-            //if (objs[i].Internals.TYPE === 'SONOSPLAYER') {
-            //    Funktion =  'audio';
-            //}
+            if (objs[i].Internals.TYPE === 'SONOSPLAYER') {
+                Funktion =  'audio';
+                obj.common.role = 'media.music';
+           }
             if (objs[i].Attributes.model === 'HM-CC-RT-DN') {
                 Funktion =  'heating';
+                obj.common.role = 'thermostate';
             }
-            //if (objs[i].Internals.TYPE === 'Weather') {
-            //    Funktion =  'weather';
-            //}
-            if (Funktion !== 'no') {
+             if (objs[i].Attributes.subType === 'thermostat') {
+                Funktion =  'heating';
+                obj.common.role = 'thermostate';
+            }
+            if (objs[i].Attributes.subType === 'smokeDetector') {
+                Funktion =  'security';
+                obj.common.role = 'sensor.alarm.fire';
+            }
+            if (Funktion !== 'no' && autoFunction === true) {
                 setFunction(id,Funktion,name);
             }
+            
+            objects.push(obj);
 
-            if (logCheckObject === true) adapter.log.info('check channel ' + id + ' | name: ' + alias + ' | room: ' + objs[i].Attributes.room + ' | function: ' + Funktion + ' | ' + ' '+ (i + 1) + '/' + objs.length);
+            if (logCheckObject === true) adapter.log.info('check channel ' + id + ' | name: ' + alias + ' | room: ' + objs[i].Attributes.room + ' | role: ' + obj.common.role + ' | function: ' + Funktion + ' | ' + ' '+ (i + 1) + '/' + objs.length);
 
             //Rooms
             if (objs[i].Attributes && objs[i].Attributes.room) {
@@ -709,7 +755,7 @@ function parseObjects(objs, cb) {
                     if (attr === 'alias') {
                         alias = val;
                     }
-                    
+
                     obj = {
                         _id: id,
                         type: 'state',
@@ -718,7 +764,7 @@ function parseObjects(objs, cb) {
                             type: 'string',
                             read: true,
                             write: true,
-                            role: 'state.' + attr
+                            role: 'state.' + attr.toLowerCase()
                         },
                         native: {
                             Name: objs[i].Name,
@@ -752,7 +798,7 @@ function parseObjects(objs, cb) {
                             type: 'string',
                             read: true,
                             write: false,
-                            role: 'value' + '.' + attr
+                            role: 'value.' + attr.toLowerCase()
                         },
                         native: {
                             Name: objs[i].Name,
@@ -794,7 +840,7 @@ function parseObjects(objs, cb) {
                             type: 'string',
                             read: false,
                             write: true,
-                            role: 'state.' + parts[0]
+                            role: 'state.' + parts[0].toLowerCase()
                         },
                         native: {
                             Name: objs[i].Name,
@@ -806,14 +852,14 @@ function parseObjects(objs, cb) {
                     if (parts[1]) {
                         if (parts[1].indexOf('noArg') !== -1) {
                             obj.common.type = 'boolean';
-                            obj.common.role = 'button.' + parts[0];
+                            obj.common.role = 'button.' + parts[0].toLowerCase();
                         }
                         if (parts[1].indexOf('slider') !== -1) {
                             const _slider = parts[1].split(',');
                             obj.common.min = _slider[1];
                             obj.common.max = _slider[3];
                             obj.common.type = 'number';
-                            obj.common.role = 'level.' + parts[0];
+                            obj.common.role = 'level.' + parts[0].toLowerCase();
                         }
                     }
 
@@ -822,7 +868,7 @@ function parseObjects(objs, cb) {
                         obj.common.min = '5';
                         obj.common.max = '30';
                         obj.common.role = 'level.temperature';
-                        obj.common.unit = '°C';
+                        obj.common.unit = 'Â°C';
                         obj.native.level_temperature = true;
                         if (adapter.namespace === 'fhem.0') {
                             obj.common.smartName = {
@@ -846,7 +892,6 @@ function parseObjects(objs, cb) {
                     }
 
                     if (volumePossibleSets.indexOf(parts[0]) !== -1) {
-                        //Funktion = 'audio';
                         obj.common.type = 'number';
                         obj.common.min = '0';
                         obj.common.max = '100';
@@ -863,7 +908,7 @@ function parseObjects(objs, cb) {
                     }
                     
                     if (rgbPossibleSets.indexOf(parts[0]) !== -1) {
-                        obj.common.type = 'number';
+                        obj.common.type = 'string';
                         obj.common.role = 'level.color.rgb';
                         obj.native.rgb = true;
                         if (adapter.namespace == 'fhem.0') {
@@ -889,7 +934,7 @@ function parseObjects(objs, cb) {
                     
                     if (logCheckObject === true && obj.common.role.indexOf('state') === -1) adapter.log.info('> role = ' +  obj.common.role + ' | ' + id);
                     //Function?
-                    if (Funktion !== 'no') {
+                    if (Funktion !== 'no' && autoFunction === true) {
                            setFunction(id,Funktion,name);
                     }
                 }
@@ -932,7 +977,14 @@ function parseObjects(objs, cb) {
                         Funktion = 'no';
                         let val = convertFhemValue(objs[i].Readings[attr].Value);
                         obj.common.type = obj.common.type || typeof val;
-                        obj.common.role = obj.common.role || 'value' + '.' + attr;
+                        obj.common.role = obj.common.role || 'value.' + attr.toLowerCase()
+                        // detect indicator
+                        if (Rindicator.indexOf(attr) !== -1) {
+                            obj.native.indicator = true;
+                            obj.common.type = 'boolean';
+                            obj.common.role = 'indicator.' + attr.toLowerCase();
+                            val = convertValueBol(val);
+                        }
 
                         // detect temperature
                         if (obj.common.unit === '°C' && combined === false) {
@@ -963,6 +1015,7 @@ function parseObjects(objs, cb) {
                                 },
                                 native: {
                                     Name: objs[i].Name,
+                                    Attribute: 'state',
                                     ts: new Date().getTime()
                                }
                             };
@@ -985,7 +1038,7 @@ function parseObjects(objs, cb) {
                         if (!combined) {
                             objects.push(obj);
                             if (logCheckObject === true && obj.common.role.indexOf('value') === -1 && obj.common.role.indexOf('state') === -1 || (logCheckObject === true && obj.common.role.indexOf('value.temperature') !== -1)) adapter.log.info('> role = ' +  obj.common.role + ' | ' + id);
-                            if (Funktion !== 'no') {
+                            if (Funktion !== 'no' && autoFunction === true) {
                                 if (Funktion  === 'switch') id=adapter.namespace + '.' + name;
                                 setFunction(id,Funktion,name);
                             }
@@ -1069,6 +1122,26 @@ function setFunction(id,Funktion,name) {
     }
 }
 
+//--------------------------------------------------------------------------------------
+function convertValueBol(val) {
+    //val = val.trim();
+    if (val === '0') return false;
+    if (val === 0) return false;
+    if (val === '1') return true;
+    if (val === 1) return true;
+    if (val === 'appeared') return true;
+    if (val === 'disappeared') return false;
+    if (val === '~~NotLoadedMarker~~') return false;
+    if (val === 'present') return true;
+    if (val === 'absent') return false;
+    if (val === 'low') return true;
+    if (val === 'ok') return false;
+    if (val === 'alive') return true;
+    if (val === 'dead') return false;
+    const f = parseFloat(val);
+    if (f == val) return f;
+    return val;
+}
 //--------------------------------------------------------------------------------------
 function convertFhemValue(val) {
     val = val.trim();
