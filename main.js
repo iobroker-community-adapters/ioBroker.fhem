@@ -240,10 +240,18 @@ function parseEvent(event,anz) {
                 ack: true,
                 ts: ts
             });
+            if (logEventFHEMstate === true) adapter.log.info('event FHEM(s) "' + event + '" > ' + id + '  ' + val);
             // special for switch
             let id_switch = adapter.namespace + '.' + parts[1].replace(/\./g, '_') + '.state_switch';
             if (fhemObjects[id_switch] && (parts[2] == 'on' || parts[2] == 'off')) {
-                    adapter.setState(id_switch,convertFhemValue(parts[2]),true);
+                adapter.setState(id_switch,convertFhemValue(parts[2]),true);
+            }
+            // special for SONOS
+            let id_media = adapter.namespace + '.' + parts[1].replace(/\./g, '_') + '.state_media';
+            if (fhemObjects[id_media]) {
+                val=false;
+                if (parts[2] === 'PLAYING') val=true;
+                adapter.setState(id_media,val,true);
             }
             // special for ZWave dim
             if (parts[0] == 'ZWave' && parts[2] == 'dim') {
@@ -251,7 +259,7 @@ function parseEvent(event,anz) {
                 adapter.log.info('event (Create4ZWave) "' + zwave + '"');
                 parseEvent(zwave);
             }
-            if (logEventFHEMstate === true) adapter.log.info('event FHEM(s) "' + event + '" > ' + id + '  ' + val);
+
         } else {
             adapter.log.warn('[parseEvent] no object(S): "' + event + '" > ' + id + ' = ' + val);
             queue.push({
@@ -282,12 +290,8 @@ function parseEvent(event,anz) {
             parts = name.split(' ');
             val = convertFhemValue(event.substring(parts[0].length + parts[1].length + parts[2].length + 4));
             id = checkID(event, val, parts[1], parts[2], id);
-            // rgb? insert #
-            if (parts[2] === 'rgb') val = '#' + val;
-            // temperature?
-            if (Utemperature.indexOf(parts[2]) !== -1) val = parseFloat(val);
-            //indicator?
-            if (Rindicator.indexOf(parts[2]) !== -1) val = convertValueBol(val);
+            // rgb? insert # usw
+            val = convertAttr(parts[2],val);
             typ = 'reading';
             }
         }
@@ -686,7 +690,6 @@ function parseObjects(objs, cb) {
 
             name = objs[i].Name.replace(/\./g, '_');
             id = adapter.namespace + '.' + name;
-            
             if (objs[i].Attributes.room) searchRoom = objs[i].Attributes.room;
             if (objs[i].Attributes && objs[i].Attributes.room === 'hidden' || searchRoom.indexOf('ioBroker') === -1 && iobroker === true) {
                 if (synchro != true) unusedObjects(name + '.*', cb);
@@ -828,7 +831,6 @@ function parseObjects(objs, cb) {
                     if (ignorePossibleSets.indexOf(parts[0]) !== -1) continue;
                     const stateName = parts[0].replace(/\./g, '_');
                     id = adapter.namespace + '.' + name + '.' + stateName;
-
                     if (parts[0] === 'off') isOff = true;
                     if (parts[0] === 'on') isOn = true;
 
@@ -853,6 +855,8 @@ function parseObjects(objs, cb) {
                         if (parts[1].indexOf('noArg') !== -1) {
                             obj.common.type = 'boolean';
                             obj.common.role = 'button.' + parts[0].toLowerCase();
+                            //special
+                            if (parts[0] === 'Previous') obj.common.role = 'button.prev';
                         }
                         if (parts[1].indexOf('slider') !== -1) {
                             const _slider = parts[1].split(',');
@@ -860,6 +864,8 @@ function parseObjects(objs, cb) {
                             obj.common.max = _slider[3];
                             obj.common.type = 'number';
                             obj.common.role = 'level.' + parts[0].toLowerCase();
+                            //special
+                            if (parts[0] === 'sat') obj.common.role = 'level.color.saturation';
                         }
                     }
 
@@ -868,7 +874,7 @@ function parseObjects(objs, cb) {
                         obj.common.min = '5';
                         obj.common.max = '30';
                         obj.common.role = 'level.temperature';
-                        obj.common.unit = 'Â°C';
+                        obj.common.unit = '°C';
                         obj.native.level_temperature = true;
                         if (adapter.namespace === 'fhem.0') {
                             obj.common.smartName = {
@@ -879,9 +885,9 @@ function parseObjects(objs, cb) {
 
                     if (dimPossibleSets.indexOf(parts[0]) !== -1) {
                         obj.common.type = 'number';
+                        obj.common.role = 'level.dimmer';
                         obj.common.min = '0';
                         obj.common.max = '100';
-                        obj.common.role = 'level.dimmer';
                         obj.common.unit = '%';
                         obj.native.level_dimmer = true;
                         if (adapter.namespace === 'fhem.0') {
@@ -911,6 +917,21 @@ function parseObjects(objs, cb) {
                         obj.common.type = 'string';
                         obj.common.role = 'level.color.rgb';
                         obj.native.rgb = true;
+                        if (adapter.namespace == 'fhem.0') {
+                            var smartN = {
+                                'de': alias
+                            };
+                            obj.common.smartName = smartN;
+                        }
+                    }
+
+                    if (parts[0] === 'color') {
+                        obj.common.type = 'number';
+                        obj.common.role = 'level.color.temperature';
+                        obj.common.unit = 'K';
+                        obj.common.min ='2000';
+                        obj.common.max ='6500';
+                        obj.native.ct = true;
                         if (adapter.namespace == 'fhem.0') {
                             var smartN = {
                                 'de': alias
@@ -977,13 +998,15 @@ function parseObjects(objs, cb) {
                         Funktion = 'no';
                         let val = convertFhemValue(objs[i].Readings[attr].Value);
                         obj.common.type = obj.common.type || typeof val;
-                        obj.common.role = obj.common.role || 'value.' + attr.toLowerCase()
+                        obj.common.role = obj.common.role || 'value.' + attr.toLowerCase();
+                        //special
+                        if (attr === 'currentAlbumArtURL') obj.common.role = 'media.cover';
                         // detect indicator
                         if (Rindicator.indexOf(attr) !== -1) {
                             obj.native.indicator = true;
                             obj.common.type = 'boolean';
-                            obj.common.role = 'indicator.' + attr.toLowerCase();
-                            val = convertValueBol(val);
+                            //obj.common.role = 'indicator.' + attr.toLowerCase();
+                            obj.common.role = 'indicator.reachable';
                         }
 
                         // detect temperature
@@ -992,7 +1015,6 @@ function parseObjects(objs, cb) {
                             Funktion = 'temperature';
                             obj.common.type = 'number';
                             obj.common.role = 'value.temperature';
-                            val = parseFloat(val);
                         }
                         // detect state
                         if (attr === 'state') {
@@ -1019,6 +1041,7 @@ function parseObjects(objs, cb) {
                                     ts: new Date().getTime()
                                }
                             };
+                            if (objs[i].Internals.TYPE === 'HUEDevice') obj_switch.common.role = 'switch.light';
                             objects.push(obj_switch);
                             states.push({
                                 id: obj_switch._id,
@@ -1027,8 +1050,38 @@ function parseObjects(objs, cb) {
                                 ack: true
                             });
                         }
+                        // detect SONOS state (media.state)
+                        if (objs[i].Internals.TYPE === 'SONOSPLAYER' && attr === 'state') {
+                            obj.native.media = true;
+                            let valMedia=false;
+                            if (val === 'PLAYING') valMedia = true;
+                            let obj_media = {
+                                _id: adapter.namespace + '.' + name + '.state_media',
+                                type: 'state',
+                                common: {
+                                    name:   objs[i].Name + ' ' + 'state_media',
+                                    type:  'boolean',
+                                    read:  true,
+                                    write: false,
+                                    role:  'media.state'
+                                },
+                                native: {
+                                    Name: objs[i].Name,
+                                    Attribute: 'state',
+                                    ts: new Date().getTime()
+                               }
+                            };
+                            objects.push(obj_media);
+                            states.push({
+                                id: obj_media._id,
+                                val: valMedia,
+                                ts: objs[i].Readings[attr].Time ? new Date(objs[i].Readings[attr].Time).getTime() : new Date().getTime(),
+                                ack: true
+                            });
+                        }
                         obj.native.ts = new Date().getTime();
-                        
+                        // rgb ? usw
+                        val = convertAttr(attr,val);
                         states.push({
                             id: obj._id,
                             val: val,
@@ -1039,7 +1092,9 @@ function parseObjects(objs, cb) {
                             objects.push(obj);
                             if (logCheckObject === true && obj.common.role.indexOf('value') === -1 && obj.common.role.indexOf('state') === -1 || (logCheckObject === true && obj.common.role.indexOf('value.temperature') !== -1)) adapter.log.info('> role = ' +  obj.common.role + ' | ' + id);
                             if (Funktion !== 'no' && autoFunction === true) {
-                                if (Funktion  === 'switch') id=adapter.namespace + '.' + name;
+                                //id = adapter.namespace + '.' + name;
+                                if (Funktion  === 'switch') id = adapter.namespace + '.' + name;
+                                if (Funktion  === 'switch' && objs[i].Internals.TYPE === 'HUEDevice') id = adapter.namespace + '.' + name  + '.state_switch';
                                 setFunction(id,Funktion,name);
                             }
                         }
@@ -1099,7 +1154,6 @@ function startSync(cb) {
                         cb = null;
                     }
                 });
-
             } else if (cb) {
                 cb();
                 cb = null;
@@ -1112,7 +1166,6 @@ function startSync(cb) {
 }
 //--------------------------------------------------------------------------------------
 function setFunction(id,Funktion,name) {
-    //if (id.indexOf('state') !== -1) id=id+'_switch'
     let fff = Funktion.split(',');
     for (let f = 0; f < fff.length; f++) {
         fff[f] = fff[f].trim();
@@ -1123,8 +1176,17 @@ function setFunction(id,Funktion,name) {
 }
 
 //--------------------------------------------------------------------------------------
+function convertAttr(attr,val) {
+    if (attr === 'rgb') return '#' + val;
+    if (Rindicator.indexOf(attr) !== -1) return convertValueBol(val);
+    if (Utemperature.indexOf(attr) !== -1) return parseFloat(val);
+    const f = parseFloat(val);
+    if (f == val) return f;
+    return val;
+}
+
+//--------------------------------------------------------------------------------------
 function convertValueBol(val) {
-    //val = val.trim();
     if (val === '0') return false;
     if (val === 0) return false;
     if (val === '1') return true;
@@ -1142,6 +1204,7 @@ function convertValueBol(val) {
     if (f == val) return f;
     return val;
 }
+
 //--------------------------------------------------------------------------------------
 function convertFhemValue(val) {
     val = val.trim();
