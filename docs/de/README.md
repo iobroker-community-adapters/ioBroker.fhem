@@ -65,7 +65,7 @@ im Abschnitt "Überblick".
 | Github                  | https://github.com/ioBroker/ioBroker.fhem                    |
 | Lizenz                  | MIT                          |
 | Kategorie               | gemäß Adapterliste           |
-| Keywords                | `Suchworte`                  |
+| Keywords                | `iobroker FHEM`                  |
 | Abhängigkeiten          | `dependencies`               |      
 
 
