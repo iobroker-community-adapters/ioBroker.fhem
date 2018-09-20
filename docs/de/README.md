@@ -64,7 +64,7 @@ im Abschnitt "Überblick".
 | Entwickler              | Name/Alias des Entwicklers   |
 | Github                  | https://github.com/ioBroker/ioBroker.fhem                    |
 | Lizenz                  | MIT                          |
-| Kategorie               | gemäß Adapterliste           |
+| Kategorie               | Iot-Systeme           |
 | Keywords                | `iobroker` `fhem` `smarthome`                |
 | Abhängigkeiten          | `dependencies`               |      
 
@@ -74,12 +74,12 @@ im Abschnitt "Überblick".
 
 ## Überblick
 
-### {Angebundenes System}
+### FHEM
 In diesem Abschnitt wird Grundlegendes zu einem eventuell angebundenen System
 oder Verfahren gesagt. Wofür ist es gut? Was kann man damit machen? Wie erfolgt
 die Kommunikation? Wie ist der Systemaufbau? Welche Rahmenbedingungen gibt es?
 
-### {Adaptername}-Adapter
+### FHEM-Adapter
 Hier werden Hintergrundinformationen zum Adapter gegeben. Dies kann im Rahmen
 eines Geräteadapters Information zu dem Gerät sein, oder bei einem Adapter für
 ein Kommunikationsprotokoll Grundlagen zu dem Protokoll.
