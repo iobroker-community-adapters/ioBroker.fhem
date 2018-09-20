@@ -9,7 +9,7 @@ editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/READ
 Dieses Template ist bei weitem noch nicht final!  
 Beispielimplementierung ist der [harmony-Adapter](adapterref/docs/iobroker.harmony/de/README).
 
-# <img src="media/{Adaptericon}" width=150 hight=150/>&emsp;{Adaptername}-Adapter
+# <img src="media/{Adaptericon}" width=150 hight=150/>&emsp;FHEM-Adapter
 In diesem Abschnitt wird eine endanwenderfreundliche Zusammenfassung des
 Anwendungszwecks des Adapters gegeben. Diese Zusammenfassung soll kurz
  gehalten sein (maximal 1-3 kleine Absätze). Sie soll gerade so viele
