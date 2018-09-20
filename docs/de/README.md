@@ -62,7 +62,7 @@ im Abschnitt "Überblick".
 | OS                      | unterstützte OS              |
 | node-Version            | unterstützte node-Versionen  |
 | Entwickler              | Name/Alias des Entwicklers   |
-| Github                  | LINK                         |
+| Github                  | https://github.com/ioBroker/ioBroker.fhem                    |
 | Lizenz                  | MIT                          |
 | Kategorie               | gemäß Adapterliste           |
 | Keywords                | `Suchworte`                  |
