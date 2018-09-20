@@ -65,7 +65,7 @@ im Abschnitt "Überblick".
 | Github                  | https://github.com/ioBroker/ioBroker.fhem                    |
 | Lizenz                  | MIT                          |
 | Kategorie               | gemäß Adapterliste           |
-| Keywords                | `iobroker FHEM`                  |
+| Keywords                | `iobroker ' ' fhem ` 'smart home '                |
 | Abhängigkeiten          | `dependencies`               |      
 
 
