@@ -1,7 +1,7 @@
 ---
 title:       "{Seitentitel}"
 lastChanged: "20.09.2018"
-editLink:    "{Link auf diese Datei auf GitHub}"
+editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
 ---
 
 
