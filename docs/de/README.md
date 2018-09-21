@@ -11,6 +11,8 @@ Seite ist im Aufbau!
 # <img src="media/fhem.png" width=150 hight=150/>&emsp;FHEM-Adapter
 Der FHEM-Adapter ermöglicht die einfache Einbindung eines oder auch mehrerer FHEM Servern in ein ioBroker-System.
 
+Alle Module aus FHEM können eingelesen, über ioBroker gesteuert und zur Visualisierung verwendet werden.
+
 <!-- Einführungsbild-->
 ![{alt BildName}](media/titel.png "FHEM Oberfläche") <span style="color:grey">  
 *FHEM Oberfläche*</span>
@@ -66,24 +68,18 @@ Der FHEM-Adapter ermöglicht die einfache Einbindung eines oder auch mehrerer FH
 ## Überblick
 
 ### FHEM
-In diesem Abschnitt wird Grundlegendes zu einem eventuell angebundenen System
-oder Verfahren gesagt. Wofür ist es gut? Was kann man damit machen? Wie erfolgt
-die Kommunikation? Wie ist der Systemaufbau? Welche Rahmenbedingungen gibt es?
+FHEM bietet eine Vielzahl an Modulen mit diversen Protokollen.
+Durch die Einbindung in ioBroker können alle Adapter wie Alexa, VIS, Material usw genutzt werden.
 
 ### FHEM-Adapter
-Hier werden Hintergrundinformationen zum Adapter gegeben. Dies kann im Rahmen
-eines Geräteadapters Information zu dem Gerät sein, oder bei einem Adapter für
-ein Kommunikationsprotokoll Grundlagen zu dem Protokoll.
-Trotzdem sollte dieser Text allgemeinverständlich auch für Einsteiger sein.
-
-
+Nach erfolgreicher Verbindung zum FHEM Server werden alle Module automatisch eingelsen (jsonlist2)
+Möglichkeit zur Einschränkung der Module ist die Verwendung `room = ioBroker` in FHEM.
+Nach der Synchronisation mit FHEM werden alle Zustände / Änderungen und neue Module übertragen.
 
 <a name="voraussetzungen"/>
 
 ## Voraussetzungen vor der Installation
 Telnet in FHEM einrichten
-
-
 
 <a name="installation"/>
 
@@ -92,7 +88,6 @@ Telnet in FHEM einrichten
 > Eine Instanz des Adapters wird über die ioBroker Admin-Oberfläche installiert.
   Die ausführliche Anleitung für die dazu notwendigen Installatonschritte ist
   **hier** beschrieben.
-
 
 
 <a name="konfiguration"/>
@@ -144,7 +139,7 @@ Auf einem ioBroker Server können mehere Instanzen installiert werden.
 > Im Bereich `Objekte` werden in einer Baumstruktur alle vom Adapter in FHEM
   erkannten Gerätemodule und Hilfs (Erweiterungs-) Module alphabetisch aufgelistet.
   Falls im Modul das Attribut `alias` vorhanden ist wird es als `Name` des Objekts verwendet.
-  Falls im Modul das Attribut `room` vorhanden ist wird es als `Raum` des Objekts verwendet.
+  Ist im Modul das Attribut `room` vorhanden wird es als `Raum` des Objekts verwendet.
 
 ![alt-Objektename](media/objekte1.PNG "Übersicht Objekte")<span style="color:grey">  
 *Übersicht Objekte*</span>
