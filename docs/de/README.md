@@ -119,7 +119,6 @@ Abschnitt vorzusehen.
 
 <a name="{Eindeutiger Fensterbezeichner}"/>
 
-### Fenster "{Fenstertitel}"
 ![{alt-Name}](media/config.PNG "{Bildbeschreibung}")<span style="color:grey">  
 *{Bildbeschreibung}*</span>
 
