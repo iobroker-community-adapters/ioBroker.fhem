@@ -158,8 +158,8 @@ Auf einem ioBroker Server können mehere Instanzen installiert werden.
   erkannten Geräte und Aktivitäten aufgelistet. Zusätzlich wird auch noch
   darüber informiert, ob die Kommunikation mit dem Hub reibungslos erfolgt.
 
-![alt-Objektename](media/{Bildname} ""{Bildbeschreibung}")<span style="color:grey">  
-*{Bildbeschreibung}*</span>
+![alt-Objektename](media/objekte1.PNG "Übersicht Objekte")<span style="color:grey">  
+*Übersicht Objekte*</span>
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
