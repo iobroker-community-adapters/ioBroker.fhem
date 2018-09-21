@@ -154,9 +154,8 @@ Auf einem ioBroker Server können mehere Instanzen installiert werden.
 
 ## Objekte des Adapters
 
-> Im Bereich `Objekte` werden in einer Baumstruktur alle vom Adapter im Hub
-  erkannten Geräte und Aktivitäten aufgelistet. Zusätzlich wird auch noch
-  darüber informiert, ob die Kommunikation mit dem Hub reibungslos erfolgt.
+> Im Bereich `Objekte` werden in einer Baumstruktur alle vom Adapter in FHEM
+  erkannten Gerätemodule und Hilfs(Erweiterungs-) Module alphabetisch aufgelistet. Falls im Modul das Attribut "alias" vorhanden ist wird es als Name verwendet.
 
 ![alt-Objektename](media/objekte1.PNG "Übersicht Objekte")<span style="color:grey">  
 *Übersicht Objekte*</span>
