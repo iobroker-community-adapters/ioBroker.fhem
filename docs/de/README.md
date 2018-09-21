@@ -73,8 +73,8 @@ Durch die Einbindung in ioBroker können alle Adapter wie Alexa, VIS, Material u
 
 ### FHEM-Adapter
 Nach erfolgreicher Verbindung zum FHEM Server werden alle Module automatisch eingelsen (jsonlist2)
-Möglichkeit zur Einschränkung der Module ist die Verwendung `room = ioBroker` in FHEM.
-Nach der Synchronisation mit FHEM werden alle Zustände / Änderungen und neue Module übertragen.
+Möglichkeit zur Einschränkung der Module ist die Verwendung von `room = ioBroker` in FHEM.
+Nach der Synchronisation mit FHEM werden alle Zustände / Änderungen und auch neue Module übertragen.
 
 <a name="voraussetzungen"/>
 
