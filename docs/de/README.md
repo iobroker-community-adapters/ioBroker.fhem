@@ -260,11 +260,12 @@ Lorem ipsum
 
 ## Links
 
+FHEM-Adapter
 * ioBroker Forum / FHEM Adapter https://forum.iobroker.net/viewtopic.php?f=20&t=5387&start=200
 * ioBroker Forum / FHEM Adapter https://forum.iobroker.net/viewtopic.php?f=20&t=5387&start=200
 
 FHEM
-* ioBroker Forum / FHEM Adapter https://forum.iobroker.net/viewtopic.php?f=20&t=5387&start=200
-* ioBroker Forum / FHEM Adapter https://forum.iobroker.net/viewtopic.php?f=20&t=5387&start=200
+* FHEMs Einstiegsseite https://fhem.de/fhem_DE.html
+* FHEM Forum           https://forum.fhem.de/
 
 ## Entwicklerbereich
