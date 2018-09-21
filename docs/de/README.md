@@ -143,14 +143,12 @@ Platz für besondere Hinweise.
 > Die Installation des Adapters hat im Bereich `Objekte` eine aktive Instanz des
   {Adaptername}-Adapters angelegt.
 
-![Instanz](media/a_harmony_instanz.png "Instanz")<span style="color:grey">  
+![Instanz](media/instanz0.PNG "Instanz")<span style="color:grey">  
 *Erste Instanz*</span>
 
-Platz für weitere Hinweise zu Instanzen des Adapters. Z.B. ob mehrere Instanzen
-auf einen Server installierbar sind oder wie sich Instanzen auf
-Multihost-Systemen verhalten.
+Es können mehere Instanzen installiert werden.
 
-> Ob der Adapter aktiviert oder mit dem {Gerät}  verbunden ist,
+> Ob der Adapter aktiviert oder mit FHEM verbunden ist,
   wird mit der Farbe des Status-Feldes der Instanz verdeutlicht. Zeigt der
   Mauszeiger auf das Symbol, werden weitere Detailinformationen dargestellt.
 
