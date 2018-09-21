@@ -172,8 +172,22 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;**:**        |  R  | x. Modul aus FHEM
 
 ### {Weitere tiefergehende Erläuterungen zu Objektgruppierungen}
-Hier könne Ausschnitte des Objektbaums hervorgehoben und besonders betrachtet
-werden.
+> Im Bereich `Objekte` werden in einer Baumstruktur alle vom Adapter in FHEM
+  erkannten Gerätemodule und Hilfs(Erweiterungs-) Module alphabetisch aufgelistet.
+  Falls im Modul das Attribut `alias` vorhanden ist wird es als `Name` des Objekts verwendet.
+  Falls im Modul das Attribut `room` vorhanden ist wird es als `Raum` des Objekts verwendet.
+
+![alt-Objektename](media/objekte2.PNG "Übersicht Objekte")<span style="color:grey">  
+*Übersicht Objekte*</span>
+
+> Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
+
+Objekt                    | Zugriff | Bescheibung
+:-------------------------|:-------:|:-----------
+**fhem.0**                 |  R  | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**A8**        |  R  | 1. Modul aus FHEM
+&emsp;**A81**        |  R  | 2. Modul aus FHEM
+&emsp;**:**        |  R  | x. Modul aus FHEM
 
 #### {Weitere tiefergehende Erläuterungen zu einzelnen Objekten oder Funktionen}
 Da der Platz für Beschreibungen in der Objekttabelle in der Regel nicht ausreichen
