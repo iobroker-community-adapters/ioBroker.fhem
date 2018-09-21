@@ -99,10 +99,6 @@ nach Herstellerdokumentation.
 <a name="installation"/>
 
 ## Installation
-Hier werden Besonderheiten zur Installation beschrieben, die den Umfang der
-**hier** dokumentierten Standardinstallation überschreiten. Das kann z.B.
-die manuelle Installation von Software vor der eigentlichen Adapterinstallation
-oder die Freischaltung von Ports auf dem Server sein.
 
 > Eine Instanz des Adapters wird über die ioBroker Admin-Oberfläche installiert.
   Die ausführliche Anleitung für die dazu notwendigen Installatonschritte ist
@@ -119,8 +115,8 @@ Abschnitt vorzusehen.
 
 <a name="{Eindeutiger Fensterbezeichner}"/>
 
-![{alt-Name}](media/config.PNG "{Bildbeschreibung}")<span style="color:grey">  
-*{Bildbeschreibung}*</span>
+![{alt-Name}](media/config.PNG "Adapterkonfiguration")<span style="color:grey">  
+*Adapterkonfiguration*</span>
 
 | Feld               | Beschreibung |                                                                       
 |:-------------------|:-------------|
@@ -146,7 +142,7 @@ Platz für besondere Hinweise.
 ![Instanz](media/instanz0.PNG "Instanz")<span style="color:grey">  
 *Erste Instanz*</span>
 
-Es können mehere Instanzen installiert werden.
+Auf einem ioBroker Server können mehere Instanzen installiert werden.
 
 > Ob der Adapter aktiviert oder mit FHEM verbunden ist,
   wird mit der Farbe des Status-Feldes der Instanz verdeutlicht. Zeigt der
