@@ -155,7 +155,7 @@ Auf einem ioBroker Server können mehere Instanzen installiert werden.
 ## Objekte des Adapters
 
 > Im Bereich `Objekte` werden in einer Baumstruktur alle vom Adapter in FHEM
-  erkannten Gerätemodule und Hilfs(Erweiterungs-) Module alphabetisch aufgelistet.
+  erkannten Gerätemodule und Hilfs (Erweiterungs-) Module alphabetisch aufgelistet.
   Falls im Modul das Attribut `alias` vorhanden ist wird es als `Name` des Objekts verwendet.
   Falls im Modul das Attribut `room` vorhanden ist wird es als `Raum` des Objekts verwendet.
 
@@ -187,6 +187,14 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;&emsp;**alias**       |  RW  | Attribut alias aus Modul HUEDevice1
 &emsp;&emsp;&emsp;**room**        |  RW  | Attribut room aus Modul HUEDevice1
 &emsp;&emsp;&emsp;**:**           |  RW  | Weitere Attribute aus Modul HUEDevice1
+&emsp;&emsp;**Internals**         |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+&emsp;&emsp;&emsp;**NAME**        |  R  | Internal NAME aus Modul HUEDevice1
+&emsp;&emsp;&emsp;**TYPE**        |  R  | Internal TYPE aus Modul HUEDevice1
+&emsp;&emsp;&emsp;**:**           |  R  | Weitere Internals aus Modul HUEDevice1
+&emsp;&emsp;**alert**             |  RW  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+&emsp;&emsp;**blink**             |  RW  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+&emsp;&emsp;**:**                 |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+&emsp;&emsp;**:**                 |  RW  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 
 #### {Weitere tiefergehende Erläuterungen zu einzelnen Objekten oder Funktionen}
 Da der Platz für Beschreibungen in der Objekttabelle in der Regel nicht ausreichen
