@@ -166,9 +166,9 @@ Auf einem ioBroker Server können mehere Instanzen installiert werden.
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                 |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**A8**        |  R  | Name des *{...}*, Liste, Bedeutung ...
-&emsp;**A81**        |  R  | Name des *{...}*, Liste, Bedeutung ...
-&emsp;**:**        |  R  | Name des *{...}*, Liste, Bedeutung ...
+&emsp;**A8**        |  R  | 1. Modul aus FHEM
+&emsp;**A81**        |  R  | 2. Modul aus FHEM
+&emsp;**:**        |  R  | x. Modul aus FHEM
 
 Mit der Tabelle wird versucht, den Objektbaum vereinfacht darzustellen
 und dem Anwender die Bedeutung und Anwendung der einzelnen Objekte zu
