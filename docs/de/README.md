@@ -21,7 +21,7 @@ im Abschnitt "Überblick".
 
 
 <!-- Einführungsbild-->
-![{alt BildName}](media/37.bild.png"{Bildbeschreibung") <span style="color:grey">  
+![{alt BildName}](media/37.bild.png "{Bildbeschreibung") <span style="color:grey">  
 *{Bildbeschreibung}*</span>
 
 
