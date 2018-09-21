@@ -1,5 +1,5 @@
 ---
-title:       "{FHEM-Adapter}"
+title:       "FHEM-Adapter"
 lastChanged: "21.09.2018"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
 ---)
@@ -9,15 +9,7 @@ editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/READ
 Seite ist im Aufbau!  
     
 # <img src="media/fhem.png" width=150 hight=150/>&emsp;FHEM-Adapter
-In diesem Abschnitt wird eine endanwenderfreundliche Zusammenfassung des
-Anwendungszwecks des Adapters gegeben. Diese Zusammenfassung soll kurz
- gehalten sein (maximal 1-3 kleine Absätze). Sie soll gerade so viele
- Informationen enthalten, dass das Interesse des Anwenders geweckt wird
- und er entscheiden kann, ob der Adapter für ihn relevant ist.
-
-Technische Hintergrundinformationen zum Adapter und ggf. Geräten stehen
-im Abschnitt "Überblick".
-
+Der FHEM-Adapter ermöglicht die einfache Einbindung eines oder auch mehrerer FHEM Servern in ein ioBroker-System.
 
 <!-- Einführungsbild-->
 ![{alt BildName}](media/titel.png "FHEM Oberfläche") <span style="color:grey">  
@@ -89,10 +81,7 @@ Trotzdem sollte dieser Text allgemeinverständlich auch für Einsteiger sein.
 <a name="voraussetzungen"/>
 
 ## Voraussetzungen vor der Installation
-Der Anwender erhält hier Informationen, welche Schritte ggf. vor der Installation
-des Adapters u.a. auf externen Systemen auszuführen sind. Dazu gehören z.B. die
-Registrierung von API-Keys oder die Konfiguration von angebundenen System
-nach Herstellerdokumentation.
+Telnet in FHEM einrichten
 
 
 
@@ -109,9 +98,7 @@ nach Herstellerdokumentation.
 <a name="konfiguration"/>
 
 ##  Konfiguration
-Kurzer Einleitungssatz zur Konfiguration. Für jedes Admin-Fenster ist ein separter
-Abschnitt vorzusehen.
-
+Die Adapterkonfiguration beschränkt sich auf Angaben zum FHEM Server und Telnet Schnittstelle.
 
 <a name="{Eindeutiger Fensterbezeichner}"/>
 
@@ -137,7 +124,7 @@ Platz für besondere Hinweise.
 
 ##  Instanzen
 > Die Installation des Adapters hat im Bereich `Objekte` eine aktive Instanz des
-  {Adaptername}-Adapters angelegt.
+  FHEM-Adapters angelegt.
 
 ![Instanz](media/instanz0.PNG "Instanz")<span style="color:grey">  
 *Erste Instanz*</span>
