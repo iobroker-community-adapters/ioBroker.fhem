@@ -261,11 +261,10 @@ Lorem ipsum
 ## Links
 
 * ioBroker Forum / FHEM Adapter https://forum.iobroker.net/viewtopic.php?f=20&t=5387&start=200
+* ioBroker Forum / FHEM Adapter https://forum.iobroker.net/viewtopic.php?f=20&t=5387&start=200
 
-Irgendwo kommen auch noch Links zu GitHub (Entwicklerbereich?) und
-externen Ressourcen? Aber bitte nicht gleich am Doku-Anfang, eher am Ende.
-Zuerst die leichte Kost.
-
-
+FHEM
+* ioBroker Forum / FHEM Adapter https://forum.iobroker.net/viewtopic.php?f=20&t=5387&start=200
+* ioBroker Forum / FHEM Adapter https://forum.iobroker.net/viewtopic.php?f=20&t=5387&start=200
 
 ## Entwicklerbereich
