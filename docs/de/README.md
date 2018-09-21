@@ -184,13 +184,7 @@ Objekt                    | Zugriff | Bescheibung
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**HUEDevice1**              |  R  | Modul aus FHEM
 &emsp;&emsp;**Attributes**        |  R  | Mögliche Attribute: alias, room, comment
-&emsp;&emsp;&emsp;**alias**       |  RW  | Attribut alias aus Modul HUEDevice1
-&emsp;&emsp;&emsp;**room**        |  RW  | Attribut room aus Modul HUEDevice1
-&emsp;&emsp;&emsp;**:**           |  RW  | Weitere Attribute aus Modul HUEDevice1
 &emsp;&emsp;**Internals**         |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
-&emsp;&emsp;&emsp;**NAME**        |  R  | Internal NAME aus Modul HUEDevice1
-&emsp;&emsp;&emsp;**TYPE**        |  R  | Internal TYPE aus Modul HUEDevice1
-&emsp;&emsp;&emsp;**:**           |  R  | Weitere Internals aus Modul HUEDevice1
 &emsp;&emsp;**alert**             |  RW  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;**blink**             |  RW  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;**:**                 |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
