@@ -125,9 +125,10 @@ Abschnitt vorzusehen.
 
 | Feld               | Beschreibung |                                                                       
 |:-------------------|:-------------|
-|**{Formularfeld 1}**|{Beschreibung}|
-|**{Formularfeld 2}**|{Beschreibung}|
-|**{Formularfeld n}**|{Beschreibung}|
+|**FHEM Telnet IP**|{Beschreibung}|
+|**FHEM Telnet Port**|{Beschreibung}|
+|**Kennwort**|{Beschreibung}|
+|**Prompt**|{Beschreibung}|
 
 Platz für besondere Hinweise.
 
