@@ -166,10 +166,10 @@ Auf einem ioBroker Server können mehere Instanzen installiert werden.
 
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
-**fhem.0**                 |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**A8**        |  R  | 1. Modul aus FHEM
-&emsp;**A81**        |  R  | 2. Modul aus FHEM
-&emsp;**:**        |  R  | x. Modul aus FHEM
+**fhem.0**                |  R  | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**A8**              |  R  | 1. Modul aus FHEM
+&emsp;**A81**             |  R  | 2. Modul aus FHEM
+&emsp;**:**               |  R  | x. Modul aus FHEM
 
 ### Objekte - einzelne Module aus FHEM
 > Öffnet man ein Modul, so erhält man eine Liste mit allen zum Modul gehörenden Funktionalitäten
@@ -181,11 +181,12 @@ Objekt                    | Zugriff | Bescheibung
 
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
-**fhem.0**                 |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**HUEDevice1**       |  R  | Modul aus FHEM
-&emsp;&emsp;**Attributes**        |  R  | Attributes zum Modul
-&emsp;&emsp;&emsp;**alias**       |  RW  | x. Modul aus FHEM
-&emsp;&emsp;&emsp;**room**        |  RW  | x. Modul aus FHEM
+**fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**HUEDevice1**              |  R  | Modul aus FHEM
+&emsp;&emsp;**Attributes**        |  R  | Mögliche Attribute: alias, room, comment
+&emsp;&emsp;&emsp;**alias**       |  RW  | Attribut alias aus Modul HUEDevice1
+&emsp;&emsp;&emsp;**room**        |  RW  | Attribut room aus Modul HUEDevice1
+&emsp;&emsp;&emsp;**:**           |  RW  | Weitere Attribute aus Modul HUEDevice1
 
 #### {Weitere tiefergehende Erläuterungen zu einzelnen Objekten oder Funktionen}
 Da der Platz für Beschreibungen in der Objekttabelle in der Regel nicht ausreichen
