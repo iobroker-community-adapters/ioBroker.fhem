@@ -155,7 +155,9 @@ Auf einem ioBroker Server können mehere Instanzen installiert werden.
 ## Objekte des Adapters
 
 > Im Bereich `Objekte` werden in einer Baumstruktur alle vom Adapter in FHEM
-  erkannten Gerätemodule und Hilfs(Erweiterungs-) Module alphabetisch aufgelistet. Falls im Modul das Attribut "alias" vorhanden ist wird es als Name verwendet.
+  erkannten Gerätemodule und Hilfs(Erweiterungs-) Module alphabetisch aufgelistet.
+  Falls im Modul das Attribut `alias` vorhanden ist wird es als `Name` des Objekts verwendet.
+  Falls im Modul das Attribut `room` vorhanden ist wird es als `Raum` des Objekts verwendet.
 
 ![alt-Objektename](media/objekte1.PNG "Übersicht Objekte")<span style="color:grey">  
 *Übersicht Objekte*</span>
@@ -168,11 +170,6 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;**A8**        |  R  | 1. Modul aus FHEM
 &emsp;**A81**        |  R  | 2. Modul aus FHEM
 &emsp;**:**        |  R  | x. Modul aus FHEM
-
-Mit der Tabelle wird versucht, den Objektbaum vereinfacht darzustellen
-und dem Anwender die Bedeutung und Anwendung der einzelnen Objekte zu
-veranschaulichen. Sie stellt die Referenzdokumentaion für den Anwender für
-z.B. den Zugriffe mit JavaScript auf die Objekthierarchie dar.
 
 ### {Weitere tiefergehende Erläuterungen zu Objektgruppierungen}
 Hier könne Ausschnitte des Objektbaums hervorgehoben und besonders betrachtet
