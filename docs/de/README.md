@@ -171,7 +171,7 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;**A81**        |  R  | 2. Modul aus FHEM
 &emsp;**:**        |  R  | x. Modul aus FHEM
 
-### {Weitere tiefergehende Erläuterungen zu Objektgruppierungen}
+### Objekte - einzelne Module aus FHEM
 > Öffnet man ein Modul, so erhält man eine Liste mit allen zum Modul gehörenden Funktionalitäten
 
 ![alt-Objektename](media/objekte2.PNG "Übersicht Objekte-Modul")<span style="color:grey">  
@@ -182,9 +182,10 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                 |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**A8**        |  R  | 1. Modul aus FHEM
-&emsp;**A81**        |  R  | 2. Modul aus FHEM
-&emsp;**:**        |  R  | x. Modul aus FHEM
+&emsp;**HUEDevice1**       |  R  | Modul aus FHEM
+&emsp;&emsp;**Attributes**        |  R  | Attributes zum Modul
+&emsp;&emsp;&emsp;**alias**       |  RW  | x. Modul aus FHEM
+&emsp;&emsp;&emsp;**room**        |  RW  | x. Modul aus FHEM
 
 #### {Weitere tiefergehende Erläuterungen zu einzelnen Objekten oder Funktionen}
 Da der Platz für Beschreibungen in der Objekttabelle in der Regel nicht ausreichen
