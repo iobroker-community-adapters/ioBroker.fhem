@@ -1,6 +1,6 @@
 ---
-title:       "{Seitentitel}"
-lastChanged: "20.09.2018"
+title:       "{FHEM-Adapter}"
+lastChanged: "21.09.2018"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
 ---)
 
@@ -20,8 +20,8 @@ im Abschnitt "Überblick".
 
 
 <!-- Einführungsbild-->
-![{alt BildName}](media/titel.png "{Bildbeschreibung") <span style="color:grey">  
-*{Bildbeschreibung}*</span>
+![{alt BildName}](media/titel.png "FHEM Oberfläche") <span style="color:grey">  
+*FHEM Oberfläche*</span>
 
 
 
