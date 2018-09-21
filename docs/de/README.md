@@ -8,7 +8,7 @@ editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/READ
 !>Achtung!   
 Seite ist im Aufbau!  
     
-# <img src="media/{Adaptericon}" width=150 hight=150/>&emsp;FHEM-Adapter
+# <img src="media/fhem.png" width=150 hight=150/>&emsp;FHEM-Adapter
 In diesem Abschnitt wird eine endanwenderfreundliche Zusammenfassung des
 Anwendungszwecks des Adapters gegeben. Diese Zusammenfassung soll kurz
  gehalten sein (maximal 1-3 kleine Absätze). Sie soll gerade so viele
