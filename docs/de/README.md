@@ -2,7 +2,7 @@
 title:       "{Seitentitel}"
 lastChanged: "20.09.2018"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
----
+---)
 
 
 !>Achtung!   
@@ -21,7 +21,7 @@ im Abschnitt "Überblick".
 
 
 <!-- Einführungsbild-->
-![{alt BildName}](media/{Bild} "{Bildbeschreibung") <span style="color:grey">  
+![{alt BildName}](media/37.bild.png"{Bildbeschreibung") <span style="color:grey">  
 *{Bildbeschreibung}*</span>
 
 
