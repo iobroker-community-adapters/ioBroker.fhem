@@ -120,7 +120,7 @@ Abschnitt vorzusehen.
 <a name="{Eindeutiger Fensterbezeichner}"/>
 
 ### Fenster "{Fenstertitel}"
-![{alt-Name}](media/{Formularfelderbild} "{Bildbeschreibung}")<span style="color:grey">  
+![{alt-Name}](media/config.PNG "{Bildbeschreibung}")<span style="color:grey">  
 *{Bildbeschreibung}*</span>
 
 | Feld               | Beschreibung |                                                                       
@@ -130,23 +130,6 @@ Abschnitt vorzusehen.
 |**{Formularfeld n}**|{Beschreibung}|
 
 Platz für besondere Hinweise.
-
-
-<a name="{Eindeutiger Fensterbezeichner}"/>
-
-### Fenster "{Fenstertitel}"
-![{alt-Name}](media/{Formularfelderbild} "{Bildbeschreibung}")<span style="color:grey">  
-*{Bildbeschreibung}*</span>
-
-| Feld               | Beschreibung |                                                                       
-|:-------------------|:-------------|
-|**{Formularfeld 1}**|{Beschreibung}|
-|**{Formularfeld 2}**|{Beschreibung}|
-|**{Formularfeld n}**|{Beschreibung}|
-
-Platz für besondere Hinweise.
-
-Abschließender Text zur Konfiguration
 
 > Nach Abschluß der Konfiguration wird der Konfigurationsdialog mit
   `SPEICHERN UND SCHLIEßEN` verlassen. Dadurch efolgt im Anschluß ein
