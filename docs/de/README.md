@@ -30,7 +30,7 @@ Alle Module aus FHEM können eingelesen, über ioBroker gesteuert und zur Visual
 | 5  [Instanz](#instanz)              |
 | 6  [Objekte des Adapters](#objekte)           |
 | 6.1 [Modul aus FHEM Typ:channel](#objekte_c)  |
-| 6.2 [info](#objekte_i)            |
+| 6.2 [Objekt info](#objekte_i)            |
 | 7  [Besonderheiten](#besonderheiten)|
 | 8  [FAQ](#faq)                      |
 | 9  [Beispiele](#beispiele)          |
@@ -266,8 +266,8 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;**Commands**          |  R  | 
 &emsp;&emsp;**Configurations**    |  R  | 
 &emsp;&emsp;**Info**              |  R  | 
-&emsp;&emsp;**Settings**           |  R  | 
-&emsp;&emsp;**connections**       |  R  | 
+&emsp;&emsp;**Settings**          |  R  | 
+&emsp;&emsp;**connection**       |  R  | 
 &emsp;&emsp;**resync**            |  RW | 
 
 #### Commands
@@ -280,7 +280,7 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**Info**                    |  R  | Modul aus FHEM
+&emsp;**Info**                    |  R  | 
 &emsp;&emsp;**Commands**          |  R  | 
 &emsp;&emsp;&emsp;**lastCommand** |  R  | 
 &emsp;&emsp;&emsp;**resultFHEM**  |  R  | 
@@ -288,19 +288,20 @@ Objekt                    | Zugriff | Bescheibung
 
 #### Configurations
 
-![alt-Objektename](media/objekte3infoConfigurations.PNG "Objekte-Attributes")<span style="color:grey">  
+![alt-Objektename](media/objekte3infoConfiguratios.PNG "Objekte-Attributes")<span style="color:grey">  
 *Objekte-Attributes*</span>
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
-**fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**Info**                    |  R  | Modul aus FHEM
-&emsp;&emsp;**Commands**          |  R  | 
-&emsp;&emsp;&emsp;**lastCommand** |  R  | 
-&emsp;&emsp;&emsp;**resultFHEM**  |  R  | 
-&emsp;&emsp;&emsp;**sendFHEM**    |  RW | 
+**fhem.0**                         |  R  | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**Info**                     |  R  | 
+&emsp;&emsp;**Commands**           |  R  | 
+&emsp;&emsp;**Configurations**     |  R  | 
+&emsp;&emsp;&emsp;**autoFunction** |  RW | 
+&emsp;&emsp;&emsp;**autoRole**     |  RW | 
+
 
 #### Info
 ![alt-Objektename](media/objekte3infoInfo.PNG "Objekte-Attributes")<span style="color:grey">  
@@ -310,12 +311,13 @@ Objekt                    | Zugriff | Bescheibung
 
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
-**fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**Info**                    |  R  | Modul aus FHEM
-&emsp;&emsp;**Commands**          |  R  | 
-&emsp;&emsp;&emsp;**lastCommand** |  R  | 
-&emsp;&emsp;&emsp;**resultFHEM**  |  R  | 
-&emsp;&emsp;&emsp;**sendFHEM**    |  RW | 
+**fhem.0**                          |  R  | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**Info**                      |  R  | 
+&emsp;&emsp;**Commands**            |  R  | 
+&emsp;&emsp;**Configurations**      |  R  | 
+&emsp;&emsp;**Info**                |  R  | 
+&emsp;&emsp;&emsp;**NumberObjects** |  R  | 
+&emsp;&emsp;&emsp;**roomioBroker**  |  R  | 
 
 #### Settings
 ![alt-Objektename](media/objekte3infoSettings.PNG "Objekte-Attributes")<span style="color:grey">  
@@ -325,12 +327,22 @@ Objekt                    | Zugriff | Bescheibung
 
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
-**fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**Info**                    |  R  | Modul aus FHEM
-&emsp;&emsp;**Commands**          |  R  | 
-&emsp;&emsp;&emsp;**lastCommand** |  R  | 
-&emsp;&emsp;&emsp;**resultFHEM**  |  R  | 
-&emsp;&emsp;&emsp;**sendFHEM**    |  RW | 
+**fhem.0**                           |  R  | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**Info**                       |  R  |
+&emsp;&emsp;**Commands**             |  R  | 
+&emsp;&emsp;**Configurations**       |  R  |
+&emsp;&emsp;**Info**                 |  R  | 
+&emsp;&emsp;**Settings**             |  R  | 
+&emsp;&emsp;&emsp;**logCheckObject**         |  RW | 
+&emsp;&emsp;&emsp;**logCreateChannel**       |  RW | 
+&emsp;&emsp;&emsp;**logDeleteChannel**       |  RW |
+&emsp;&emsp;&emsp;**logEventFHEM**           |  RW | 
+&emsp;&emsp;&emsp;**logEventFHEMglobal**     |  RW | 
+&emsp;&emsp;&emsp;**logEventFHEMreading**    |  RW | 
+&emsp;&emsp;&emsp;**logEventFHEMstate**      |  RW | 
+&emsp;&emsp;&emsp;**logEventIOB**            |  RW | 
+&emsp;&emsp;&emsp;**logUnhandeledEventFHEM** |  RW | 
+&emsp;&emsp;&emsp;**logUpdateChannel**       |  RW | 
 
 <a name="besonderheiten"/>
 
