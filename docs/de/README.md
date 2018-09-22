@@ -82,7 +82,7 @@ Nach der Synchronisation mit FHEM werden alle Zustände / Änderungen und auch n
 ## Voraussetzungen vor der Installation
 Bei der Installation von FHEM wird ein telnet-Modul mit Namen `telnetPort` automatisch angelegt.
 
-1. Der FHEM Befehl `list telnetPort` sollte deshalb folgendes Ergebnis zeigen:
+Der FHEM Befehl `list telnetPort` sollte deshalb folgendes Ergebnis zeigen:
 
 ![{alt-Name}](media/telnet1.PNG "FHEM telnetPort")<span style="color:grey">  
 *FHEM telnetPort*</span>
@@ -90,7 +90,7 @@ Bei der Installation von FHEM wird ein telnet-Modul mit Namen `telnetPort` autom
 Falls nicht vorhanden, mit FHEM Befehl `define telnetPort telnet 7072 global` anlegen.
 
 
-2. Zusätlich kann noch ein Passwort für die Telnet Verbindung gesetzt werden.
+Zusätlich kann noch ein Passwort für die Telnet Verbindung gesetzt werden.
 
 Der FHEM Befehl `list allowed_telnetPort` sollte folgendes Ergebnis zeigen:
 
@@ -103,7 +103,8 @@ Falls nicht vorhanden, mit folgenden Befehlen anlegen:
 * `attr allowed_telnetPort validFor telnetPort`
 * `set allowed_telnetPort password <passwort>`
 
-3. Zum Abschluß ist ein Test der Verbindung mit zB PuTTY ( Download unter [Links](#links)) zu empfehlen!
+
+Zum Abschluß ist ein Test der Verbindung mit zB PuTTY ( Download unter [Links](#links)) zu empfehlen!
 
 ![{alt-Name}](media/putty1.PNG "Putty1")<span style="color:grey">  
 *Putty1*</span>
@@ -116,8 +117,8 @@ Eingabe Passwort und 2 * Return!
 ![{alt-Name}](media/putty3.PNG "Putty3")<span style="color:grey">  
 *Putty Prompt*</span>
 
-Mit `inform on` können alle FHEM events angezeigt werden
-Mit `inform on` können alle FHEM events angezeigt werden
+* `jsonlist2` FHEM Module
+* `inform on` FHEM events 
 
 
 <a name="installation"/>
