@@ -109,13 +109,11 @@ Zum Abschluß ist ein Test der Verbindung mit zB PuTTY ( Download unter [Links](
 *Putty1*</span>
 
 ![{alt-Name}](media/putty2.PNG "Putty2")<span style="color:grey">  
-*Putty2*</span>
-
+*Putty Passwort*</span>
 Eingabe Passwort und 2 * Return!
 
 ![{alt-Name}](media/putty3.PNG "Putty3")<span style="color:grey">  
-*Putty3*</span>
-
+*Putty Prompt*</span>
 Mit `inform on` können alle FHEM events angezeigt werden
 
 
