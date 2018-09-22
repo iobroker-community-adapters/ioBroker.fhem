@@ -214,36 +214,24 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;**:**                 |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;**:**                 |  RW  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 
-#### {Weitere tiefergehende Erläuterungen zu einzelnen Objekten oder Funktionen}
-Da der Platz für Beschreibungen in der Objekttabelle in der Regel nicht ausreichen
-müssen hier z.B. einzelne Datenpunkte ausführlicher dokumentiert werden.
 
-Beispiel für beschreibbare Datenpunkte:
-#### Starten einer Aktivität
-Aktivitäten werden gestartet, wenn man bei einer Aktivität
-`{Instanz}.{Hub Name}.activities.{Aktivität}` eine Zahl größer als 0 einträgt.
-Während der Ausführung der Aktivität ändert sich dieser Wert zuerst
-nach 1 (=startend) und dann nach 2 (=aktiv).
+<a name="besonderheiten"/>
 
-### {Weitere tiefergehende Erläuterungen zu Objektgruppierungen}
-Entsprechend dem Aufbau des Objektbaums und der Funktion des Adapters
-hier individuelle Gestaltungsmöglichkeiten gegeben.
+## Besonderheiten
 
-Beispiel für die Beschreibung einzelner Datenpunkte:
-#### Statuswerte
-`{Instanz}.{Hub Name}.activities.currentActivity` liefert die aktuell ausgeführte
-Aktivität als Zeichenfolge.
+<a name="faq"/>
 
-`{Instanz}.{Hub Name}.activities.currentStatus` zeigt den Status des Harmony Hubs
-an. Dabei bedeuten die Werte
-- 0 = inaktiv
-- 1 = startend
-- 2 = aktiv
+## FAQ
+
+* Lorem ipsum
+
+<a name="beispiel"/>
+
+## Beispiele/Demo
+Lorem ipsum
 
 
-
-
-
+<a name="deinstallation"/>
 
 ## Deinstallation
 sollte die Instanz wieder entfernt werden sollen wird diese über das zugeordnete Mülleimer-Icon
@@ -263,37 +251,6 @@ Bei dieser Deinstallation werden alle zu der Instanz gehörenden Objekte vollst�
 
 Sollten die Installationsdateien vollständig von dem Host gelöscht werden, muss dies über das Mülleimer-Icon
 in der Kachel des AdapterName-Adapters in der Rubrik Adapter geschehen.
-
-
-
-
-
-## Beispiele/Demo
-Lorem ipsum
-
-
-## Besonderheiten
-Backup
-Multihost
-History
-Performance
-
-
-## Bekannte Probleme
-
-* nichts bekannt :-)
-
-
-## Einbinden der States
-
-### Blockly
-Lorem ipsum
-
-### Node-Red
-Lorem ipsum
-
-### vis
-Lorem ipsum
 
 <a name="links"/>
 
