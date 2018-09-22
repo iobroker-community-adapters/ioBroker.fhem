@@ -103,7 +103,7 @@ Falls nicht vorhanden, mit folgenden Befehlen anlegen:
 * `attr allowed_telnetPort validFor telnetPort`
 * `set allowed_telnetPort password <passwort>`
 
-Zum Abschluß ist ein Test der Verbindung mit zB PUTTY zu empfehlen
+Zum Abschluß ist ein Test der Verbindung mit zB PuTTY ( Download unter [Links](#links)) zu empfehlen!
 
 ![{alt-Name}](media/putty1.PNG "Putty1")<span style="color:grey">  
 *Putty1*</span>
@@ -111,8 +111,12 @@ Zum Abschluß ist ein Test der Verbindung mit zB PUTTY zu empfehlen
 ![{alt-Name}](media/putty2.PNG "Putty2")<span style="color:grey">  
 *Putty2*</span>
 
+Eingabe Passwort und 2 * Return!
+
 ![{alt-Name}](media/putty3.PNG "Putty3")<span style="color:grey">  
 *Putty3*</span>
+
+Mit `inform on` können alle FHEM events angezeigt werden
 
 
 <a name="installation"/>
@@ -299,6 +303,9 @@ Lorem ipsum
 FHEM-Adapter
 * ioBroker Forum / FHEM Adapter https://forum.iobroker.net/viewtopic.php?f=20&t=5387&start=200
 * ioBroker-Tutorial Part 9: Verknüpfung mit FHEM | haus-automatisierung.com https://youtu.be/6jwlxGqt5TU
+
+Tools
+* Download Putty https://www.putty.org/
 
 FHEM
 * FHEMs Einstiegsseite https://fhem.de/fhem_DE.html
