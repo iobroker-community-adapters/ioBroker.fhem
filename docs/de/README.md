@@ -81,6 +81,7 @@ Nach der Synchronisation mit FHEM werden alle Zustände / Änderungen und auch n
 
 ## Voraussetzungen vor der Installation
 Telnet in FHEM einrichten
+Bei der Installation von FHEM wird Modul telnetPort automatisch angelegt.
 
 <a name="installation"/>
 
@@ -103,12 +104,12 @@ Die Adapterkonfiguration beschränkt sich auf Angaben zum FHEM Server und Telnet
 
 | Feld               | Beschreibung |                                                                       
 |:-------------------|:-------------|
-|**FHEM Telnet IP**|{Beschreibung}|
-|**FHEM Telnet Port**|{Beschreibung}|
-|**Kennwort**|{Beschreibung}|
-|**Prompt**|{Beschreibung}|
+|**FHEM Telnet IP**|iobBroker/FHEM auf 1 Server (local)127.0.0.1, sonst IP FHEM Server                       |
+|**FHEM Telnet Port**|Standard: 7072 oder Wert aus FHEM Modul telnetPort Internals:PORT      |                                                           
+|**Kennwort**|Option:                                                                          |
+|**Prompt**|Standard: fhem> oder Wert aus attr telnetPort prompt xxx + > oder Wert aus attr global title xxx + >                            |
 
-Platz für besondere Hinweise.
+Alle Angaben beziehen sich auf bei der FHEM Installation automatisch angelegte Modul `telnetPort`
 
 > Nach Abschluß der Konfiguration wird der Konfigurationsdialog mit
   `SPEICHERN UND SCHLIEßEN` verlassen. Dadurch efolgt im Anschluß ein
