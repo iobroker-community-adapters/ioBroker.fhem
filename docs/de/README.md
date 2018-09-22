@@ -104,7 +104,7 @@ Falls nicht vorhanden oder unvollständig, mit folgenden Befehlen anlegen/ergän
 * `set allowed_telnetPort password <passwort>` Passwort setzen
 
 
-Zum Abschluß ist ein Test der Verbindung mit zB PuTTY ( Download unter [Links](#links)) zu empfehlen!
+Zum Abschluß ist ein Test der Verbindung mit zB PuTTY zu empfehlen! (Download unter [Links](#links)) 
 
 ![{alt-Name}](media/putty1.PNG "Putty1")<span style="color:grey">  
 *Putty1*</span>
