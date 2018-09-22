@@ -1,6 +1,6 @@
 ---
 title:       "FHEM-Adapter"
-lastChanged: "21.09.2018"
+lastChanged: "22.09.2018"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
 ---)
 
@@ -295,9 +295,6 @@ Lorem ipsum
 ### vis
 Lorem ipsum
 
-### History
-Lorem ipsum
-
 <a name="links"/>
 
 ## Links
@@ -316,6 +313,6 @@ FHEM
 ## Entwicklerbereich
 * github ioBroker.fhem https://github.com/ioBroker/ioBroker.fhem
 
-<a name=historie/) 
+<a name=historie/> 
 
 ## Historie
