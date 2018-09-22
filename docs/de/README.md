@@ -216,9 +216,13 @@ Objekt                    | Zugriff | Bescheibung
 
 #### Attributes
 
+![alt-Objektename](media/objekte2attributes.PNG "Objekte-Attributes")<span style="color:grey">  
+*Objekte-Attributes*</span>
+
 #### Internals
 
-
+![alt-Objektename](media/objekte2internals.PNG "Objekte-Internals")<span style="color:grey">  
+*Objekte-Internals*</span>
 
 
 <a name="besonderheiten"/>
