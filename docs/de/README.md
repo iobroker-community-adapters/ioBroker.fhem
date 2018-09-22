@@ -80,7 +80,7 @@ Nach der Synchronisation mit FHEM werden alle Zustände / Änderungen und auch n
 <a name="voraussetzungen"/>
 
 ## Voraussetzungen vor der Installation
-Bei der Installation FHEM-Server wird ein telnet-Modul mit Namen `telnetPort` automatisch angelegt.
+> Bei der Installation FHEM-Server wird ein telnet-Modul mit Namen `telnetPort` automatisch angelegt.
 
 Der FHEM Befehl `list telnetPort` sollte deshalb folgendes Ergebnis bringen:
 
@@ -90,7 +90,7 @@ Der FHEM Befehl `list telnetPort` sollte deshalb folgendes Ergebnis bringen:
 Falls nicht vorhanden, mit FHEM Befehl `define telnetPort telnet 7072 global` anlegen.
 
 
-Zusätlich kann noch ein Passwort für die Telnet Verbindung gesetzt werden.
+> Zusätlich kann noch ein Passwort für die Telnet Verbindung gesetzt werden.
 
 Der FHEM Befehl `list allowed_telnetPort` sollte folgendes Ergebnis bringen:
 
@@ -104,7 +104,7 @@ Falls nicht vorhanden oder unvollständig, mit folgenden Befehlen anlegen/ergän
 * `set allowed_telnetPort password <passwort>` Passwort setzen
 
 
-Zum Abschluß ist ein Test der Verbindung mit zB PuTTY zu empfehlen! (Download unter [Links](#links)) 
+> Zum Abschluß ist ein Test der Verbindung mit zB PuTTY zu empfehlen! (Download unter [Links](#links)) 
 
 ![{alt-Name}](media/putty1.PNG "Putty1")<span style="color:grey">  
 *Putty1*</span>
@@ -209,21 +209,44 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;**HUEDevice1**              |  R  | Modul aus FHEM
 &emsp;&emsp;**Attributes**        |  R  | Mögliche Attribute: alias, room, comment
 &emsp;&emsp;**Internals**         |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
-&emsp;&emsp;**alert**             |  RW  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
-&emsp;&emsp;**blink**             |  RW  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+&emsp;&emsp;**alert**             |  RW | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+&emsp;&emsp;**blink**             |  RW | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;**:**                 |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
-&emsp;&emsp;**:**                 |  RW  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+&emsp;&emsp;**:**                 |  RW | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 
 #### Attributes
 
 ![alt-Objektename](media/objekte2attributes.PNG "Objekte-Attributes")<span style="color:grey">  
 *Objekte-Attributes*</span>
 
+> Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
+
+Objekt                    | Zugriff | Bescheibung
+:-------------------------|:-------:|:-----------
+**fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**HUEDevice1**              |  R  | Modul aus FHEM
+&emsp;&emsp;**Attributes**        |  R  | Mögliche Attribute: alias, room, comment
+&emsp;&emsp;&emsp;**alias**       |  RW | alias = Name Objekt + Übertrag in FHEM
+&emsp;&emsp;&emsp;**room**        |  RW | room = Raum Objekt + Übertrag in FHEM
+
+
 #### Internals
 
 ![alt-Objektename](media/objekte2internals.PNG "Objekte-Internals")<span style="color:grey">  
 *Objekte-Internals*</span>
 
+> Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
+
+Objekt                    | Zugriff | Bescheibung
+:-------------------------|:-------:|:-----------
+**fhem.0**                              |  R  | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**HUEDevice1**                    |  R  | Modul aus FHEM
+&emsp;&emsp;**Internals**               |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+&emsp;&emsp;&emsp;**NAME**              |  R  | Info zB zur Anzeige in VIS
+&emsp;&emsp;&emsp;**TYPE**              |  R  | Info zB zur Anzeige in VIS
+&emsp;&emsp;&emsp;**manufacturname**    |  R  | Info zB zur Anzeige in VIS
+&emsp;&emsp;&emsp;**modellid**          |  R  | Info zB zur Anzeige in VIS
+&emsp;&emsp;&emsp;**swversion**         |  R  | Info zB zur Anzeige in VIS
 
 <a name="besonderheiten"/>
 
