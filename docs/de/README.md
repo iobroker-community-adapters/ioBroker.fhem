@@ -28,7 +28,8 @@ Alle Module aus FHEM können eingelesen, über ioBroker gesteuert und zur Visual
 | 3  [Installation](#installation)    |
 | 4  [Konfiguration](#konfiguration)  |
 | 5  [Instanz](#instanz)              |
-| 6  [Objekte](#objekte)              |
+| 6  [Objekte des Adapters](#objekte)                   |
+| 6.1 [Modul aus FHEM Typ:channel](#objekte_c)  |
 | 7  [Besonderheiten](#besonderheiten)|
 | 8  [FAQ](#faq)                      |
 | 9  [Beispiele](#beispiele)          |
@@ -153,7 +154,9 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;**A81**             |  R  | 2. Modul aus FHEM
 &emsp;**:**               |  R  | x. Modul aus FHEM
 
-### Objekte - einzelne Module aus FHEM
+<a name="objekte_c"/>
+
+### Modul aus FHEM Typ:channel
 > Öffnet man ein Modul, so erhält man eine Liste mit allen zum Modul gehörenden Funktionalitäten
 
 ![alt-Objektename](media/objekte2.PNG "Übersicht Objekte-Modul")<span style="color:grey">  
