@@ -225,7 +225,7 @@ Objekt                    | Zugriff | Bescheibung
 
 * Lorem ipsum
 
-<a name="beispiel"/>
+<a name="beispiele"/>
 
 ## Beispiele/Demo
 Lorem ipsum
