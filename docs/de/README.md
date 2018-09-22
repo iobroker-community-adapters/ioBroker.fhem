@@ -70,7 +70,7 @@ Alle Module aus FHEM können eingelesen, über ioBroker gesteuert und zur Visual
 
 ### FHEM
 FHEM bietet eine Vielzahl an Modulen mit diversen Protokollen.
-Durch die Einbindung in ioBroker können alle FHEM Module in Verbindung mit sämtlichen Adaptern wie Alexa, VIS, Material usw genutzt werden.
+Durch die Einbindung in ioBroker können alle FHEM Module in Verbindung mit sämtlichen ioBroker-Adaptern wie Alexa, VIS, Material usw genutzt werden.
 
 ### FHEM-Adapter
 Nach erfolgreicher Verbindung zum FHEM Server werden alle Module automatisch eingelsen (jsonlist2)
@@ -196,7 +196,7 @@ Objekt                    | Zugriff | Bescheibung
 <a name="objekte_c"/>
 
 ### Modul aus FHEM Typ:channel
-> Öffnet man ein Modul, so erhält man eine Liste mit allen zum Modul gehörenden Funktionalitäten
+> Öffnet man ein Modul (channel), so erhält man eine Liste mit allen zum Modul gehörenden Funktionalitäten
 
 ![alt-Objektename](media/objekte2.PNG "Übersicht Objekte-Modul")<span style="color:grey">  
 *Übersicht Objekte-Modul*</span>
@@ -213,6 +213,12 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;**blink**             |  RW  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;**:**                 |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;**:**                 |  RW  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+
+#### Attributes
+
+#### Internals
+
+
 
 
 <a name="besonderheiten"/>
