@@ -80,14 +80,15 @@ Nach der Synchronisation mit FHEM werden alle Zustände / Änderungen und auch n
 <a name="voraussetzungen"/>
 
 ## Voraussetzungen vor der Installation
-Bei der Installation von FHEM wird ein Modul telnet mit dem Namen telnetPort automatisch angelegt.
+Bei der Installation von FHEM wird ein telnet-Modul mit dem Namen `telnetPort` automatisch angelegt.
 
-Der Befehl `list telnetPort` sollte deshalb folgendes Ergebnis zeigen:
+Der FHEM Befehl `list telnetPort` sollte deshalb folgendes Ergebnis zeigen:
 
 ![{alt-Name}](media/telnet1.PNG "FHEM telnetPort")<span style="color:grey">  
 *FHEM telnetPort*</span>
 
-Falls nicht vorhanden, mit Befehl `define telnetPort telnet 7072 global` anlegen.
+Falls nicht vorhanden, mit FHEM Befehl `define telnetPort telnet 7072 global` anlegen.
+
 
 Zusätlich kann noch ein Passwort für die Telnet Verbindung gesetzt werden.
 
@@ -101,6 +102,17 @@ Falls nicht vorhanden, mit folgenden Befehlen anlegen:
 * `define allowed_telnetPort allowed`
 * `attr allowed_telnetPort validFor telnetPort`
 * `set allowed_telnetPort password <passwort>`
+
+Zum Abschluß ist ein Test der Verbindung mit zB PUTTY zu empfehlen
+
+![{alt-Name}](media/putty1.PNG "Putty1")<span style="color:grey">  
+*Putty1*</span>
+
+![{alt-Name}](media/putty2.PNG "Putty2")<span style="color:grey">  
+*Putty2*</span>
+
+![{alt-Name}](media/putty3.PNG "Putty3")<span style="color:grey">  
+*Putty3*</span>
 
 
 <a name="installation"/>
