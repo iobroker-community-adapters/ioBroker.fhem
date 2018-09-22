@@ -96,13 +96,12 @@ Der FHEM Befehl `list allowed_telnetPort` sollte folgendes Ergebnis zeigen:
 ![{alt-Name}](media/telnet2.PNG "FHEM telnetPort Passwort")<span style="color:grey">  
 *FHEM telnetPort Passwort*</span>
 
-Falls nicht vorhanden, mit folgenden Befehlen anlegen 
+Falls nicht vorhanden, mit folgenden Befehlen anlegen: 
 
+* `define allowed_telnetPort allowed`
+* `attr allowed_telnetPort validFor telnetPort`
+* `set allowed_telnetPort password <passwort>`
 
-define allowed_telnetPort allowed
-attr allowed_telnetPort validFor telnetPort
-set allowed_telnetPort password <passwort>
-    anlegen
 
 <a name="installation"/>
 
