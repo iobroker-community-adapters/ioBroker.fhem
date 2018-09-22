@@ -80,7 +80,7 @@ Nach der Synchronisation mit FHEM werden alle Zustände / Änderungen und auch n
 <a name="voraussetzungen"/>
 
 ## Voraussetzungen vor der Installation
-Bei der Installation von FHEM wird ein telnet-Modul mit Namen `telnetPort` automatisch angelegt.
+Bei der Installation FHEM-Server wird ein telnet-Modul mit Namen `telnetPort` automatisch angelegt.
 
 Der FHEM Befehl `list telnetPort` sollte deshalb folgendes Ergebnis zeigen:
 
