@@ -269,3 +269,4 @@ FHEM
 * FHEM Forum           https://forum.fhem.de/
 
 ## Entwicklerbereich
+* github ioBroker.fhem https://github.com/ioBroker/ioBroker.fhem
