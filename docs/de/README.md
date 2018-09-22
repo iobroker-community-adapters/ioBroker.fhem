@@ -74,7 +74,7 @@ Durch die Einbindung in ioBroker können alle FHEM Module in Verbindung mit säm
 
 ### FHEM-Adapter
 Nach erfolgreicher Verbindung zum FHEM Server werden alle Module automatisch eingelsen (jsonlist2)
-Eine Möglichkeit zur Einschränkung der Module ist die Verwendung von `room = ioBroker` in FHEM.
+Eine Möglichkeit zur Einschränkung der eingelesenen Module ist die Verwendung von einem Raum `room = ioBroker` in FHEM.
 Nach der Synchronisation mit FHEM werden alle Zustände / Änderungen und auch neue Module übertragen.
 
 <a name="voraussetzungen"/>
@@ -82,7 +82,7 @@ Nach der Synchronisation mit FHEM werden alle Zustände / Änderungen und auch n
 ## Voraussetzungen vor der Installation
 Bei der Installation FHEM-Server wird ein telnet-Modul mit Namen `telnetPort` automatisch angelegt.
 
-Der FHEM Befehl `list telnetPort` sollte deshalb folgendes Ergebnis zeigen:
+Der FHEM Befehl `list telnetPort` sollte deshalb folgendes Ergebnis bringen:
 
 ![{alt-Name}](media/telnet1.PNG "FHEM telnetPort")<span style="color:grey">  
 *FHEM telnetPort*</span>
@@ -92,7 +92,7 @@ Falls nicht vorhanden, mit FHEM Befehl `define telnetPort telnet 7072 global` an
 
 Zusätlich kann noch ein Passwort für die Telnet Verbindung gesetzt werden.
 
-Der FHEM Befehl `list allowed_telnetPort` sollte folgendes Ergebnis zeigen:
+Der FHEM Befehl `list allowed_telnetPort` sollte folgendes Ergebnis bringen:
 
 ![{alt-Name}](media/telnet2.PNG "FHEM telnetPort Passwort")<span style="color:grey">  
 *FHEM telnetPort Passwort*</span>
