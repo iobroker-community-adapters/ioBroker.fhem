@@ -144,7 +144,7 @@ Die Adapterkonfiguration beschränkt sich auf Angaben zum FHEM Server und Telnet
 |:-------------------|:-------------|
 |**FHEM Telnet IP**|iobBroker/FHEM auf 1 Server (local)127.0.0.1, sonst IP FHEM Server                       |
 |**FHEM Telnet Port**|Standard: 7072 oder Wert aus FHEM Modul telnetPort Internals:PORT              |                                                           
-|**Kennwort**|Option: set allowed_telnetPort password <passwort>                                                        |
+|**Kennwort**|Option: Wurde mit set allowed_telnetPort password `<passwort>` gesetzt                                                      |
 |**Prompt**|Standard: fhem> oder Wert aus attr telnetPort prompt xxx + > oder Wert aus attr global title xxx + >        |
 
 Alle Angaben beziehen sich auf bei der FHEM Installation automatisch angelegte Modul `telnetPort`
