@@ -251,7 +251,7 @@ Objekt                    | Zugriff | Bescheibung
 
 <a name="objekte_i"/>
 
-### info
+## Objekt info
 > Öffnet man ein Modul (channel), so erhält man eine Liste mit allen zum Modul gehörenden Funktionalitäten
 
 ![alt-Objektename](media/objekt3info.PNG "Übersicht info")<span style="color:grey">  
@@ -263,16 +263,16 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**info**              |  R  | Modul aus FHEM
-&emsp;&emsp;**Attributes**        |  R  | Mögliche Attribute: alias, room, comment
+&emsp;&emsp;**Commands**         |  R  | Mögliche Attribute: alias, room, comment
 &emsp;&emsp;**Internals**         |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;**alert**             |  RW | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;**blink**             |  RW | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;**:**                 |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;**:**                 |  RW | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 
-#### Attributes
+#### Commands
 
-![alt-Objektename](media/objekte2attributes.PNG "Objekte-Attributes")<span style="color:grey">  
+![alt-Objektename](media/objekt3infoCommands.PNG "Objekte-Attributes")<span style="color:grey">  
 *Objekte-Attributes*</span>
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
