@@ -262,7 +262,7 @@ Lorem ipsum
 
 FHEM-Adapter
 * ioBroker Forum / FHEM Adapter https://forum.iobroker.net/viewtopic.php?f=20&t=5387&start=200
-* ioBroker Forum / FHEM Adapter https://forum.iobroker.net/viewtopic.php?f=20&t=5387&start=200
+* ioBroker-Tutorial Part 9: Verknüpfung mit FHEM | haus-automatisierung.com https://youtu.be/6jwlxGqt5TU
 
 FHEM
 * FHEMs Einstiegsseite https://fhem.de/fhem_DE.html
