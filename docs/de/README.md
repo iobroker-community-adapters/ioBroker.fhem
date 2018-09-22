@@ -254,7 +254,7 @@ Objekt                    | Zugriff | Bescheibung
 ## Objekt info
 > Öffnet man ein Modul (channel), so erhält man eine Liste mit allen zum Modul gehörenden Funktionalitäten
 
-![alt-Objektename](media/objekt3info.PNG "Übersicht info")<span style="color:grey">  
+![alt-Objektename](media/objekte3info.PNG "Übersicht info")<span style="color:grey">  
 *Übersicht info*</span>
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
@@ -272,7 +272,7 @@ Objekt                    | Zugriff | Bescheibung
 
 #### Commands
 
-![alt-Objektename](media/objekt3infoCommands.PNG "Objekte-Attributes")<span style="color:grey">  
+![alt-Objektename](media/objekte3infoCommands.PNG "Objekte-Attributes")<span style="color:grey">  
 *Objekte-Attributes*</span>
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
