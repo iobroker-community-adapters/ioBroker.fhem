@@ -97,11 +97,11 @@ Der FHEM Befehl `list allowed_telnetPort` sollte folgendes Ergebnis zeigen:
 ![{alt-Name}](media/telnet2.PNG "FHEM telnetPort Passwort")<span style="color:grey">  
 *FHEM telnetPort Passwort*</span>
 
-Falls nicht vorhanden, mit folgenden Befehlen anlegen: 
+Falls nicht vorhanden oder unvollständig, mit folgenden Befehlen anlegen/ergänzen/ändern: 
 
-* `define allowed_telnetPort allowed`
-* `attr allowed_telnetPort validFor telnetPort`
-* `set allowed_telnetPort password <passwort>`
+* `define allowed_telnetPort allowed` Anlage allowed-Modul mit Name allowed_telnetPort
+* `attr allowed_telnetPort validFor telnetPort` Zuordnung telnet-Modul Name telnetPort
+* `set allowed_telnetPort password <passwort>` Passwort setzen
 
 
 Zum Abschluß ist ein Test der Verbindung mit zB PuTTY ( Download unter [Links](#links)) zu empfehlen!
