@@ -28,8 +28,9 @@ Alle Module aus FHEM können eingelesen, über ioBroker gesteuert und zur Visual
 | 3  [Installation](#installation)    |
 | 4  [Konfiguration](#konfiguration)  |
 | 5  [Instanz](#instanz)              |
-| 6  [Objekte des Adapters](#objekte)                   |
+| 6  [Objekte des Adapters](#objekte)           |
 | 6.1 [Modul aus FHEM Typ:channel](#objekte_c)  |
+| 6.2 [info](#objekte_i)            |
 | 7  [Besonderheiten](#besonderheiten)|
 | 8  [FAQ](#faq)                      |
 | 9  [Beispiele](#beispiele)          |
@@ -247,6 +248,44 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;&emsp;**manufacturname**    |  R  | Info zB zur Anzeige in VIS
 &emsp;&emsp;&emsp;**modellid**          |  R  | Info zB zur Anzeige in VIS
 &emsp;&emsp;&emsp;**swversion**         |  R  | Info zB zur Anzeige in VIS
+
+<a name="objekte_i"/>
+
+### info
+> Öffnet man ein Modul (channel), so erhält man eine Liste mit allen zum Modul gehörenden Funktionalitäten
+
+![alt-Objektename](media/objekt3info.PNG "Übersicht info")<span style="color:grey">  
+*Übersicht info*</span>
+
+> Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
+
+Objekt                    | Zugriff | Bescheibung
+:-------------------------|:-------:|:-----------
+**fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**info**              |  R  | Modul aus FHEM
+&emsp;&emsp;**Attributes**        |  R  | Mögliche Attribute: alias, room, comment
+&emsp;&emsp;**Internals**         |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+&emsp;&emsp;**alert**             |  RW | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+&emsp;&emsp;**blink**             |  RW | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+&emsp;&emsp;**:**                 |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+&emsp;&emsp;**:**                 |  RW | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+
+#### Attributes
+
+![alt-Objektename](media/objekte2attributes.PNG "Objekte-Attributes")<span style="color:grey">  
+*Objekte-Attributes*</span>
+
+> Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
+
+Objekt                    | Zugriff | Bescheibung
+:-------------------------|:-------:|:-----------
+**fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**Info**                    |  R  | Modul aus FHEM
+&emsp;&emsp;**Commands**          |  R  | Mögliche Attribute: alias, room, comment
+&emsp;&emsp;&emsp;**lastCommand** |  R  | alias = Name Objekt + Übertrag in FHEM
+&emsp;&emsp;&emsp;**resultFHEM**  |  R  | room = Raum Objekt + Übertrag in FHEM
+&emsp;&emsp;&emsp;**sendFHEM**    |  RW | room = Raum Objekt + Übertrag in FHEM
+
 
 <a name="besonderheiten"/>
 
