@@ -83,6 +83,10 @@ Nach der Synchronisation mit FHEM werden alle Zustände / Änderungen und auch n
 Bei der Installation von FHEM wird ein Modul telnet mit dem Namen telnetPort automatisch angelegt.
 Der Befehl `list telnetPort` sollte folgendes Ergebnis zeigen:
 
+![{alt-Name}](media/telnet1.PNG "FHEM telnetPort")<span style="color:grey">  
+*FHEM telnetPort*</span>
+
+Falls nicht vorhanden, mit Befehl `define telnetPort telnet 7072 global` anlegen.
 
 <a name="installation"/>
 
