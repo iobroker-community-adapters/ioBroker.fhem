@@ -88,6 +88,18 @@ Der Befehl `list telnetPort` sollte folgendes Ergebnis zeigen:
 
 Falls nicht vorhanden, mit Befehl `define telnetPort telnet 7072 global` anlegen.
 
+Zusätlich kann noch ein Passwort für die Telnet Verbindung gesetzt werden.
+
+FHEM Befehl `list allowed_telnetPort`
+
+![{alt-Name}](media/telnet2.PNG "FHEM telnetPort Passwort")<span style="color:grey">  
+*FHEM telnetPort Passwort*</span>
+
+
+define allowed_telnetPort allowed
+attr allowed_telnetPort validFor telnetPort
+set allowed_telnetPort password <passwort>
+
 <a name="installation"/>
 
 ## Installation
