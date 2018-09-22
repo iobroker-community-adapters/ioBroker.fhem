@@ -112,7 +112,7 @@ Zum Abschluß ist ein Test der Verbindung mit zB PuTTY zu empfehlen! (Download u
 ![{alt-Name}](media/putty2.PNG "Putty2")<span style="color:grey">  
 *Putty Passwort*</span>
 
-Eingabe Passwort und 2 * Return!
+* Eingabe Passwort und 2 * Return!
 
 ![{alt-Name}](media/putty3.PNG "Putty3")<span style="color:grey">  
 *Putty Prompt*</span>
