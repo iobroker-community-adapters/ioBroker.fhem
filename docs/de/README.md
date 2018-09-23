@@ -356,6 +356,29 @@ Objekt                    | Zugriff | Bescheibung
 
 ## Besonderheiten
 
+> Zusätzliche Funktionen dieses Adapter
+
+### Vergabe Rolle
+> Rollen
+
+> Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
+
+Rolle                    | Zugeordnet | Bescheibung
+:------------------------|:----   ---:|:-----------
+level.volume             |  R  | Name der ersten *Instanz* des FHEM Adapters
+level.volume.group       |  R  | Name der ersten *Instanz* des FHEM Adapters
+
+### Vergabe Funktion
+> Funktionen
+
+
+> Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
+
+Rolle                    | Zugeordnet | Bescheibung
+:------------------------|:----   ---:|:-----------
+level.volume             |  R  | Name der ersten *Instanz* des FHEM Adapters
+level.volume.group       |  R  | Name der ersten *Instanz* des FHEM Adapters
+
 <a name="faq"/>
 
 ## FAQ
