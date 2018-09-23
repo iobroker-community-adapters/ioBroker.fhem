@@ -227,13 +227,13 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**HUEDevice1**              |  R  | Modul aus FHEM
-&emsp;&emsp;**Attributes**        |  R  | Mögliche Attribute: alias, room, comment
+&emsp;&emsp;**Attributes**        |  R  | Mögliche Attribute: alias, room, disable, comment
 &emsp;&emsp;&emsp;**alias**       |  RW | alias = Name Objekt + Übertrag in FHEM
 &emsp;&emsp;&emsp;**room**        |  RW | room = Raum Objekt + Übertrag in FHEM
 
 
 #### Internals
-> Internals werden aus FHEM ausgelesen undsind nur als Info zB Anzeige in VIS gedacht.
+> Internals werden aus FHEM ausgelesen und sind nur als Info zB Anzeige in VIS gedacht.
 
 ![alt-Objektename](media/objekte2internals.PNG "Objekte-Internals")<span style="color:grey">  
 *Objekte-Internals*</span>
@@ -264,14 +264,15 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**info**                    |  R  | 
+&emsp;**info**                    |  R  | Information
 &emsp;&emsp;**Commands**          |  R  | 
-&emsp;&emsp;**Configurations**    |  R  | 
+&emsp;&emsp;**Configurations**    |  R  | [Bschreibung](#info_configurations)
 &emsp;&emsp;**Info**              |  R  | 
 &emsp;&emsp;**Settings**          |  R  | 
-&emsp;&emsp;**connection**        |  R  | Verbindung zu FHEM true/false
-&emsp;&emsp;**resync**            |  RW | 
+&emsp;&emsp;**connection**        |  R  | Status Verbindung zu FHEM true/false
+&emsp;&emsp;**resync**            |  RW | im Moment nicht möglich :-(
 
+<a name="info_commands"/>
 #### Commands
 > Unter Commands ist es möglich einen beliebigen Befehl an FHEM zu senden.
 
@@ -283,12 +284,13 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**Info**                    |  R  | 
+&emsp;**Info**                    |  R  | Information
 &emsp;&emsp;**Commands**          |  R  | 
 &emsp;&emsp;&emsp;**lastCommand** |  R  | Letzer Befehl von ioBroker an FHEM
 &emsp;&emsp;&emsp;**resultFHEM**  |  R  | Liefert Ergebnis von sendFHEM
 &emsp;&emsp;&emsp;**sendFHEM**    |  RW | Entspricht Befehlszeile in FHEM zB update check
 
+<a name="info_configurations"/>
 #### Configurations
 > Unter Configurations können verschiedene Funktionen aktiviert/deaktiviert werden. Bei Änderungen ist ein Neustart des FHEM Adaptes notwendig.
 
@@ -300,13 +302,13 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                             | Zugriff | Bescheibung
 :----------------------------------|:-------:|:-----------
 **fhem.0**                         |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**Info**                     |  R  | 
+&emsp;**Info**                     |  R  | Information
 &emsp;&emsp;**Commands**           |  R  |
 &emsp;&emsp;**Configurations**     |  R  |
 &emsp;&emsp;&emsp;**autoFunction** |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben  (false) Funktionn werden nur beim 1.Start Adapter vergeben
 &emsp;&emsp;&emsp;**autoRole**     |  RW | (true) Rollen werden bei Neustart nach Stand Adaper vergeben  (false) Rollen werden nur beim 1.Start Adapter vergeben
 
-
+<a name="info_info"/>
 #### Info
 > Unter Info sind verschiedene Parameter aus der Synchronisation sichtbar.
 
@@ -318,13 +320,14 @@ Objekt                             | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                          |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**Info**                      |  R  | 
+&emsp;**Info**                      |  R  | Information
 &emsp;&emsp;**Commands**            |  R  | 
 &emsp;&emsp;**Configurations**      |  R  | 
 &emsp;&emsp;**Info**                |  R  | 
 &emsp;&emsp;&emsp;**NumberObjects** |  R  | Anzahl Module in FHEM
 &emsp;&emsp;&emsp;**roomioBroker**  |  R  | (true) Raum ioBroker in FHEM vorhanden
 
+<a name="info_settings"/>
 #### Settings
 > Unter Settings können bestimmte Einträge für die ioBroker Admin-Oberfläche Bereich `Log` ausgewählt werden. Bei Änderungen ist kein Neustart FHEM-Adapter notwendig.
 
@@ -336,7 +339,7 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                           |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**Info**                       |  R  |
+&emsp;**Info**                       |  R  | Information
 &emsp;&emsp;**Commands**             |  R  | 
 &emsp;&emsp;**Configurations**       |  R  |
 &emsp;&emsp;**Info**                 |  R  | 
@@ -371,8 +374,8 @@ level.dimmer             | pct, brightness, dim  |
 level.color.temperature  | color                 | 
 level.color.rgb          | rgb                   | 
 level.color.saturation   | sat                   | 
-level.temperature        | esired-temp          | 
-indicator.unreach        | present              | 
+level.temperature        | desired-temp          | 
+indicator.unreach        | present               | 
 indicator.reachable      |           | 
 
 ### Objekt zugeordnete Funktion
