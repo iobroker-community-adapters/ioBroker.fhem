@@ -216,7 +216,7 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;**:**                 |  RW | 
 
 #### Attributes
-> Attributes
+> Attributes werden aus FHEM ausgelesen und können über ioBroker auch geändert werden.
 
 ![alt-Objektename](media/objekte2attributes.PNG "Objekte-Attributes")<span style="color:grey">  
 *Objekte-Attributes*</span>
@@ -233,7 +233,7 @@ Objekt                    | Zugriff | Bescheibung
 
 
 #### Internals
-> Internals
+> Internals werden aus FHEM ausgelesen undsind nur als Info zB Anzeige in VIS gedacht.
 
 ![alt-Objektename](media/objekte2internals.PNG "Objekte-Internals")<span style="color:grey">  
 *Objekte-Internals*</span>
@@ -254,7 +254,7 @@ Objekt                    | Zugriff | Bescheibung
 <a name="objekte_i"/>
 
 ## Objekt info
-> Öffnet man das Objekt info, so erhält man eine Liste mit allen zum Modul gehörenden Funktionalitäten. Es ist nicht möglich ein Modul mit dem Namen info aus FHEM zu übernehmen.
+> Öffnet man das Objekt info, so erhält man eine Liste mit allen weiteren Funktionalitäten und Informationen. Es ist nicht möglich ein Modul mit dem Namen info aus FHEM zu übernehmen.
 
 ![alt-Objektename](media/objekte3info.PNG "Übersicht info")<span style="color:grey">  
 *Übersicht info*</span>
@@ -273,7 +273,7 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;**resync**            |  RW | 
 
 #### Commands
-> Commands
+> Unter Commands ist es möglich einen beliebigen Befehl an FHEM zu senden.
 
 ![alt-Objektename](media/objekte3infoCommands.PNG "Objekte-Attributes")<span style="color:grey">  
 *Objekte-Attributes*</span>
@@ -290,7 +290,7 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;&emsp;**sendFHEM**    |  RW | Entspricht Befehlszeile in FHEM zB update check
 
 #### Configurations
-> Configurations
+> Unter Configurations können verschiedene Funktionen aktiviert/deaktiviert werden. Bei Änderungen ist ein Neustart des FHEM Adaptes notwendig.
 
 ![alt-Objektename](media/objekte3infoConfiguratios.PNG "Objekte-Attributes")<span style="color:grey">  
 *Objekte-Attributes*</span>
@@ -308,7 +308,7 @@ Objekt                             | Zugriff | Bescheibung
 
 
 #### Info
-> Info
+> Unter Info sind verschiedene Parameter aus der Synchronisation sichtbar.
 
 ![alt-Objektename](media/objekte3infoInfo.PNG "Objekte-Attributes")<span style="color:grey">  
 *Objekte-Attributes*</span>
@@ -326,7 +326,7 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;&emsp;**roomioBroker**  |  R  | (true) Raum ioBroker in FHEM vorhanden
 
 #### Settings
-> Settings
+> Unter Settings können bestimmte Einträge für die ioBroker Admin-Oberfläche Bereich `Log` ausgewählt werden. Bei Änderungen ist kein Neustart FHEM-Adapter notwendig.
 
 ![alt-Objektename](media/objekte3infoSettings.PNG "Objekte-Attributes")<span style="color:grey">  
 *Objekte-Attributes*</span>
