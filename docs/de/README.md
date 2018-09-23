@@ -299,9 +299,8 @@ Objekt                             | Zugriff | Bescheibung
 &emsp;**Info**                     |  R  | 
 &emsp;&emsp;**Commands**           |  R  |
 &emsp;&emsp;**Configurations**     |  R  |
-&emsp;&emsp;&emsp;**autoFunction** |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben
-                                         | (false) Funktionn werden nur beim 1.Start Adapter vergeben
-&emsp;&emsp;&emsp;**autoRole**     |  RW | (true) Rollenn werden bei Neustart nach Stand Adaper vergeben (false) Rollen werden nur beim 1.Start Adapter vergeben
+&emsp;&emsp;&emsp;**autoFunction** |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben (false) Funktionn werden nur beim 1.Start Adapter vergeben
+&emsp;&emsp;&emsp;**autoRole**     |  RW | (true) Rollen werden bei Neustart nach Stand Adaper vergeben (false) Rollen werden nur beim 1.Start Adapter vergeben
 
 
 #### Info
