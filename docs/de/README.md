@@ -208,8 +208,8 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**HUEDevice1**              |  R  | Modul aus FHEM
-&emsp;&emsp;**Attributes**        |  R  | [Beschreibung](#objekte_c_a)
-&emsp;&emsp;**Internals**         |  R  | [Beschreibung](#objekte_c_i)
+&emsp;&emsp;**Attributes**        |  R  | [Attributes](#objekte_c_a)
+&emsp;&emsp;**Internals**         |  R  | [Internals](#objekte_c_i)
 &emsp;&emsp;**alert**             |  RW | 
 &emsp;&emsp;**blink**             |  RW | 
 &emsp;&emsp;**:**                 |  R  | 
@@ -228,7 +228,7 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**HUEDevice1**              |  R  | Modul aus FHEM
+&emsp;**HUEDevice1**              |  R  | [Modul aus FHEM](#objekte_c)
 &emsp;&emsp;**Attributes**        |  R  | Mögliche Attribute: alias, room, disable, comment
 &emsp;&emsp;&emsp;**alias**       |  RW | alias = Name Objekt + Übertrag in FHEM
 &emsp;&emsp;&emsp;**room**        |  RW | room = Raum Objekt + Übertrag in FHEM
@@ -246,8 +246,8 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                              |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**HUEDevice1**                    |  R  | Modul aus FHEM
-&emsp;&emsp;**Attributes**              |  R  | [Beschreibung](#objekte_c_a)
+&emsp;**HUEDevice1**                    |  R  | [Modul aus FHEM](#objekte_c)
+&emsp;&emsp;**Attributes**              |  R  | [Attributes](#objekte_c_a)
 &emsp;&emsp;**Internals**               |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;&emsp;**NAME**              |  R  | Info zB zur Anzeige in VIS
 &emsp;&emsp;&emsp;**TYPE**              |  R  | Info zB zur Anzeige in VIS
@@ -269,10 +269,10 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**info**                    |  R  | Objekt info
-&emsp;&emsp;**Commands**          |  R  | [Beschreibung](#info_commands)
-&emsp;&emsp;**Configurations**    |  R  | [Beschreibung](#info_configurations)
-&emsp;&emsp;**Info**              |  R  | [Beschreibung](#info_info)
-&emsp;&emsp;**Settings**          |  R  | [Beschreibung](#info_settings)
+&emsp;&emsp;**Commands**          |  R  | [Commands](#info_commands)
+&emsp;&emsp;**Configurations**    |  R  | [Configurations](#info_configurations)
+&emsp;&emsp;**Info**              |  R  | [Info](#info_info)
+&emsp;&emsp;**Settings**          |  R  | [Settings](#info_settings)
 &emsp;&emsp;**connection**        |  R  | Status Verbindung zu FHEM true/false
 &emsp;&emsp;**resync**            |  RW | im Moment nicht möglich :-(
 
@@ -290,7 +290,7 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**Info**                    |  R  | [Beschreibung](#objekte_i)
+&emsp;**Info**                    |  R  | [Objekt info](#objekte_i)
 &emsp;&emsp;**Commands**          |  R  | Commands
 &emsp;&emsp;&emsp;**lastCommand** |  R  | Letzer Befehl von ioBroker an FHEM
 &emsp;&emsp;&emsp;**resultFHEM**  |  R  | Liefert Ergebnis von sendFHEM
@@ -310,8 +310,8 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                             | Zugriff | Bescheibung
 :----------------------------------|:-------:|:-----------
 **fhem.0**                         |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**Info**                     |  R  | [Beschreibung](#objekte_i)
-&emsp;&emsp;**Commands**           |  R  | [Beschreibung](#info_commands)
+&emsp;**Info**                     |  R  | [Objekt info](#objekte_i)
+&emsp;&emsp;**Commands**           |  R  | [Commands](#info_commands)
 &emsp;&emsp;**Configurations**     |  R  | Configurations
 &emsp;&emsp;&emsp;**autoFunction** |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben  (false) Funktionn werden nur beim 1.Start Adapter vergeben
 &emsp;&emsp;&emsp;**autoRole**     |  RW | (true) Rollen werden bei Neustart nach Stand Adaper vergeben  (false) Rollen werden nur beim 1.Start Adapter vergeben
@@ -330,9 +330,9 @@ Objekt                             | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                          |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**Info**                      |  R  | [Beschreibung](#objekte_i)
-&emsp;&emsp;**Commands**            |  R  | [Beschreibung](#info_commands)
-&emsp;&emsp;**Configurations**      |  R  | [Beschreibung](#info_configurations)
+&emsp;**Info**                      |  R  | [Objekt info](#objekte_i)
+&emsp;&emsp;**Commands**            |  R  | [Commands](#info_commands)
+&emsp;&emsp;**Configurations**      |  R  | [Configurations](#info_configurations)
 &emsp;&emsp;**Info**                |  R  | Info
 &emsp;&emsp;&emsp;**NumberObjects** |  R  | Anzahl Module in FHEM
 &emsp;&emsp;&emsp;**roomioBroker**  |  R  | (true) Raum ioBroker in FHEM vorhanden
@@ -351,10 +351,10 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                           |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**Info**                       |  R  | [Beschreibung](#objekte_i)
-&emsp;&emsp;**Commands**             |  R  | [Beschreibung](#info_commands)
-&emsp;&emsp;**Configurations**       |  R  | [Beschreibung](#info_configurations)
-&emsp;&emsp;**Info**                 |  R  | [Beschreibung](#info_info)
+&emsp;**Info**                       |  R  | [Objekt info](#objekte_i)
+&emsp;&emsp;**Commands**             |  R  | [Commands](#info_commands)
+&emsp;&emsp;**Configurations**       |  R  | [Configurations](#info_configurations)
+&emsp;&emsp;**Info**                 |  R  | [Info](#info_info)
 &emsp;&emsp;**Settings**             |  R  | Settings
 &emsp;&emsp;&emsp;**logCheckObject**         |  RW | (true) Erzeugt info check cannel im LOG
 &emsp;&emsp;&emsp;**logCreateChannel**       |  RW | (true) Erzeugt info Create channel im LOG
