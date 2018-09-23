@@ -208,7 +208,7 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**HUEDevice1**              |  R  | Modul aus FHEM
-&emsp;&emsp;**Attributes**        |  R  | Mögliche Attribute: alias, room, comment
+&emsp;&emsp;**Attributes**        |  R  | Mögliche Attribute: alias, room, disable, comment
 &emsp;&emsp;**Internals**         |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;**alert**             |  RW | 
 &emsp;&emsp;**blink**             |  RW | 
@@ -365,19 +365,29 @@ Objekt                    | Zugriff | Bescheibung
 
 Rolle                    | Zugeordnet | Bescheibung
 :------------------------|:----------:|:-----------
-level.volume             |  R  | Name der ersten *Instanz* des FHEM Adapters
-level.volume.group       |  R  | Name der ersten *Instanz* des FHEM Adapters
+level.volume             | volume, Volume        | 
+level.volume.group       | GroupVolume           | 
+level.dimmer             | pct, brightness, dim  | 
+level.color.temperature  | color                 | 
+level.color.rgb          | rgb                   | 
+level.color.saturation   | sat                   | 
+level.temperature        | esired-temp          | 
+indicator.unreach        | present              | 
+indicator.reachable      |           | 
 
 ### Objekt zugeordnete Funktion
 > Funktionen
-
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
 Rolle                    | Zugeordnet | Bescheibung
 :------------------------|:----------:|:-----------
-level.volume             |  R  | Name der ersten *Instanz* des FHEM Adapters
-level.volume.group       |  R  | Name der ersten *Instanz* des FHEM Adapters
+switch                   |    |
+temperature              |    |
+audio                    |    |
+security                 |    |
+light                    |    |
+heating                  |    |
 
 <a name="faq"/>
 
@@ -385,7 +395,7 @@ level.volume.group       |  R  | Name der ersten *Instanz* des FHEM Adapters
 
 > In meiner IoBroker Installation werden nicht alle Module aus FHEM synchronisiert
 
-Ist in FHEM evt. ein Raum ioBroker vorhanden?
+Ist in FHEM ein Raum ioBroker vorhanden?
 
 > Abweichungen diese Doku zu meinem ioBroker System
 
