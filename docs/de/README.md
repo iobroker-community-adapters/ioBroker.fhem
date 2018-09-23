@@ -299,7 +299,8 @@ Objekt                             | Zugriff | Bescheibung
 &emsp;**Info**                     |  R  | 
 &emsp;&emsp;**Commands**           |  R  |
 &emsp;&emsp;**Configurations**     |  R  |
-&emsp;&emsp;&emsp;**autoFunction** |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben (false) Funktionn werden nur beim 1.Start Adapter vergeben
+&emsp;&emsp;&emsp;**autoFunction** |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben
+                                         | (false) Funktionn werden nur beim 1.Start Adapter vergeben
 &emsp;&emsp;&emsp;**autoRole**     |  RW | (true) Rollenn werden bei Neustart nach Stand Adaper vergeben (false) Rollen werden nur beim 1.Start Adapter vergeben
 
 
@@ -341,7 +342,7 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;&emsp;**logEventFHEMreading**    |  RW | (true) Erzeugt info eventFHEM(r) im LOG
 &emsp;&emsp;&emsp;**logEventFHEMstate**      |  RW | (true) Erzeugt info eventFHEM(s) im LOG
 &emsp;&emsp;&emsp;**logEventIOB**            |  RW | (true) Erzeugt info eventIOB im LOG
-&emsp;&emsp;&emsp;**logUnhandeledEventFHEM** |  RW | (true) Erzeugt warn unhandeled event im LOG
+&emsp;&emsp;&emsp;**logUnhandeledEventFHEM** |  RW | (true) Erzeugt warn unhandeled event FHEM im LOG
 &emsp;&emsp;&emsp;**logUpdateChannel**       |  RW | (true) Erzeugt info Update channel im LOG
 
 <a name="besonderheiten"/>
