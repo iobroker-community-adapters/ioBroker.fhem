@@ -208,12 +208,14 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**HUEDevice1**              |  R  | Modul aus FHEM
-&emsp;&emsp;**Attributes**        |  R  | Mögliche Attribute: alias, room, disable, comment
-&emsp;&emsp;**Internals**         |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+&emsp;&emsp;**Attributes**        |  R  | [Beschreibung](#objekte_c_a)
+&emsp;&emsp;**Internals**         |  R  | [Beschreibung](#objekte_c_i)
 &emsp;&emsp;**alert**             |  RW | 
 &emsp;&emsp;**blink**             |  RW | 
 &emsp;&emsp;**:**                 |  R  | 
 &emsp;&emsp;**:**                 |  RW | 
+
+<a name="objekte_c_a"/>
 
 #### Attributes
 > Attributes werden aus FHEM ausgelesen und können über ioBroker auch geändert werden.
@@ -231,6 +233,7 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;&emsp;**alias**       |  RW | alias = Name Objekt + Übertrag in FHEM
 &emsp;&emsp;&emsp;**room**        |  RW | room = Raum Objekt + Übertrag in FHEM
 
+<a name="objekte_c_i"/>
 
 #### Internals
 > Internals werden aus FHEM ausgelesen und sind nur als Info zB Anzeige in VIS gedacht.
@@ -267,7 +270,7 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;**info**                    |  R  | [Beschreibung](#objekte_i)
 &emsp;&emsp;**Commands**          |  R  | [Beschreibung](#info_commands)
 &emsp;&emsp;**Configurations**    |  R  | [Beschreibung](#info_configurations)
-&emsp;&emsp;**Info**              |  R  | [Beschreibung](#info_infos)
+&emsp;&emsp;**Info**              |  R  | [Beschreibung](#info_info)
 &emsp;&emsp;**Settings**          |  R  | [Beschreibung](#info_settings)
 &emsp;&emsp;**connection**        |  R  | Status Verbindung zu FHEM true/false
 &emsp;&emsp;**resync**            |  RW | im Moment nicht möglich :-(
