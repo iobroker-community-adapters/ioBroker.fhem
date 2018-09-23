@@ -361,8 +361,11 @@ Objekt                    | Zugriff | Bescheibung
 ## FAQ
 
 > In meiner IoBroker Installation werden nicht alle Module aus FHEM synchronisiert
-Ist in FHEM evt. ein Raum ioBroker vorhanden? 
+
+Ist in FHEM evt. ein Raum ioBroker vorhanden?
+
 > Abweichungen diese Doku zu meinem ioBroker System
+
 Aktuellle Version der FHEM Adapters installiert?
 
 <a name="beispiele"/>
