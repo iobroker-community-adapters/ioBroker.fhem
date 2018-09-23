@@ -247,6 +247,7 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                              |  R  | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**HUEDevice1**                    |  R  | Modul aus FHEM
+&emsp;&emsp;**Attributes**              |  R  | [Beschreibung](#objekte_c_a)
 &emsp;&emsp;**Internals**               |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;&emsp;**NAME**              |  R  | Info zB zur Anzeige in VIS
 &emsp;&emsp;&emsp;**TYPE**              |  R  | Info zB zur Anzeige in VIS
@@ -267,7 +268,7 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**info**                    |  R  | [Beschreibung](#objekte_i)
+&emsp;**info**                    |  R  | Objekt info
 &emsp;&emsp;**Commands**          |  R  | [Beschreibung](#info_commands)
 &emsp;&emsp;**Configurations**    |  R  | [Beschreibung](#info_configurations)
 &emsp;&emsp;**Info**              |  R  | [Beschreibung](#info_info)
@@ -290,7 +291,7 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**Info**                    |  R  | [Beschreibung](#objekte_i)
-&emsp;&emsp;**Commands**          |  R  | [Beschreibung](#info_commands)
+&emsp;&emsp;**Commands**          |  R  | Commands
 &emsp;&emsp;&emsp;**lastCommand** |  R  | Letzer Befehl von ioBroker an FHEM
 &emsp;&emsp;&emsp;**resultFHEM**  |  R  | Liefert Ergebnis von sendFHEM
 &emsp;&emsp;&emsp;**sendFHEM**    |  RW | Entspricht Befehlszeile in FHEM zB update check
@@ -311,7 +312,7 @@ Objekt                             | Zugriff | Bescheibung
 **fhem.0**                         |  R  | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**Info**                     |  R  | [Beschreibung](#objekte_i)
 &emsp;&emsp;**Commands**           |  R  | [Beschreibung](#info_commands)
-&emsp;&emsp;**Configurations**     |  R  | [Beschreibung](#info_configurations)
+&emsp;&emsp;**Configurations**     |  R  | Configurations
 &emsp;&emsp;&emsp;**autoFunction** |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben  (false) Funktionn werden nur beim 1.Start Adapter vergeben
 &emsp;&emsp;&emsp;**autoRole**     |  RW | (true) Rollen werden bei Neustart nach Stand Adaper vergeben  (false) Rollen werden nur beim 1.Start Adapter vergeben
 
@@ -332,7 +333,7 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;**Info**                      |  R  | [Beschreibung](#objekte_i)
 &emsp;&emsp;**Commands**            |  R  | [Beschreibung](#info_commands)
 &emsp;&emsp;**Configurations**      |  R  | [Beschreibung](#info_configurations)
-&emsp;&emsp;**Info**                |  R  | [Beschreibung](#info_infos)
+&emsp;&emsp;**Info**                |  R  | Info
 &emsp;&emsp;&emsp;**NumberObjects** |  R  | Anzahl Module in FHEM
 &emsp;&emsp;&emsp;**roomioBroker**  |  R  | (true) Raum ioBroker in FHEM vorhanden
 
@@ -353,8 +354,8 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;**Info**                       |  R  | [Beschreibung](#objekte_i)
 &emsp;&emsp;**Commands**             |  R  | [Beschreibung](#info_commands)
 &emsp;&emsp;**Configurations**       |  R  | [Beschreibung](#info_configurations)
-&emsp;&emsp;**Info**                 |  R  | [Beschreibung](#info_infos)
-&emsp;&emsp;**Settings**             |  R  | [Beschreibung](#info_settings)
+&emsp;&emsp;**Info**                 |  R  | [Beschreibung](#info_info)
+&emsp;&emsp;**Settings**             |  R  | Settings
 &emsp;&emsp;&emsp;**logCheckObject**         |  RW | (true) Erzeugt info check cannel im LOG
 &emsp;&emsp;&emsp;**logCreateChannel**       |  RW | (true) Erzeugt info Create channel im LOG
 &emsp;&emsp;&emsp;**logDeleteChannel**       |  RW | (true) Erzeugt info Delete channel im LOG
