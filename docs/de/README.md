@@ -210,10 +210,10 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;**HUEDevice1**              |  R  | Modul aus FHEM
 &emsp;&emsp;**Attributes**        |  R  | Mögliche Attribute: alias, room, comment
 &emsp;&emsp;**Internals**         |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
-&emsp;&emsp;**alert**             |  RW | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
-&emsp;&emsp;**blink**             |  RW | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
-&emsp;&emsp;**:**                 |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
-&emsp;&emsp;**:**                 |  RW | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+&emsp;&emsp;**alert**             |  RW | 
+&emsp;&emsp;**blink**             |  RW | 
+&emsp;&emsp;**:**                 |  R  | 
+&emsp;&emsp;**:**                 |  RW | 
 
 #### Attributes
 
@@ -252,7 +252,7 @@ Objekt                    | Zugriff | Bescheibung
 <a name="objekte_i"/>
 
 ## Objekt info
-> Öffnet man ein Modul (channel), so erhält man eine Liste mit allen zum Modul gehörenden Funktionalitäten
+> Öffnet man das Objekt info, so erhält man eine Liste mit allen zum Modul gehörenden Funktionalitäten. Es ist nicht möglich ein Modul mit dem Namen info aus FHEM zu übernehmen.
 
 ![alt-Objektename](media/objekte3info.PNG "Übersicht info")<span style="color:grey">  
 *Übersicht info*</span>
@@ -267,7 +267,7 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;**Configurations**    |  R  | 
 &emsp;&emsp;**Info**              |  R  | 
 &emsp;&emsp;**Settings**          |  R  | 
-&emsp;&emsp;**connection**       |  R  | 
+&emsp;&emsp;**connection**        |  R  | Verbindung zu FHEM true/false
 &emsp;&emsp;**resync**            |  RW | 
 
 #### Commands
@@ -282,9 +282,9 @@ Objekt                    | Zugriff | Bescheibung
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**Info**                    |  R  | 
 &emsp;&emsp;**Commands**          |  R  | 
-&emsp;&emsp;&emsp;**lastCommand** |  R  | 
-&emsp;&emsp;&emsp;**resultFHEM**  |  R  | 
-&emsp;&emsp;&emsp;**sendFHEM**    |  RW | 
+&emsp;&emsp;&emsp;**lastCommand** |  R  | Letzer Befehl von ioBroker an FHEM
+&emsp;&emsp;&emsp;**resultFHEM**  |  R  | Liefert Ergebnis von sendFHEM
+&emsp;&emsp;&emsp;**sendFHEM**    |  RW | Entspricht Befehlszeile in FHEM zB update check
 
 #### Configurations
 
@@ -293,14 +293,14 @@ Objekt                    | Zugriff | Bescheibung
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
-Objekt                    | Zugriff | Bescheibung
-:-------------------------|:-------:|:-----------
+Objekt                             | Zugriff | Bescheibung
+:----------------------------------|:-------:|:-----------
 **fhem.0**                         |  R  | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**Info**                     |  R  | 
-&emsp;&emsp;**Commands**           |  R  | 
-&emsp;&emsp;**Configurations**     |  R  | 
-&emsp;&emsp;&emsp;**autoFunction** |  RW | 
-&emsp;&emsp;&emsp;**autoRole**     |  RW | 
+&emsp;&emsp;**Commands**           |  R  |
+&emsp;&emsp;**Configurations**     |  R  |
+&emsp;&emsp;&emsp;**autoFunction** |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben (false) Funktionn werden nur beim 1.Start Adapter vergeben
+&emsp;&emsp;&emsp;**autoRole**     |  RW | (true) Rollenn werden bei Neustart nach Stand Adaper vergeben (false) Rollen werden nur beim 1.Start Adapter vergeben
 
 
 #### Info
@@ -316,8 +316,8 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;**Commands**            |  R  | 
 &emsp;&emsp;**Configurations**      |  R  | 
 &emsp;&emsp;**Info**                |  R  | 
-&emsp;&emsp;&emsp;**NumberObjects** |  R  | 
-&emsp;&emsp;&emsp;**roomioBroker**  |  R  | 
+&emsp;&emsp;&emsp;**NumberObjects** |  R  | Anzahl Module in FHEM
+&emsp;&emsp;&emsp;**roomioBroker**  |  R  | (true) Raum ioBroker in FHEM vorhanden
 
 #### Settings
 ![alt-Objektename](media/objekte3infoSettings.PNG "Objekte-Attributes")<span style="color:grey">  
@@ -333,16 +333,16 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;**Configurations**       |  R  |
 &emsp;&emsp;**Info**                 |  R  | 
 &emsp;&emsp;**Settings**             |  R  | 
-&emsp;&emsp;&emsp;**logCheckObject**         |  RW | 
-&emsp;&emsp;&emsp;**logCreateChannel**       |  RW | 
-&emsp;&emsp;&emsp;**logDeleteChannel**       |  RW |
-&emsp;&emsp;&emsp;**logEventFHEM**           |  RW | 
-&emsp;&emsp;&emsp;**logEventFHEMglobal**     |  RW | 
-&emsp;&emsp;&emsp;**logEventFHEMreading**    |  RW | 
-&emsp;&emsp;&emsp;**logEventFHEMstate**      |  RW | 
-&emsp;&emsp;&emsp;**logEventIOB**            |  RW | 
-&emsp;&emsp;&emsp;**logUnhandeledEventFHEM** |  RW | 
-&emsp;&emsp;&emsp;**logUpdateChannel**       |  RW | 
+&emsp;&emsp;&emsp;**logCheckObject**         |  RW | (true) Erzeugt info check cannel im LOG
+&emsp;&emsp;&emsp;**logCreateChannel**       |  RW | (true) Erzeugt info Create channel im LOG
+&emsp;&emsp;&emsp;**logDeleteChannel**       |  RW | (true) Erzeugt info Delete channel im LOG
+&emsp;&emsp;&emsp;**logEventFHEM**           |  RW | (true) Erzeugt info eventFHEM im LOG
+&emsp;&emsp;&emsp;**logEventFHEMglobal**     |  RW | (true) Erzeugt info eventFHEM(g) im LOG
+&emsp;&emsp;&emsp;**logEventFHEMreading**    |  RW | (true) Erzeugt info eventFHEM(r) im LOG
+&emsp;&emsp;&emsp;**logEventFHEMstate**      |  RW | (true) Erzeugt info eventFHEM(s) im LOG
+&emsp;&emsp;&emsp;**logEventIOB**            |  RW | (true) Erzeugt info eventIOB im LOG
+&emsp;&emsp;&emsp;**logUnhandeledEventFHEM** |  RW | (true) Erzeugt warn unhandeled event im LOG
+&emsp;&emsp;&emsp;**logUpdateChannel**       |  RW | (true) Erzeugt info Update channel im LOG
 
 <a name="besonderheiten"/>
 
