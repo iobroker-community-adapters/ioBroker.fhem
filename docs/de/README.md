@@ -273,7 +273,9 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;**resync**            |  RW | im Moment nicht möglich :-(
 
 <a name="info_commands"/>
+
 #### Commands
+
 > Unter Commands ist es möglich einen beliebigen Befehl an FHEM zu senden.
 
 ![alt-Objektename](media/objekte3infoCommands.PNG "Objekte-Attributes")<span style="color:grey">  
@@ -291,7 +293,9 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;&emsp;**sendFHEM**    |  RW | Entspricht Befehlszeile in FHEM zB update check
 
 <a name="info_configurations"/>
+
 #### Configurations
+
 > Unter Configurations können verschiedene Funktionen aktiviert/deaktiviert werden. Bei Änderungen ist ein Neustart des FHEM Adaptes notwendig.
 
 ![alt-Objektename](media/objekte3infoConfiguratios.PNG "Objekte-Attributes")<span style="color:grey">  
@@ -309,7 +313,9 @@ Objekt                             | Zugriff | Bescheibung
 &emsp;&emsp;&emsp;**autoRole**     |  RW | (true) Rollen werden bei Neustart nach Stand Adaper vergeben  (false) Rollen werden nur beim 1.Start Adapter vergeben
 
 <a name="info_info"/>
+
 #### Info
+
 > Unter Info sind verschiedene Parameter aus der Synchronisation sichtbar.
 
 ![alt-Objektename](media/objekte3infoInfo.PNG "Objekte-Attributes")<span style="color:grey">  
@@ -328,7 +334,9 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;&emsp;**roomioBroker**  |  R  | (true) Raum ioBroker in FHEM vorhanden
 
 <a name="info_settings"/>
+
 #### Settings
+
 > Unter Settings können bestimmte Einträge für die ioBroker Admin-Oberfläche Bereich `Log` ausgewählt werden. Bei Änderungen ist kein Neustart FHEM-Adapter notwendig.
 
 ![alt-Objektename](media/objekte3infoSettings.PNG "Objekte-Attributes")<span style="color:grey">  
