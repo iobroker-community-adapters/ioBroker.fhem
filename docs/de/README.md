@@ -159,7 +159,7 @@ Alle Angaben beziehen sich auf bei der FHEM Installation automatisch angelegte M
 <a name="instanz"/>
 
 ##  Instanzen
-> Die Installation des Adapters hat im Bereich `Objekte` eine aktive Instanz des
+> Die Installation des Adapters hat in der ioBroker Admin-Oberfläche Bereich `Instanzen` eine aktive Instanz des
   FHEM-Adapters angelegt.
 
 ![Instanz](media/instanz0.PNG "Instanz")<span style="color:grey">  
@@ -177,7 +177,7 @@ Auf einem ioBroker Server können mehere Instanzen installiert werden.
 
 ## Objekte des Adapters
 
-> Im Bereich `Objekte` werden in einer Baumstruktur alle vom Adapter in FHEM
+> In der ioBroker Admin-OberflächeIm Bereich `Objekte` werden in einer Baumstruktur alle vom Adapter in FHEM
   erkannten Gerätemodule und Hilfs (Erweiterungs-) Module alphabetisch aufgelistet.
   Falls im Modul das Attribut `alias` vorhanden ist wird es als `Name` des Objekts verwendet.
   Ist im Modul das Attribut `room` vorhanden wird es als `Raum` des Objekts verwendet.
@@ -216,6 +216,7 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;**:**                 |  RW | 
 
 #### Attributes
+> Attributes
 
 ![alt-Objektename](media/objekte2attributes.PNG "Objekte-Attributes")<span style="color:grey">  
 *Objekte-Attributes*</span>
@@ -232,6 +233,7 @@ Objekt                    | Zugriff | Bescheibung
 
 
 #### Internals
+> Internals
 
 ![alt-Objektename](media/objekte2internals.PNG "Objekte-Internals")<span style="color:grey">  
 *Objekte-Internals*</span>
@@ -271,6 +273,7 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;**resync**            |  RW | 
 
 #### Commands
+> Commands
 
 ![alt-Objektename](media/objekte3infoCommands.PNG "Objekte-Attributes")<span style="color:grey">  
 *Objekte-Attributes*</span>
@@ -287,6 +290,7 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;&emsp;**sendFHEM**    |  RW | Entspricht Befehlszeile in FHEM zB update check
 
 #### Configurations
+> Configurations
 
 ![alt-Objektename](media/objekte3infoConfiguratios.PNG "Objekte-Attributes")<span style="color:grey">  
 *Objekte-Attributes*</span>
@@ -299,11 +303,13 @@ Objekt                             | Zugriff | Bescheibung
 &emsp;**Info**                     |  R  | 
 &emsp;&emsp;**Commands**           |  R  |
 &emsp;&emsp;**Configurations**     |  R  |
-&emsp;&emsp;&emsp;**autoFunction** |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben (false) Funktionn werden nur beim 1.Start Adapter vergeben
-&emsp;&emsp;&emsp;**autoRole**     |  RW | (true) Rollen werden bei Neustart nach Stand Adaper vergeben (false) Rollen werden nur beim 1.Start Adapter vergeben
+&emsp;&emsp;&emsp;**autoFunction** |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben  (false) Funktionn werden nur beim 1.Start Adapter vergeben
+&emsp;&emsp;&emsp;**autoRole**     |  RW | (true) Rollen werden bei Neustart nach Stand Adaper vergeben  (false) Rollen werden nur beim 1.Start Adapter vergeben
 
 
 #### Info
+> Info
+
 ![alt-Objektename](media/objekte3infoInfo.PNG "Objekte-Attributes")<span style="color:grey">  
 *Objekte-Attributes*</span>
 
@@ -320,6 +326,8 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;&emsp;**roomioBroker**  |  R  | (true) Raum ioBroker in FHEM vorhanden
 
 #### Settings
+> Settings
+
 ![alt-Objektename](media/objekte3infoSettings.PNG "Objekte-Attributes")<span style="color:grey">  
 *Objekte-Attributes*</span>
 
@@ -352,7 +360,10 @@ Objekt                    | Zugriff | Bescheibung
 
 ## FAQ
 
-* Lorem ipsum
+> In meiner IoBroker Installation werden nicht alle Module aus FHEM synchronisiert
+Ist in FHEM evt. ein Raum ioBroker vorhanden? 
+> Abweichungen diese Doku zu meinem ioBroker System
+Aktuellle Version der FHEM Adapters installiert?
 
 <a name="beispiele"/>
 
