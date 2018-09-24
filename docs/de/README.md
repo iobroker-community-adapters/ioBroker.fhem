@@ -382,7 +382,8 @@ Objekt                    | Zugriff | Bescheibung
 
 Rolle                    | Objekt state | Zugriff | Art | min Wert | max Wert | Einheit |
 :------------------------|:------------:|:-------:|:---:|:--------:|:--------:|:---------  
-level.volume             | volume, Volume        | RW | Zahl  |  0  | 100 | %  
+level.volume             | volume      | RW | Zahl  |  0  | 100 | %  
+                         | Volume      |  
 level.volume.group       | GroupVolume           | RW | Zahl  |  0  | 100 | %
 level.dimmer             | pct, brightness, dim  | RW | Zahl  |  0  | 100 | %
 level.color.temperature  | color                 | RW | Zahl  |
@@ -394,10 +395,8 @@ indicator.reachable      |                       | R  | Logik |
 value.temperature        |                       | R  | Zahl |
 switch                   |                       | R  | Logik |
 
-Rolle                    | Objekt state | Zugriff | Art | min Wert | max Wert | Einheit |
 
-:------------------------|:------------:|:-------:|:---:|:--------:|:--------:|:---------
-level.volume             | volume, Volume        | RW | Zahl  |  0  | 100 | %  
+
  
 ### Objekt zugeordnete Funktion
 > Funktionen
