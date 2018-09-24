@@ -378,7 +378,7 @@ Objekt                    | Zugriff | Bescheibung
 ### Objekt zugeordnete Rolle
 > Rollen
 
->> Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
+> Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
 Rolle                    | Objekt state | Zugriff | Art | min Wert | max Wert | Einheit |
 :------------------------|:------------:|:-------:|:---:|:--------:|:--------:|:---------  
@@ -392,6 +392,7 @@ level.temperature        | desired-temp          | RW | Zahl  |
 indicator.unreach        | present               | R  | Logik |
 indicator.reachable      |                       | R  | Logik |
 value.temperature        |                       | R  | Zahl |
+switch                   |                       | R  | Logik |
 
 Rolle                    | Objekt state | Zugriff | Art | min Wert | max Wert | Einheit |
 
@@ -405,7 +406,7 @@ level.volume             | volume, Volume        | RW | Zahl  |  0  | 100 | %
 
 Funktion                    | TYPE  | Rolle
 :------------------------|:----------:|:-----------
-switch                   |    |
+switch                   |    | switch
 temperature              |    | value.temperature
 audio                    |  SONOSPLAYER  |
 security                 |    |
