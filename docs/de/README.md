@@ -249,7 +249,7 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **[fhem.o](#objekte)**                     |  R  | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[HUEDevice1](#objekte_c)**         |  R  | 
-&emsp;&emsp;**[Attributes](#objekte_c_a)**              |  R  | [Attributes](#objekte_c_a)
+&emsp;&emsp;**[Attributes](#objekte_c_a)**              |  R  | Mögliche Attribute: alias, room, disable, comment
 &emsp;&emsp;**Internals**               |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;&emsp;**NAME**              |  R  | Info zB zur Anzeige in VIS
 &emsp;&emsp;&emsp;**TYPE**              |  R  | Info zB zur Anzeige in VIS
@@ -391,7 +391,7 @@ level.color.saturation   | sat                   | RW |       |
 level.temperature        | desired-temp          | RW | Zahl  |
 indicator.unreach        | present               | R  | Logik |
 indicator.reachable      |                       | R  | Logik |
-
+value.temperature        |                       | R  | Zahl |
 
 Rolle                    | Objekt state | Zugriff | Art | min Wert | max Wert | Einheit |
 
@@ -403,13 +403,13 @@ level.volume             | volume, Volume        | RW | Zahl  |  0  | 100 | %
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
-Funktion                    | Zugeordnet | Bescheibung
+Funktion                    | TYPE  | Rolle
 :------------------------|:----------:|:-----------
 switch                   |    |
-temperature              |    |
-audio                    |    |
+temperature              |    | value.temperature
+audio                    |  SONOSPLAYER  |
 security                 |    |
-light                    |    |
+light                    |  HUEDEVICE  |
 heating                  |    |
 
 <a name="faq"/>
