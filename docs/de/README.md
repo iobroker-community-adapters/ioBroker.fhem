@@ -189,10 +189,12 @@ Auf einem ioBroker Server können mehere Instanzen installiert werden.
 
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
-**fhem.0**                |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**A8**              |  R  | 1. Modul aus FHEM
-&emsp;**A81**             |  R  | 2. Modul aus FHEM
-&emsp;**:**               |  R  | x. Modul aus FHEM
+**fhem.0**                   |  R  | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**A8**                 |  R  | 1. Modul aus FHEM
+&emsp;**A81**                |  R  | 2. Modul aus FHEM
+&emsp;**:**                  |  R  | x. Modul aus FHEM
+&emsp;**[info](#objekte_i)** |  R  | Information und mehr
+
 
 <a name="objekte_c"/>
 
@@ -268,7 +270,7 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**info**                    |  R  | Objekt info
+&emsp;**info**                    |  R  | Information und mehr
 &emsp;&emsp;**Commands**          |  R  | [Commands](#info_commands)
 &emsp;&emsp;**Configurations**    |  R  | [Configurations](#info_configurations)
 &emsp;&emsp;**Info**              |  R  | [Info](#info_info)
@@ -290,7 +292,7 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**Info**                    |  R  | [Objekt info](#objekte_i)
+&emsp;**[info](#objekte_i)**      |  R  | Information und mehr
 &emsp;&emsp;**Commands**          |  R  | Commands
 &emsp;&emsp;&emsp;**lastCommand** |  R  | Letzer Befehl von ioBroker an FHEM
 &emsp;&emsp;&emsp;**resultFHEM**  |  R  | Liefert Ergebnis von sendFHEM
@@ -310,7 +312,7 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                             | Zugriff | Bescheibung
 :----------------------------------|:-------:|:-----------
 **fhem.0**                         |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**Info**                     |  R  | [Objekt info](#objekte_i)
+&emsp;**[info](#objekte_i)**       |  R  | Information und mehr
 &emsp;&emsp;**Commands**           |  R  | [Commands](#info_commands)
 &emsp;&emsp;**Configurations**     |  R  | Configurations
 &emsp;&emsp;&emsp;**autoFunction** |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben  (false) Funktionn werden nur beim 1.Start Adapter vergeben
@@ -329,10 +331,10 @@ Objekt                             | Zugriff | Bescheibung
 
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
-**fhem.0**                          |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**Info**                      |  R  | [Objekt info](#objekte_i)
-&emsp;&emsp;**Commands**            |  R  | [Commands](#info_commands)
-&emsp;&emsp;**Configurations**      |  R  | [Configurations](#info_configurations)
+**fhem.0**                                              |  R  | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**[info](#objekte_i)**                     |  R  | 
+&emsp;&emsp;**[Commands](#info_commands)**              |  R  | 
+&emsp;&emsp;**[Configurations](#info_configurations)**  |  R  | 
 &emsp;&emsp;**Info**                |  R  | Info
 &emsp;&emsp;&emsp;**NumberObjects** |  R  | Anzahl Module in FHEM
 &emsp;&emsp;&emsp;**roomioBroker**  |  R  | (true) Raum ioBroker in FHEM vorhanden
@@ -350,12 +352,12 @@ Objekt                    | Zugriff | Bescheibung
 
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
-**fhem.0**                           |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**Info**                       |  R  | [Objekt info](#objekte_i)
-&emsp;&emsp;**Commands**             |  R  | [Commands](#info_commands)
-&emsp;&emsp;**Configurations**       |  R  | [Configurations](#info_configurations)
-&emsp;&emsp;**Info**                 |  R  | [Info](#info_info)
-&emsp;&emsp;**Settings**             |  R  | Settings
+**fhem.0**                                             |  R  | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**[info](#objekte_i)**                    |  R  | Information und mehr
+&emsp;&emsp;**[Commands](#info_commands)**             |  R  | 
+&emsp;&emsp;**[Configurations](#info_configurations)** |  R  | 
+&emsp;&emsp;**[Info](#info_info)**                     |  R  | 
+&emsp;&emsp;**Settings**                               |  R  | Settings
 &emsp;&emsp;&emsp;**logCheckObject**         |  RW | (true) Erzeugt info check cannel im LOG
 &emsp;&emsp;&emsp;**logCreateChannel**       |  RW | (true) Erzeugt info Create channel im LOG
 &emsp;&emsp;&emsp;**logDeleteChannel**       |  RW | (true) Erzeugt info Delete channel im LOG
@@ -376,26 +378,32 @@ Objekt                    | Zugriff | Bescheibung
 ### Objekt zugeordnete Rolle
 > Rollen
 
-> Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
+>> Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
-Rolle                    | Zugeordnet | Bescheibung
-:------------------------|:----------:|:-----------
-level.volume             | volume, Volume        | 
-level.volume.group       | GroupVolume           | 
-level.dimmer             | pct, brightness, dim  | 
-level.color.temperature  | color                 | 
-level.color.rgb          | rgb                   | 
-level.color.saturation   | sat                   | 
-level.temperature        | desired-temp          | 
-indicator.unreach        | present               | 
-indicator.reachable      |           | 
+Rolle                    | Objekt state | Zugriff | Art | min Wert | max Wert | Einheit |
+:------------------------|:------------:|:-------:|:---:|:--------:|:--------:|:---------  
+level.volume             | volume, Volume        | RW | Zahl  |  0  | 100 | %  
+level.volume.group       | GroupVolume           | RW | Zahl  |  0  | 100 | %
+level.dimmer             | pct, brightness, dim  | RW | Zahl  |  0  | 100 | %
+level.color.temperature  | color                 | RW | Zahl  |
+level.color.rgb          | rgb                   | RW | Text  |
+level.color.saturation   | sat                   | RW |       |
+level.temperature        | desired-temp          | RW | Zahl  |
+indicator.unreach        | present               | R  | Logik |
+indicator.reachable      |                       | R  | Logik |
 
+
+Rolle                    | Objekt state | Zugriff | Art | min Wert | max Wert | Einheit |
+
+:------------------------|:------------:|:-------:|:---:|:--------:|:--------:|:---------
+level.volume             | volume, Volume        | RW | Zahl  |  0  | 100 | %  
+ 
 ### Objekt zugeordnete Funktion
 > Funktionen
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
-Rolle                    | Zugeordnet | Bescheibung
+Funktion                    | Zugeordnet | Bescheibung
 :------------------------|:----------:|:-----------
 switch                   |    |
 temperature              |    |
