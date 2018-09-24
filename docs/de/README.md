@@ -381,9 +381,8 @@ Objekt                    | Zugriff | Bescheibung
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
 Rolle                    | Objekt state | Zugriff | Art | min Wert | max Wert | Einheit |
-:------------------------|:------------:|:-------:|:---:|:--------:|:--------:|:---------  
-level.volume             | volume      | RW | Zahl  |  0  | 100 | %  
-                         | Volume      |  
+:------------------------|:------------:|:-------:|:----|:--------:|:--------:|:---------  
+level.volume             | volume    Volume      | RW | Zahl  |  0  | 100 | %  
 level.volume.group       | GroupVolume           | RW | Zahl  |  0  | 100 | %
 level.dimmer             | pct, brightness, dim  | RW | Zahl  |  0  | 100 | %
 level.color.temperature  | color                 | RW | Zahl  |
