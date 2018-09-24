@@ -313,7 +313,7 @@ Objekt                             | Zugriff | Bescheibung
 :----------------------------------|:-------:|:-----------
 **[fhem.o](#objekte)**                      |  R  | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[info](#objekte_i)**                |  R  | Information und mehr
-&emsp;&emsp;** [Commands](#info_commands)** |  R  |
+&emsp;&emsp;**[Commands](#info_commands)** |  R  |
 &emsp;&emsp;**Configurations**     |  R  | Configurations
 &emsp;&emsp;&emsp;**autoFunction** |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben  (false) Funktionn werden nur beim 1.Start Adapter vergeben
 &emsp;&emsp;&emsp;**autoRole**     |  RW | (true) Rollen werden bei Neustart nach Stand Adaper vergeben  (false) Rollen werden nur beim 1.Start Adapter vergeben
