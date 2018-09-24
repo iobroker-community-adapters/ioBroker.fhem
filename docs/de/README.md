@@ -230,7 +230,7 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **[fhem.o](#objekte)**                     |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**HUEDevice1**              |  R  | [Modul aus FHEM](#objekte_c)
+&emsp;**[HUEDevice1](#objekte_c)**         |  R  | 
 &emsp;&emsp;**Attributes**        |  R  | Mögliche Attribute: alias, room, disable, comment
 &emsp;&emsp;&emsp;**alias**       |  RW | alias = Name Objekt + Übertrag in FHEM
 &emsp;&emsp;&emsp;**room**        |  RW | room = Raum Objekt + Übertrag in FHEM
@@ -248,8 +248,8 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **[fhem.o](#objekte)**                     |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**HUEDevice1**                    |  R  | [Modul aus FHEM](#objekte_c)
-&emsp;&emsp;**Attributes**              |  R  | [Attributes](#objekte_c_a)
+&emsp;**[HUEDevice1](#objekte_c)**         |  R  | 
+&emsp;&emsp;**[Attributes](#objekte_c_a)**              |  R  | [Attributes](#objekte_c_a)
 &emsp;&emsp;**Internals**               |  R  | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;&emsp;**NAME**              |  R  | Info zB zur Anzeige in VIS
 &emsp;&emsp;&emsp;**TYPE**              |  R  | Info zB zur Anzeige in VIS
@@ -269,14 +269,14 @@ Objekt                    | Zugriff | Bescheibung
 
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
-**[fhem.o](#objekte)**                     |  R  | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**info**                    |  R  | Information und mehr
-&emsp;&emsp;**Commands**          |  R  | [Commands](#info_commands)
-&emsp;&emsp;**Configurations**    |  R  | [Configurations](#info_configurations)
-&emsp;&emsp;**Info**              |  R  | [Info](#info_info)
-&emsp;&emsp;**Settings**          |  R  | [Settings](#info_settings)
-&emsp;&emsp;**connection**        |  R  | Status Verbindung zu FHEM true/false
-&emsp;&emsp;**resync**            |  RW | im Moment nicht möglich :-(
+**[fhem.o](#objekte)**                                 |  R  | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**info**                                         |  R  | Information und mehr
+&emsp;&emsp;**[Commands](#info_commands)**             |  R  | 
+&emsp;&emsp;**[Configurations](#info_configurations)** |  R  | 
+&emsp;&emsp;**[Info](#info_info)**                     |  R  |
+&emsp;&emsp;**[Settings](#info_settings)**             |  R  | 
+&emsp;&emsp;**connection**                             |  R  | Status Verbindung zu FHEM true/false
+&emsp;&emsp;**resync**                                 |  RW | im Moment nicht möglich :-(
 
 <a name="info_commands"/>
 
