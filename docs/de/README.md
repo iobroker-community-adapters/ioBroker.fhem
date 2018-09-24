@@ -208,7 +208,7 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **fhem.0**                        |  R  | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**HUEDevice1**              |  R  | Modul aus FHEM
-&emsp;&emsp;**Attributes**        |  R  | [Attributes](#objekte_c_a)
+&emsp;&emsp;**[Attributes](#objekte_c_a)**        |  R  | [Attributes](#objekte_c_a)
 &emsp;&emsp;**Internals**         |  R  | [Internals](#objekte_c_i)
 &emsp;&emsp;**alert**             |  RW | 
 &emsp;&emsp;**blink**             |  RW | 
