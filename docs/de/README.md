@@ -210,8 +210,8 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **[fhem.o](#objekte)**                     |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**HUEDevice1**                       |     | Modul aus FHEM
-&emsp;&emsp;**[Attributes](#objekte_c_a)** |     | 
-&emsp;&emsp;**[Internals](#objekte_c_i)**  |     | 
+&emsp;&emsp;**[Attributes](#objekte_c_a)** |     | Mögliche Attribute: alias, room, disable, comment
+&emsp;&emsp;**[Internals](#objekte_c_i)**  |     | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;**alert**                      |  RW | 
 &emsp;&emsp;**blink**                      |  RW | 
 &emsp;&emsp;**:**                          |  R  | 
