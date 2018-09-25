@@ -189,16 +189,17 @@ Auf einem ioBroker Server können mehere Instanzen installiert werden.
 
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
-**fhem.0**                   |     | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**A8**                 |     | 1. Modul aus FHEM
-&emsp;**A81**                |     | 2. Modul aus FHEM
-&emsp;**:**                  |     | x. Modul aus FHEM
-&emsp;**[info](#objekte_i)** |     | Information und mehr
+**fhem.0**                         |     | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**A8**                       |     | 1. Modul aus FHEM
+&emsp;**A81**                      |     | 2. Modul aus FHEM
+&emsp;**:**                        |     | x. Modul aus FHEM
+&emsp;**[HUEDevice1](#objekte_c)** |     | Bsp HUEDevice1
+&emsp;**[info](#objekte_i)**       |     | Information und mehr
 
 
 <a name="objekte_c"/>
 
-### Modul aus FHEM Typ:channel
+### Objekt HUEDevice1
 > Öffnet man ein Modul (channel), so erhält man eine Liste mit allen zum Modul gehörenden Funktionalitäten
 
 ![alt-Objektename](media/objekte2.PNG "Übersicht Objekte-Modul")<span style="color:grey">  
