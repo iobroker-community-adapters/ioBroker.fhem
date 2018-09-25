@@ -210,7 +210,7 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **[fhem.o](#objekte)**                     |     | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**HUEDevice1**                       |     | Modul aus FHEM
+&emsp;**HUEDevice1**                       |     | HUEDevice1 (Beispiel)
 &emsp;&emsp;**[Attributes](#objekte_c_a)** |     | Mögliche Attribute: alias, room, disable, comment
 &emsp;&emsp;**[Internals](#objekte_c_i)**  |     | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;**alert**                      |  RW | 
@@ -231,7 +231,7 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **[fhem.o](#objekte)**                     |     | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**[HUEDevice1](#objekte_c)**         |     | 
+&emsp;**[HUEDevice1](#objekte_c)**         |     | HUEDevice1 (Beispiel)
 &emsp;&emsp;**Attributes**        |     | Mögliche Attribute: alias, room, disable, comment
 &emsp;&emsp;&emsp;**alias**       |  RW | alias = Name Objekt + Übertrag in FHEM
 &emsp;&emsp;&emsp;**room**        |  RW | room = Raum Objekt + Übertrag in FHEM
@@ -249,7 +249,7 @@ Objekt                    | Zugriff | Bescheibung
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **[fhem.o](#objekte)**                      |     | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**[HUEDevice1](#objekte_c)**          |    | 
+&emsp;**[HUEDevice1](#objekte_c)**          |     | HUEDevice1 (Beispiel)
 &emsp;&emsp;**[Attributes](#objekte_c_a)**  |     | Mögliche Attribute: alias, room, disable, comment
 &emsp;&emsp;**Internals**               |     | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
 &emsp;&emsp;&emsp;**NAME**              |  R  | Info zB zur Anzeige in VIS
