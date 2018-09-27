@@ -312,13 +312,13 @@ Objekt                    | Zugriff | Bescheibung
 
 Objekt                             | Zugriff | Bescheibung
 :----------------------------------|:-------:|:-----------
-**[fhem.o](#objekte)**                      |     | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**[info](#objekte_i)**                |     | Information und mehr
+**[fhem.o](#objekte)**                     |     | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**[info](#objekte_i)**               |     | Information und mehr
 &emsp;&emsp;**[Commands](#info_commands)** |     |
-&emsp;&emsp;**Configurations**     |     | Configurations
-&emsp;&emsp;&emsp;**autoConfigFHEM** |  RW | (true) Automatische Änderungen in FHEM
-&emsp;&emsp;&emsp;**autoFunction** |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben  (false) Funktionn werden nur beim 1.Start Adapter vergeben
-&emsp;&emsp;&emsp;**autoRole**     |  RW | (true) Rollen werden bei Neustart nach Stand Adaper vergeben  (false) Rollen werden nur beim 1.Start Adapter vergeben
+&emsp;&emsp;**Configurations**             |     | Configurations
+&emsp;&emsp;&emsp;**autoConfigFHEM**       |  RW | (true) Automatische Änderungen in FHEM
+&emsp;&emsp;&emsp;**autoFunction**         |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben  (false) Funktionn werden nur beim 1.Start Adapter vergeben
+&emsp;&emsp;&emsp;**autoRole**             |  RW | (true) Rollen werden bei Neustart nach Stand Adaper vergeben  (false) Rollen werden nur beim 1.Start Adapter vergeben
 
 Funktionen autoConfigFHEM = true (über fhem.0.info.Commands.sendFHEM)        |                
 :----------------------------------|
