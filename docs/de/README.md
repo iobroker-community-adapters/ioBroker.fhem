@@ -316,8 +316,15 @@ Objekt                             | Zugriff | Bescheibung
 &emsp;**[info](#objekte_i)**                |     | Information und mehr
 &emsp;&emsp;**[Commands](#info_commands)** |     |
 &emsp;&emsp;**Configurations**     |     | Configurations
+&emsp;&emsp;&emsp;**autoConfigFHEM** |  RW | (true) Automatische Änderungen in FHEM
 &emsp;&emsp;&emsp;**autoFunction** |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben  (false) Funktionn werden nur beim 1.Start Adapter vergeben
 &emsp;&emsp;&emsp;**autoRole**     |  RW | (true) Rollen werden bei Neustart nach Stand Adaper vergeben  (false) Rollen werden nur beim 1.Start Adapter vergeben
+
+Funktionen autoConfigFHEM = true (über fhem.0.info.Commands.sendFHEM)        |                
+:----------------------------------|
+Am Ende der Synchronisation `save` |
+Für TYPE=SONOSPLAYER `attr xxx generateVolumeEvent 1` damit Lautstärke übertragen wird                                  |  
+
 
 <a name="info_info"/>
 
