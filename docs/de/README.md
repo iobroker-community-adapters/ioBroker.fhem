@@ -427,7 +427,7 @@ gemischt     |
 
 <a name="besonderheiten_funktionen"/>
  
-### Objekt zugeordnete Funktion
+### Übersicht Funktionen
 > Funktionen
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
