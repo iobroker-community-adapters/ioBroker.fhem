@@ -32,6 +32,8 @@ Alle Module aus FHEM können eingelesen, über ioBroker gesteuert und zur Visual
 | 6.1 [Objekt HUEDevice1 (Bsp)](#objekte_c)  |
 | 6.2 [Objekt info](#objekte_i)            |
 | 7  [Besonderheiten](#besonderheiten)|
+| 7.1 [Übersicht Rollen](#besonderheiten_rollen)|
+| 7.2 [Übersicht Funktionen](#besonderheiten_funktionen)|
 | 8  [FAQ](#faq)                      |
 | 9  [Beispiele](#beispiele)          |
 | 10 [Deinstallation](#deinstallation)|
