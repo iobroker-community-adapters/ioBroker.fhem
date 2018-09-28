@@ -218,6 +218,9 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;**:**                          |  R  | 
 &emsp;&emsp;**:**                          |  RW | 
 
+> Einem state ist immer eine Rolle zugeordnet. **[Übersicht Rollen](#besonderheiten_rollen)** **[Übersicht Funktionen](#besonderheiten_funktionen)** 
+
+
 <a name="objekte_c_a"/>
 
 #### Attributes
@@ -383,10 +386,12 @@ Objekt                    | Zugriff | Bescheibung
 
 > Zusätzliche Funktionen dieses Adapter
 
-### Objekt zugeordnete Rolle
+<a name="besonderheiten_rollen"/>
+
+### Übersicht Rollen
 > Rollen
 
-> Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
+> Der FHEM Adapter ordnet folgende Rollen automatisch einem state-Objekt zu.
 
 Rolle                    | Zugriff | Art | min Wert | max Wert | Einheit |
 :------------------------|:-------:|:----|:--------:|:--------:|:---------  
@@ -415,7 +420,10 @@ Zeichenkette | text A-Z     | rt    |
 Zahl         |
 Feld         |
 Objekt       | 
-gemischt     |            
+gemischt     |  
+
+
+<a name="besonderheiten_funktionen"/>
  
 ### Objekt zugeordnete Funktion
 > Funktionen
