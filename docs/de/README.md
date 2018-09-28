@@ -388,22 +388,34 @@ Objekt                    | Zugriff | Bescheibung
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
-Rolle                    | Objekt state | Zugriff | Art | min Wert | max Wert | Einheit |
-:------------------------|:------------:|:-------:|:----|:--------:|:--------:|:---------  
-level.volume             | volume    Volume      | RW | Zahl  |  0  | 100 | %  
-level.volume.group       | GroupVolume           | RW | Zahl  |  0  | 100 | %
-level.dimmer             | pct, brightness, dim  | RW | Zahl  |  0  | 100 | %
-level.color.temperature  | color                 | RW | Zahl  |
-level.color.rgb          | rgb                   | RW | Text  |
-level.color.saturation   | sat                   | RW |       |
-level.temperature        | desired-temp          | RW | Zahl  |
-indicator.unreach        | present               | R  | Logik |
-indicator.reachable      |                       | R  | Logik |
-value.temperature        |                       | R  | Zahl |
-switch                   |                       | R  | Logik |
+Rolle                    | Zugriff | Art | min Wert | max Wert | Einheit |
+:------------------------|:-------:|:----|:--------:|:--------:|:---------  
+button                   | W  | Logikwert    |   
+button.play              | W  | Logikwert    |   
+button.pause             | W  | Logikwert    |   
+button.stop              | W  | Logikwert    |   
+button.prev              | W  | Logikwert    | 
+button.next              | W  | Logikwert    |
+level.volume             | RW | Zahl         |  0  | 100 | %  
+level.volume.group       | RW | Zahl         |  0  | 100 | %
+level.dimmer             | RW | Zahl         |  0  | 100 | %
+level.color.temperature  | RW | Zahl         |
+level.color.rgb          | RW | Zeichenkette |
+level.color.saturation   | RW |              |
+level.temperature        | RW | Zahl         |
+indicator.unreach        | R  | Logikwert    |
+indicator.reachable      | R  | Logikwert    |
+value.temperature        | R  | Zahl         |
+switch                   | R  | Logikwert    |
 
-
-
+Art                 | Mögliche Werte | Art | min Wert | max Wert | Einheit |
+:------------------------|:-------:|:----|:--------:|:--------:|:---------  
+Logikwert    | true / false | Logikwert    |   
+Zeichenkette | text A-Z     | rt    | 
+Zahl         |
+Feld         |
+Objekt       | 
+gemischt     |            
  
 ### Objekt zugeordnete Funktion
 > Funktionen
