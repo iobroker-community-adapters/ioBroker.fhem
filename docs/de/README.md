@@ -177,7 +177,7 @@ Auf einem ioBroker Server können mehere Instanzen installiert werden.
 
 ## Objekte des Adapters
 
-> In der ioBroker Admin-OberflächeIm Bereich `Objekte` werden in einer Baumstruktur alle vom Adapter in FHEM
+> In der ioBroker Admin-Oberfläche Bereich `Objekte` werden in einer Baumstruktur alle vom Adapter in FHEM
   erkannten Gerätemodule und Hilfs (Erweiterungs-) Module alphabetisch aufgelistet.
   Falls im Modul das Attribut `alias` vorhanden ist wird es als `Name` des Objekts verwendet.
   Ist im Modul das Attribut `room` vorhanden wird es als `Raum` des Objekts verwendet.
@@ -266,8 +266,8 @@ Objekt                    | Zugriff | Bescheibung
 ## Objekt info
 > Öffnet man das Objekt info, so erhält man eine Liste mit allen weiteren Funktionalitäten und Informationen. Es ist nicht möglich ein Modul mit dem Namen info aus FHEM zu übernehmen.
 
-![alt-Objektename](media/objekte3info.PNG "Übersicht info")<span style="color:grey">  
-*Übersicht info*</span>
+![alt-Objektename](media/objekte3info.PNG "Objekt info")<span style="color:grey">  
+*Objekt info*</span>
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
@@ -275,10 +275,10 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **[fhem.o](#objekte)**                                 |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**info**                                         |     | Information und mehr
-&emsp;&emsp;**[Commands](#info_commands)**             |     | 
+&emsp;&emsp;**[Commands](#info_commands)**             |     | Befehlszeile FHEM
 &emsp;&emsp;**[Configurations](#info_configurations)** |     | 
 &emsp;&emsp;**[Info](#info_info)**                     |     |
-&emsp;&emsp;**[Settings](#info_settings)**             |     | 
+&emsp;&emsp;**[Settings](#info_settings)**             |     | Auswahl Einträge für Admin-Oberfläche Bereich `LOG`
 &emsp;&emsp;**connection**                             |  R  | Status Verbindung zu FHEM true/false
 &emsp;&emsp;**resync**                                 |  RW | im Moment nicht möglich :-(
 
@@ -288,16 +288,16 @@ Objekt                    | Zugriff | Bescheibung
 
 > Unter Commands ist es möglich einen beliebigen Befehl an FHEM zu senden.
 
-![alt-Objektename](media/objekte3infoCommands.PNG "Objekte-Attributes")<span style="color:grey">  
-*Objekte-Attributes*</span>
+![alt-Objektename](media/objekte3infoCommands.PNG "Objekt info - Commands")<span style="color:grey">  
+*Objekt info - Commands*</span>
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
 Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
-**[fhem.o](#objekte)**                     |     | Name der ersten *Instanz* des FHEM Adapters
+**[fhem.o](#objekte)**            |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[info](#objekte_i)**      |     | Information und mehr
-&emsp;&emsp;**Commands**          |     | Commands
+&emsp;&emsp;**Commands**          |     | Befehlszeile FHEM
 &emsp;&emsp;&emsp;**lastCommand** |  R  | Letzer Befehl von ioBroker an FHEM
 &emsp;&emsp;&emsp;**resultFHEM**  |  R  | Liefert Ergebnis von sendFHEM
 &emsp;&emsp;&emsp;**sendFHEM**    |  RW | Entspricht Befehlszeile in FHEM zB update check
@@ -308,8 +308,8 @@ Objekt                    | Zugriff | Bescheibung
 
 > Unter Configurations können verschiedene Funktionen aktiviert/deaktiviert werden. Bei Änderungen ist ein Neustart des FHEM Adaptes notwendig.
 
-![alt-Objektename](media/objekte3infoConfiguratios.PNG "Objekte-Attributes")<span style="color:grey">  
-*Objekte-Attributes*</span>
+![alt-Objektename](media/objekte3infoConfiguratios.PNG "Objekt info - Configurations")<span style="color:grey">  
+*Objekt info - Configurations*</span>
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
@@ -317,7 +317,7 @@ Objekt                             | Zugriff | Bescheibung
 :----------------------------------|:-------:|:-----------
 **[fhem.o](#objekte)**                     |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[info](#objekte_i)**               |     | Information und mehr
-&emsp;&emsp;**[Commands](#info_commands)** |     |
+&emsp;&emsp;**[Commands](#info_commands)** |     | Befehlszeile FHEM 
 &emsp;&emsp;**Configurations**             |     | Configurations
 &emsp;&emsp;&emsp;**autoConfigFHEM**       |  RW | (true) Automatische Änderungen in FHEM
 &emsp;&emsp;&emsp;**autoFunction**         |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben  (false) Funktionn werden nur beim 1.Start Adapter vergeben
@@ -335,8 +335,8 @@ Für TYPE=SONOSPLAYER `attr xxx generateVolumeEvent 1` damit Lautstärke übertr
 
 > Unter Info sind verschiedene Parameter aus der Synchronisation sichtbar.
 
-![alt-Objektename](media/objekte3infoInfo.PNG "Objekte-Attributes")<span style="color:grey">  
-*Objekte-Attributes*</span>
+![alt-Objektename](media/objekte3infoInfo.PNG "Objekt info - Info")<span style="color:grey">  
+*Objekt info - Info*</span>
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
@@ -344,11 +344,11 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **[fhem.o](#objekte)**                                  |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[info](#objekte_i)**                            |     | 
-&emsp;&emsp;**[Commands](#info_commands)**              |     | 
+&emsp;&emsp;**[Commands](#info_commands)**              |     | Befehlszeile FHEM
 &emsp;&emsp;**[Configurations](#info_configurations)**  |     | 
-&emsp;&emsp;**Info**                |     | Info
-&emsp;&emsp;&emsp;**NumberObjects** |  R  | Anzahl Module in FHEM
-&emsp;&emsp;&emsp;**roomioBroker**  |  R  | (true) Raum ioBroker in FHEM vorhanden
+&emsp;&emsp;**Info**                                    |     | Info
+&emsp;&emsp;&emsp;**NumberObjects**                     |  R  | Anzahl Module in FHEM
+&emsp;&emsp;&emsp;**roomioBroker**                      |  R  | (true) Raum ioBroker in FHEM vorhanden
 
 <a name="info_settings"/>
 
@@ -356,8 +356,8 @@ Objekt                    | Zugriff | Bescheibung
 
 > Unter Settings können bestimmte Einträge für die ioBroker Admin-Oberfläche Bereich `Log` ausgewählt werden. Bei Änderungen ist kein Neustart FHEM-Adapter notwendig.
 
-![alt-Objektename](media/objekte3infoSettings.PNG "Objekte-Attributes")<span style="color:grey">  
-*Objekte-Attributes*</span>
+![alt-Objektename](media/objekte3infoSettings.PNG "Objekt info - Settings")<span style="color:grey">  
+*Objekt info - Settings*</span>
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
@@ -365,10 +365,10 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **[fhem.o](#objekte)**                                 |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[info](#objekte_i)**                           |     | Information und mehr
-&emsp;&emsp;**[Commands](#info_commands)**             |     | 
+&emsp;&emsp;**[Commands](#info_commands)**             |     | Befehlszeile FHEM
 &emsp;&emsp;**[Configurations](#info_configurations)** |     | 
 &emsp;&emsp;**[Info](#info_info)**                     |     | 
-&emsp;&emsp;**Settings**                               |     | Settings
+&emsp;&emsp;**Settings**                               |     | Einträge für Admin-Oberfläche Bereich `LOG`
 &emsp;&emsp;&emsp;**logCheckObject**         |  RW | (true) Erzeugt info check cannel im LOG
 &emsp;&emsp;&emsp;**logCreateChannel**       |  RW | (true) Erzeugt info Create channel im LOG
 &emsp;&emsp;&emsp;**logDeleteChannel**       |  RW | (true) Erzeugt info Delete channel im LOG
