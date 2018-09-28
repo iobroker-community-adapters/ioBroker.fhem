@@ -128,8 +128,6 @@ function getUnit(name) {
     }
     return undefined;
 }
-
-//--------------------------------------------------------------------------------------
 function checkID(event, val, name, attr, id) {
    for (const f in fhemObjects) {
        if (fhemObjects[f].native.Name === name && fhemObjects[f].native.Attribute === attr) {
@@ -140,8 +138,6 @@ function checkID(event, val, name, attr, id) {
    }
    return id;
 }
-
-//--------------------------------------------------------------------------------------
 function parseEvent(event,anz) {
     if (!event) return;
     if (logEventFHEM === true) adapter.log.info('event (FHEM) "' + event + '"');
@@ -332,8 +328,6 @@ function parseEvent(event,anz) {
    }
    adapter.log.warn('[parseEvent] no action ' + event);
 }
-
-//--------------------------------------------------------------------------------------
 function syncStates(states, cb) {
     if (!states || !states.length) {
         adapter.log.debug('end [syncStates]');
@@ -349,8 +343,6 @@ function syncStates(states, cb) {
         setImmediate(syncStates, states, cb);
     });
 }
-
-//--------------------------------------------------------------------------------------
 function syncObjects(objects, cb) {
     if (!objects || !objects.length) {
         adapter.log.debug('end [syncObjects]');
@@ -363,7 +355,7 @@ function syncObjects(objects, cb) {
         if (err) adapter.log.error('[syncObjects] ' + err);
 
         if (!oldObj) {
-            if (obj.type === 'channel') adapter.log.info('Create channel ' + obj._id + ' | ' + obj.common.name + ' |');
+            if (obj.type === 'channel') adapter.log.info('Create channel ' + obj._id + ' | ' + obj.common.name);
             adapter.setForeignObject(obj._id, obj, err => {
                 if (err) adapter.log.error('[syncObjects] ' + err);
                 setImmediate(syncObjects, objects, cb);
@@ -373,7 +365,7 @@ function syncObjects(objects, cb) {
                 oldObj.native = obj.native;
                 oldObj.common.name = obj.common.name;
                 if (autoRole === true) oldObj.common = obj.common;
-                if (obj.type === 'channel' && logUpdateChannel === true) adapter.log.info('Update channel ' + obj._id + '  | ' + oldObj.common.name + ' |');
+                if (obj.type === 'channel' && logUpdateChannel === true) adapter.log.info('Update channel ' + obj._id + '  | ' + oldObj.common.name);
                 adapter.setForeignObject(obj._id, oldObj, err => {
                     if (err) adapter.log.error('[syncObjects] ' + err);
                     setImmediate(syncObjects, objects, cb);
@@ -385,8 +377,6 @@ function syncObjects(objects, cb) {
     });
 
 }
-
-//--------------------------------------------------------------------------------------
 function syncRoom(room, members, cb) {
     adapter.log.debug('[syncRoom] (' + room + ') ' + members);
     adapter.getForeignObject('enum.rooms.' + room, (err, obj) => {
@@ -427,8 +417,6 @@ function syncRoom(room, members, cb) {
         }
     });
 }
-
-//--------------------------------------------------------------------------------------
 function syncRooms(rooms, cb) {
     for (const r in rooms) {
         if (!rooms.hasOwnProperty(r)) continue;
@@ -440,8 +428,6 @@ function syncRooms(rooms, cb) {
     }
     if (cb) cb();
 }
-
-//--------------------------------------------------------------------------------------
 function syncFunction(funktion, members, cb) {
     adapter.log.debug('[syncFunction] (' + funktion + ') ' + members);
     adapter.getForeignObject('enum.functions.' + funktion, function(err, obj) {
@@ -483,8 +469,6 @@ function syncFunction(funktion, members, cb) {
     });
 
 }
-
-//--------------------------------------------------------------------------------------
 function syncFunctions(functions, cb) {
     for (const f in functions) {
         if (!functions.hasOwnProperty(f)) continue;
@@ -496,8 +480,6 @@ function syncFunctions(functions, cb) {
     }
     if (cb) cb();
 }
-
-//--------------------------------------------------------------------------------------
 function myObjects(cb) {
     adapter.log.debug ('[myObjects] start');
     adapter.log.info('check objects ' + adapter.namespace + '.info');
@@ -559,8 +541,6 @@ function myObjects(cb) {
     }
     cb();
 }
-
-//--------------------------------------------------------------------------------------
 function getSetting(id, setting, callback) {
     adapter.log.debug ('[getSetting] ' + id + ' ' + setting);
     adapter.getState (id,function(err,obj) {
@@ -575,8 +555,6 @@ function getSetting(id, setting, callback) {
          }
    });
 }
-
-//--------------------------------------------------------------------------------------
 function getSettings(mode, cb) {
     adapter.log.debug ('[getSettings] ' + mode);
 
@@ -619,8 +597,6 @@ function getSettings(mode, cb) {
     }
     if (cb) cb();
 }
-
-//--------------------------------------------------------------------------------------
 function parseObjects(objs, cb) {
     adapter.log.debug ('[parseObjects]');
     const rooms = {};
@@ -720,12 +696,7 @@ function parseObjects(objs, cb) {
                 Funktion =  'audio';
                 obj.common.role = 'media.music';
                 if (!objs[i].Attributes.generateVolumeEvent) {
-                    let cmd = 'attr ' + objs[i].Name + ' generateVolumeEvent 1';
-                    if (autoConfigFHEM) {
-                        sendFHEM (cmd);
-                    } else {
-                       adapter.log.warn('detect SONOSPLAYER "' + cmd + '" or "' + adapter.name + '.info.Configuration.autoConfigFhem" = true > more info README.md');
-                    }
+                    sendFHEM ('attr ' + objs[i].Name + ' generateVolumeEvent 1','SONOSPLAYER');
                 }
             }
             if (objs[i].Attributes.model === 'HM-CC-RT-DN') {
@@ -1157,8 +1128,6 @@ function parseObjects(objs, cb) {
     });
 
 }
-
-//--------------------------------------------------------------------------------------
 function startSync(cb) {
     adapter.log.debug('[startSync]');
     // send command JsonList2
@@ -1200,7 +1169,6 @@ function startSync(cb) {
         }
     });
 }
-//--------------------------------------------------------------------------------------
 function setFunction(id,Funktion,name) {
     let fff = Funktion.split(',');
     for (let f = 0; f < fff.length; f++) {
@@ -1210,14 +1178,14 @@ function setFunction(id,Funktion,name) {
         functions[fff[f]].push(id);
     }
 }
-
-//--------------------------------------------------------------------------------------
-function sendFHEM(val) {
-    adapter.setState('info.Commands.sendFHEM', val, false);
-    adapter.log.warn ('"' + adapter.name + '.info.Configurations.autoConfigFHEM" = true  > ' + val + ' > more info README.md')
+function sendFHEM(cmd,detect) {
+    if (autoConfigFHEM) {
+        adapter.setState('info.Commands.sendFHEM', cmd, false);
+        adapter.log.info ('"' + adapter.name + '.info.Configurations.autoConfigFHEM" = true  > ' + cmd + ' | more info README.md');
+    } else {
+        if (detect) adapter.log.warn('detect ' + detect + ' "' + cmd + '" or "' + adapter.name + '.info.Configuration.autoConfigFhem" = true | more info README.md');
+    }
 }
-
-//--------------------------------------------------------------------------------------
 function convertAttr(attr,val) {
     if (attr === 'rgb') return '#' + val;
     if (attr === 'Mute') return convertBol0(val);
@@ -1229,8 +1197,6 @@ function convertAttr(attr,val) {
     if (f === val) return f;
     return val;
 }
-
-//--------------------------------------------------------------------------------------
 function convertBol0(val) {
     if (val === '0') return false;
     if (val === 0) return false;
@@ -1244,8 +1210,6 @@ function convertBol0(val) {
     if (f === val) return f;
     return val;
 }
-
-//--------------------------------------------------------------------------------------
 function convertValueBol(val) {
     if (val === '0') return true;
     if (val === 0) return true;
@@ -1266,8 +1230,6 @@ function convertValueBol(val) {
     if (f === val) return f;
     return val;
 }
-
-//--------------------------------------------------------------------------------------
 function convertFhemValue(val) {
     val = val.trim();
     if (val === 'true') return true;
@@ -1278,8 +1240,6 @@ function convertFhemValue(val) {
     if (f === val) return f;
     return val;
 }
-
-//--------------------------------------------------------------------------------------
 function readValue(id, cb) {
     telnetOut.send('get ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute, (err, result) => {
         if (err) adapter.log.error('readValue: ' + err);
@@ -1293,8 +1253,6 @@ function readValue(id, cb) {
         if (cb) cb();
     });
 }
-
-//--------------------------------------------------------------------------------------
 function writeValueDo(id, val, cmd, mode) {
     adapter.log.debug('[writeValueDo] ' + id + ' ' + val + ' ' + cmd);
     if (logEventIOB === true) adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + cmd);
@@ -1310,8 +1268,6 @@ function writeValueDo(id, val, cmd, mode) {
        }
     });
 }
-
-//--------------------------------------------------------------------------------------
 function writeValue(id, val, cb) {
     adapter.log.debug('[writeValue] ' + id + ' ' + val);
     let cmd;
@@ -1372,8 +1328,6 @@ function writeValue(id, val, cb) {
         if (cb) cb();
     });
 }
-
-//--------------------------------------------------------------------------------------
 function requestMeta(name, attr, value, event, cb) {
      adapter.log.info('check channel ' + name + ' > jsonlist2');
      // send command JsonList2
@@ -1405,8 +1359,6 @@ function requestMeta(name, attr, value, event, cb) {
         }
     });
 }
-
-//--------------------------------------------------------------------------------------
 function deleteChannel(name, cb) {
     adapter.log.debug ('[deleteChannel] ' + name);
     delete fhemObjects[adapter.namespace + '.' + name];
@@ -1415,8 +1367,6 @@ function deleteChannel(name, cb) {
         if (cb) cb();
     });
 }
-
-//--------------------------------------------------------------------------------------
 function deleteObject(name, cb) {
     adapter.log.debug('[deleteObject] ' + name);
     adapter.delObject(name, err => {
@@ -1424,8 +1374,6 @@ function deleteObject(name, cb) {
         if (cb) cb();
     });
 }
-
-//--------------------------------------------------------------------------------------
 function deleteState(name, cb) {
     adapter.log.debug('[deleteState] ' + name);
      adapter.delState(name, err => {
@@ -1433,8 +1381,6 @@ function deleteState(name, cb) {
         if (cb) cb();
     });
 }
-
-//--------------------------------------------------------------------------------------
 function unusedObjects(check, cb) {
     adapter.log.debug ('[unusedObjects] ' + check);
     let channel = 'no';
@@ -1498,8 +1444,6 @@ function unusedObjects(check, cb) {
     });
     if (cb) cb();
 }
-
-//-------------------------------------------------------------------------------------------------------------------------------
 function processQueue() {
     //adapter.log.debug ('[processQueue]');
     if (telnetOut.isCommandRunning() || !queue.length) return;
@@ -1519,8 +1463,6 @@ function processQueue() {
         setImmediate(processQueue);
     }
 }
-
-//-------------------------------------------------------------------------------------------------------------------------------
 function processQueueL() {
     //adapter.log.debug ('[processQueueL]');
     if (!queueL.length) return;
@@ -1536,8 +1478,7 @@ function processQueueL() {
         setImmediate(processQueueL);
     }
 }
-
-//================================================================================================================================== end
+// end ==================================================================================================================================
 function main() {
     adapter.log.debug ('[main]');
     adapter.config.host = adapter.config.host || '127.0.0.1';
