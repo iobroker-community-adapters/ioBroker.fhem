@@ -349,7 +349,8 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;**[Commands](#info_commands)**              |     | Befehlszeile FHEM
 &emsp;&emsp;**[Configurations](#info_configurations)**  |     | 
 &emsp;&emsp;**Info**                                    |     | Info
-&emsp;&emsp;&emsp;**NumberObjects**                     |  R  | Anzahl Module in FHEM
+&emsp;&emsp;&emsp;**buildDate**                         |  R  | Datum Version
+&emsp;&emsp;&emsp;**numberObjects**                     |  R  | Anzahl Module in FHEM
 &emsp;&emsp;&emsp;**roomioBroker**                      |  R  | (true) Raum ioBroker in FHEM vorhanden
 
 <a name="info_settings"/>
@@ -397,23 +398,30 @@ Objekt                    | Zugriff | Bescheibung
 
 Rolle                    | Zugriff | Art | min Wert | max Wert | Einheit |
 :------------------------|:-------:|:----|:--------:|:--------:|:---------  
-button                   | W  | Logikwert    |   
-button.play              | W  | Logikwert    |   
-button.pause             | W  | Logikwert    |   
-button.stop              | W  | Logikwert    |   
-button.prev              | W  | Logikwert    | 
+button                   | W  | Logikwert    | 
 button.next              | W  | Logikwert    |
-level.volume             | RW | Zahl         |  0  | 100 | %  
-level.volume.group       | RW | Zahl         |  0  | 100 | %
-level.dimmer             | RW | Zahl         |  0  | 100 | %
-level.color.temperature  | RW | Zahl         |
-level.color.rgb          | RW | Zeichenkette |
-level.color.saturation   | RW |              |
-level.temperature        | RW | Zahl         |
+button.pause             | W  | Logikwert    | 
+button.play              | W  | Logikwert    |   
+button.prev              | W  | Logikwert    | 
+button.stop              | W  | Logikwert    | 
+indicator                | R  | Logikwert    |
 indicator.unreach        | R  | Logikwert    |
 indicator.reachable      | R  | Logikwert    |
-value.temperature        | R  | Zahl         |
-switch                   | R  | Logikwert    |
+level                    | RW | Zahl         |
+level.color.rgb          | RW | Zeichenkette |
+level.color.saturation   | RW | Zahl         |    0 |  254 |
+level.color.temperature  | RW | Zahl         | 2000 | 6500 |
+level.dimmer             | RW | Zahl         |    0 |  100 | %
+level.temperature        | RW | Zahl         |    5 |   35 | °C
+level.volume             | RW | Zahl         |    0 |  100 | %  
+level.volume.group       | RW | Zahl         |    0 |  100 | %
+state                    | RW | Zeichenkette |
+switch                   | RW | Logikwert    |
+switch.light             | RW | Logikwert    |
+text                     | R  | Zeichenkette |
+value                    | R  | Zahl         |     
+value.temperature        | R  | Zahl         |      |      | °C
+
 
 Art                 | Mögliche Werte | Art | min Wert | max Wert | Einheit |
 :------------------------|:-------:|:----|:--------:|:--------:|:---------  
