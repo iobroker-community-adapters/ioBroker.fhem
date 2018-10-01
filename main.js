@@ -24,7 +24,7 @@ let lastNameTS = '0';
 let iobroker = false;
 let firstRun = true;
 let synchro = true;
-const buildDate = '01.10.18a';
+const buildDate = '01.10.18b';
 const ignoreObjectsInternalsTYPE = ['no'];
 const ignoreObjectsInternalsNAME = ['info'];
 const ignoreObjectsAttributesroom = ['no'];
@@ -163,6 +163,7 @@ function parseEvent(event,anz) {
     // No cannel for event and not global?
     if (!fhemObjects[adapter.namespace + '.' + parts[1].replace(/\./g, '_')] && parts[1] !== 'global') return;
     // Global global ?
+    if (!parts[3]) return;
     if (parts[0] === 'Global' && parts[1] === 'global') {
        // Global global DEFINED ?
        if (parts[2] === 'DEFINED') {
@@ -178,7 +179,7 @@ function parseEvent(event,anz) {
            return;
        }
        // No channel for event and not room?
-       if (!fhemObjects[adapter.namespace + '.' + parts[3]] && parts[4] !== 'room') return;
+       if (!fhemObjects[adapter.namespace + '.' + parts[3].replace(/\./g, '_')] && parts[4] !== 'room') return;
        // Global global ATTR ?
        if (parts[2] === 'ATTR' && allowedAttributes.indexOf(parts[4]) !== -1) {
            if (logEventFHEMglobal) adapter.log.info('event FHEM(g) "' + event + '"');
@@ -196,9 +197,9 @@ function parseEvent(event,anz) {
        if (parts[2] === 'DELETEATTR' && allowedAttributes.indexOf(parts[4]) !== -1) {
            if (logEventFHEMglobal) adapter.log.info('event FHEM(g) "' + event + '"');
            if (parts[4] === 'room' && iobroker) {
-                  unusedObjects(parts[3] + '.*');
+                  unusedObjects(parts[3].replace(/\./g, '_') + '.*');
               } else {
-                  unusedObjects(parts[3] + '.Attributes.' + parts[4]);
+                  unusedObjects(parts[3].replace(/\./g, '_') + '.Attributes.' + parts[4]);
               }
            if (parts[4] === 'alias') {
                queue.push({
