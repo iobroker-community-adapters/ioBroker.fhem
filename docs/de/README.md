@@ -453,13 +453,23 @@ heating                  |    |
 
 ## FAQ
 
-> In meiner IoBroker Installation werden nicht alle Module aus FHEM synchronisiert
+#### Update FHEM Adapter von github ?
+1. Admin-Oberfläche Bereich `Adapter` oben links "Installieren aus eigener URL"
+2. VON GITHUB >Adapter auswählen: fhem >INSTALLIEREN
 
+![alt-Objektename](media/update_github.PNG "update_github")<span style="color:grey">  
+*update_github*</span>
+
+#### In meiner ioBroker Installation werden nicht alle Module aus FHEM synchronisiert
 Ist in FHEM ein Raum ioBroker vorhanden?
 
-> Abweichungen diese Doku zu meinem ioBroker System
+#### Objekte werden aus FHEM synchronisiert, danach aber nicht aktuallisiert
+Eine Aktualisierung kann nur bei einem entsprechenden Event in FHEM erfolgen.
+1. FHEM Event monitor auf Einträge prüfen
+2. `fhem.0.info.Settings.logEventFHEM` auf true und in der Admin-Oberfläche Bereich `Log` werden alle über Telnet eingehenden Events angezeigt.
 
-Aktuellle Version der FHEM Adapters installiert?
+#### Abweichungen diese Doku zu meinem ioBroker System
+Aktuellle Version von FHEM Adapters installiert?
 
 <a name="beispiele"/>
 
