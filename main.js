@@ -130,15 +130,13 @@ function getUnit(name) {
     return undefined;
 }
 function checkID(event, val, name, attr, id) {
-// adapter.log.warn (name + ' ' + attr);   
    for (const f in fhemObjects) {
-       if (fhemObjects[f].native.Name === name && fhemObjects[f].native.Attribute === attr) {
+        if (fhemObjects[f].native.Name === name && fhemObjects[f].native.Attribute === attr) {
            adapter.log.debug ('[checkID] (FHEM) ' + event + ' > (ioBroker) ' + fhemObjects[f]._id + ' ' + val);
            id = fhemObjects[f]._id;
            continue;
-       }
+        }
    }
-   if (!id) adapter.log.warn ('checkID' + name + ' error');
    return id;
 }
 function parseEvent(event,anz) {
@@ -163,7 +161,7 @@ function parseEvent(event,anz) {
     // No cannel for event and not global?
     if (!fhemObjects[adapter.namespace + '.' + parts[1].replace(/\./g, '_')] && parts[1] !== 'global') return;
     // Global global ?
-    if (!parts[3]) return;
+    if (parts[2] === 'SAVE') return;
     if (parts[0] === 'Global' && parts[1] === 'global') {
        // Global global DEFINED ?
        if (parts[2] === 'DEFINED') {
