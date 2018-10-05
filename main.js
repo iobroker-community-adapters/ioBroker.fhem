@@ -529,8 +529,9 @@ function myObjects(cb) {
     for (let i = 0; i < newPoints.length; i++) {
         adapter.setForeignObject(newPoints[i]._id, newPoints[i], err => {
             if (err) adapter.log.error('[myObjects] ' + err);
+            if (i === newPoints.length-1) cb();
         });
-        if (i === newPoints.length-1) cb();
+       
     }
     // Alte Objekte löschen
     adapter.getObject('info.Info.NumberObjects', (err, obj) => {
