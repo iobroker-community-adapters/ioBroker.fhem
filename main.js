@@ -24,7 +24,7 @@ let lastNameTS = '0';
 let iobroker = false;
 let firstRun = true;
 let synchro = true;
-const buildDate = '01.10.18b';
+const buildDate = '07.10.18';
 const ignoreObjectsInternalsTYPE = ['no'];
 const ignoreObjectsInternalsNAME = ['info'];
 const ignoreObjectsAttributesroom = ['no'];
@@ -1257,81 +1257,104 @@ function readValue(id, cb) {
         if (cb) cb();
     });
 }
-function writeValueDo(id, val, cmd, mode) {
-    adapter.log.debug('[writeValueDo] ' + id + ' ' + val + ' ' + cmd);
-    if (logEventIOB) adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + cmd);
-    if (mode === 'command') adapter.setState('info.Commands.lastCommand', cmd, true);
-    if (mode === 'iob') adapter.setState('info.Commands.lastCommand', cmd + ' / ' + id + ' ' + val, true);
-    telnetOut.send(cmd, function(err, result) {
-        if (err) adapter.log.error('[writeValueDo] ' + err);
-        if (mode === 'command') {
-           result = result.replace(/(\r\n)|(\r)|(\n)/g, '<br />');
-           adapter.setState('info.Commands.resultFHEM', result, function(err) {
-           if (err) adapter.log.error('[writeValueDo] ' + err);
-           });
-       }
-    });
-}
+
 function writeValue(id, val, cb) {
     adapter.log.debug('[writeValue] ' + id + ' ' + val);
     let cmd;
     let parts;
-    let val_in = val;
-    if (val === undefined || val === null) val = '';
+    if (val === undefined || val === null)
+        val = '';
     parts = id.split('.');
-     // switch?
+    // switch?
     if (id.indexOf('state_switch') !== -1) {
-        if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true) val = 'on';
-        if (val === '0' || val === 0 || val === 'off' || val === 'false' || val === false) val = 'off';
+        if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true)
+            val = 'on';
+        if (val === '0' || val === 0 || val === 'off' || val === 'false' || val === false)
+            val = 'off';
         cmd = 'set ' + fhemObjects[id].native.Name + ' ' + val;
-        writeValueDo(id, val, cmd, 'iob');
-        if (cb) cb();
+        if (logEventIOB)
+            adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + cmd);
+        telnetOut.send(cmd, function (err, result) {
+            if (err)
+                adapter.log.error('[writeValue] ' + err);
+            if (cb)
+                cb();
+        });
         return;
     }
     // change settings?
     if (id.indexOf(adapter.namespace + '.info.Settings.') !== -1) {
         getSettings('settings');
-        if (cb) cb();
+        if (cb)
+            cb();
         return;
     }
     // sendFHEM?
     if (id === adapter.namespace + '.info.Commands.sendFHEM') {
-        cmd =  val;
-        writeValueDo(id, val, cmd, 'command');
-        if (cb) cb();
+        if (logEventIOB)
+            adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + val);
+        telnetOut.send(val, function (err, result) {
+            if (err)
+                adapter.log.error('[writeValue] ' + err);
+            adapter.setState('info.Commands.resultFHEM', result.replace(/(\r\n)|(\r)|(\n)/g, '<br />'), function (err) {
+                if (err)
+                    adapter.log.error('[writeValueDo] ' + err);
+            });
+            adapter.setState('info.Commands.lastCommand', cmd, function (err) {
+                if (err)
+                    adapter.log.error('[writeValueDo] ' + err);
+            });
+            if (cb)
+                cb();
+        });
         return;
     }
     // attr?
     if (allowedAttributes.indexOf(parts[4]) !== -1) {
         cmd = 'attr ' + fhemObjects[id].native.Name + ' ' + parts[4] + ' ' + val;
-        writeValueDo(id, val, cmd, 'iob');
-        if (cb) cb();
+        if (logEventIOB)
+            adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + cmd);
+        telnetOut.send(cmd, function (err, result) {
+            if (err)
+                adapter.log.error('[writeValue] ' + err);
+            if (cb)
+                cb();
+        });
         return;
     }
     // rgb?
-    if (fhemObjects[id].native.Attribute === 'rgb') val = val.substring(1);
+    if (fhemObjects[id].native.Attribute === 'rgb')
+        val = val.substring(1);
     // bol0?
     if (fhemObjects[id].native.bol0) {
         //convertBol0(val);
-        if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true) val = '1';
-        if (val === '0' || val === 0 || val === 'off' || val === 'false' || val === false) val = '0';
+        if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true)
+            val = '1';
+        if (val === '0' || val === 0 || val === 'off' || val === 'false' || val === false)
+            val = '0';
     }
     // state?
     if (fhemObjects[id].native.Attribute === 'state') {
-        if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true) val = 'on';
-        if (val === '0' || val === 0 || val === 'off' || val === 'false' || val === false) val = 'off';
+        if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true)
+            val = 'on';
+        if (val === '0' || val === 0 || val === 'off' || val === 'false' || val === false)
+            val = 'off';
         cmd = 'set ' + fhemObjects[id].native.Name + ' ' + val;
     } else {
         cmd = 'set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute + ' ' + val;
         // button?
-        if(fhemObjects[id].common.role.indexOf('button') !== -1) {cmd = 'set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute;}
+        if (fhemObjects[id].common.role.indexOf('button') !== -1) {
+            cmd = 'set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute;
+        }
     }
-    writeValueDo(id, val_in, cmd, 'iob');
-/*    if (logEventIOB) adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + cmd);
-    telnetOut.send(cmd, function(err, result) {
-        if (err) adapter.log.error('[writeValue] ' + err);
-        if (cb) cb();
-    });       */
+    if (logEventIOB)
+        adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + cmd);
+    telnetOut.send(cmd, function (err, result) {
+        if (err)
+            adapter.log.error('[writeValue] ' + err);
+        if (cb)
+            cb();
+    });
 }
 function requestMeta(name, attr, value, event, cb) {
      adapter.log.info('check channel ' + name + ' > jsonlist2');
