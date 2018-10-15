@@ -850,8 +850,8 @@ function parseObjects(objs, cb) {
                             const _slider = parts[1].split(',');
                             obj.common.type = 'number';
                             obj.common.role = 'level';
-                            obj.common.min = _slider[1];
-                            obj.common.max = _slider[3];
+                            obj.common.min = parseInt(_slider[1]);
+                            obj.common.max = parseInt(_slider[3]);
                             //special
                             if (parts[0] === 'sat') obj.common.role = 'level.color.saturation';
                         }
