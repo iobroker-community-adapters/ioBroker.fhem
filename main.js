@@ -24,7 +24,7 @@ let lastNameTS = '0';
 let iobroker = false;
 let firstRun = true;
 let synchro = true;
-const buildDate = '07.10.18';
+const buildDate = '15.10.18';
 const ignoreObjectsInternalsTYPE = ['no'];
 const ignoreObjectsInternalsNAME = ['info'];
 const ignoreObjectsAttributesroom = ['no'];
@@ -861,8 +861,8 @@ function parseObjects(objs, cb) {
                         obj.common.type = 'number';
                         obj.common.role = 'level.temperature';
                         obj.common.unit = '°C';
-                        obj.common.min = '5';
-                        obj.common.max = '30';
+                        obj.common.min = 5;
+                        obj.common.max = 30;
                         obj.native.level_temperature = true;
                         if (adapter.namespace === 'fhem.0') {
                             obj.common.smartName = {
@@ -875,8 +875,8 @@ function parseObjects(objs, cb) {
                         obj.common.type = 'number';
                         obj.common.role = 'level.dimmer';
                         obj.common.unit = '%';
-                        obj.common.min = '0';
-                        obj.common.max = '100';
+                        obj.common.min = 0;
+                        obj.common.max = 100;
                         obj.native.level_dimmer = true;
                         if (adapter.namespace === 'fhem.0') {
                             obj.common.smartName = {
@@ -889,8 +889,8 @@ function parseObjects(objs, cb) {
                         obj.common.role = 'level.volume';
                         obj.common.type = 'number';
                         obj.common.unit = '%';
-                        obj.common.min = '0';
-                        obj.common.max = '100';
+                        obj.common.min = 0;
+                        obj.common.max = 100;
                         obj.native.volume = true;
                         if (parts[0].indexOf('Group') !== -1) obj.common.role = 'level.volume.group';
                         if (adapter.namespace === 'fhem.0') {
@@ -915,8 +915,8 @@ function parseObjects(objs, cb) {
                         obj.common.type = 'number';
                         obj.common.role = 'level.color.temperature';
                         obj.common.unit = 'K';
-                        obj.common.min ='2000';
-                        obj.common.max ='6500';
+                        obj.common.min =2000;
+                        obj.common.max =6500;
                         obj.native.ct = true;
                         if (adapter.namespace === 'fhem.0') {
                             obj.common.smartName = {
