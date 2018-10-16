@@ -255,8 +255,8 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **[fhem.o](#objekte)**                      |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[HUEDevice1](#objekte_c)**          |     | HUEDevice1 (Beispiel)
-&emsp;&emsp;**[Attributes](#objekte_c_a)**  |     | Mögliche Attribute: alias, room, disable, comment
-&emsp;&emsp;**Internals**               |     | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+&emsp;&emsp;**[Attributes](#objekte_c_a)**  |     | Mögliche Attribute: alias, room, comment + info.Configurations.allowedAttributes
+&emsp;&emsp;**Internals**               |     | Mögliche Internals: NAME, TYPE + info.Configurations.allowedInternals
 &emsp;&emsp;&emsp;**NAME**              |  R  | Info zB zur Anzeige in VIS
 &emsp;&emsp;&emsp;**TYPE**              |  R  | Info zB zur Anzeige in VIS
 &emsp;&emsp;&emsp;**manufacturname**    |  R  | Info zB zur Anzeige in VIS
@@ -315,21 +315,29 @@ Objekt                    | Zugriff | Bescheibung
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
-Objekt                             | Zugriff | Bescheibung
-:----------------------------------|:-------:|:-----------
-**[fhem.o](#objekte)**                     |     | Name der ersten *Instanz* des FHEM Adapters
-&emsp;**[info](#objekte_i)**               |     | Information und mehr
-&emsp;&emsp;**[Commands](#info_commands)** |     | Befehlszeile FHEM 
-&emsp;&emsp;**Configurations**             |     | Configurations
-&emsp;&emsp;&emsp;**autoConfigFHEM**       |  RW | (true) Automatische Änderungen in FHEM
-&emsp;&emsp;&emsp;**autoFunction**         |  RW | (true) Funktionen werden bei Neustart nach Stand Adapter vergeben  (false) Funktionn werden nur beim 1.Start Adapter vergeben
-&emsp;&emsp;&emsp;**autoRole**             |  RW | (true) Rollen werden bei Neustart nach Stand Adaper vergeben  (false) Rollen werden nur beim 1.Start Adapter vergeben
+Objekt                                           | Zugriff | Bescheibung
+:-------------------------------------------------|:---:|:-----------
+**[fhem.o](#objekte)**                            |     | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**[info](#objekte_i)**                      |     | Information und mehr
+&emsp;&emsp;**[Commands](#info_commands)**        |     | Befehlszeile FHEM 
+&emsp;&emsp;**Configurations**                    |     | Configurations
+&emsp;&emsp;&emsp;**allowedAttributes**           |  RW | Sync Attributtes = room, alias, comment +
+&emsp;&emsp;&emsp;**allowedIOBin**                |  RW | Erlaubte Objekte zum Übertrag nach FHEM
+&emsp;&emsp;&emsp;**allowedInternals**            |  RW | Sync Internals = TYPE, NAME +
+&emsp;&emsp;&emsp;**autoConfigFHEM**              |  RW | (true) Erlaubt Änderungen in FHEM
+&emsp;&emsp;&emsp;**autoFunction**                |  RW | (true) Funktionen werden bei Neustart nach Stand Adaper vergeben
+&emsp;&emsp;&emsp;**autoRole**                    |  RW | (true) Rollen werden bei Neustart nach Stand Adaper vergeben  (false) Rollen werden nur beim 1.Start Adapter vergeben
+&emsp;&emsp;&emsp;**ignoreObjectsAttributesroom** |  RW | Kein Sync von Modulen mit Raum =
+&emsp;&emsp;&emsp;**ignoreObjectsInternalsNAME**  |  RW | Kein Sync von Modulen mit NAME = info +
+&emsp;&emsp;&emsp;**ignoreObjectsInternalsTYPE**  |  RW | Kein Sync von Modulen mit TYPE =
+&emsp;&emsp;&emsp;**ignorePossibleSets**          |  RW | Kein Sync von PossibleSets =
+&emsp;&emsp;&emsp;**ignoreReadings**              |  RW | Kein Sync von Readings =
+&emsp;&emsp;&emsp;**onlySyncRoom**                |  RW | Sync nur aus Raum = ioBroker, ioB.OUT +
 
 Funktionen autoConfigFHEM = true (über fhem.0.info.Commands.sendFHEM)        |                
 :----------------------------------|
-Am Ende der Synchronisation `save` |
 Für TYPE=SONOSPLAYER `attr xxx generateVolumeEvent 1` damit Lautstärke übertragen wird                                  |  
-
+Am Ende der Synchronisation `save` |
 
 <a name="info_info"/>
 
@@ -350,8 +358,10 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;**[Configurations](#info_configurations)**  |     | 
 &emsp;&emsp;**Info**                                    |     | Info
 &emsp;&emsp;&emsp;**buildDate**                         |  R  | Datum Version
-&emsp;&emsp;&emsp;**numberObjects**                     |  R  | Anzahl Module in FHEM
-&emsp;&emsp;&emsp;**roomioBroker**                      |  R  | (true) Raum ioBroker in FHEM vorhanden
+&emsp;&emsp;&emsp;**numberDevicesFHEM**                 |  R  | Anzahl Module in FHEM
+&emsp;&emsp;&emsp;**numberObjectsIOBin**                |  R  | Anzahl Objekte aus FHEM
+&emsp;&emsp;&emsp;**numberObjectsIOBout**               |  R  | Anzahl Objekte zu FHEM
+&emsp;&emsp;&emsp;**roomioBroker**                      |  R  | (true) Raum aus Configurations.onlySyncRoom vorhanden
 
 <a name="info_settings"/>
 
@@ -380,6 +390,7 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;&emsp;**logEventFHEMreading**    |  RW | (true) Erzeugt info eventFHEM(r) im LOG
 &emsp;&emsp;&emsp;**logEventFHEMstate**      |  RW | (true) Erzeugt info eventFHEM(s) im LOG
 &emsp;&emsp;&emsp;**logEventIOB**            |  RW | (true) Erzeugt info eventIOB im LOG
+&emsp;&emsp;&emsp;**logIgnoreConfigurations**|  RW | (true) Erzeugt info ignore objec im LOG
 &emsp;&emsp;&emsp;**logUnhandeledEventFHEM** |  RW | (true) Erzeugt warn unhandeled event FHEM im LOG
 &emsp;&emsp;&emsp;**logUpdateChannel**       |  RW | (true) Erzeugt info Update channel im LOG
 
