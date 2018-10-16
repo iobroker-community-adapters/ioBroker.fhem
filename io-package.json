@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "fhem",
-        "version":                  "0.5.6",
+        "version":                  "1.0.0",
         "title":                    "FHEM connection",
         "desc":                     {
            "en": "FHEM",
@@ -9,6 +9,17 @@
            "ru": "FHEM"
 	    },
         "news": {
+            "1.0.0": {
+              "en": "Min/max are defined as number now",
+              "de": "Min / Max sind jetzt als Nummer definiert",
+              "ru": "Мин / макс определяются как число сейчас",
+              "pt": "Min / max são definidos como número agora",
+              "nl": "Min / max worden nu als nummer gedefinieerd",
+              "fr": "Min / max sont définis comme un nombre maintenant",
+              "it": "Min / max sono definiti come numero ora",
+              "es": "Min / max se definen como número ahora",
+              "pl": "Min / max są teraz zdefiniowane jako liczba"
+            },
             "0.5.6" : {
               "en": "Some roles were updated",
               "de": "Einige Rollen wurden aktualisiert",

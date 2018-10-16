@@ -48,6 +48,9 @@ Actually only following attributes are supported:
 
 
 ## Changelog
+### 1.0.0 (2018-10-15)
+* (LausiD) Min/max were defined as number
+
 ### 0.5.6 (2018-09-09)
 * (LausiD) Some roles were updated
 

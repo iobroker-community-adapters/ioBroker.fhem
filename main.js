@@ -129,17 +129,19 @@ function getUnit(name) {
     }
     return undefined;
 }
+
 function checkID(event, val, name, attr, id) {
-   for (const f in fhemObjects) {
+    for (const f in fhemObjects) {
+        if (!fhemObjects.hasOwnProperty(f)) continue;
         if (fhemObjects[f].native.Name === name && fhemObjects[f].native.Attribute === attr) {
            adapter.log.debug ('[checkID] (FHEM) ' + event + ' > (ioBroker) ' + fhemObjects[f]._id + ' ' + val);
            id = fhemObjects[f]._id;
-           continue;
         }
-   }
-   return id;
+    }
+    return id;
 }
-function parseEvent(event,anz) {
+
+function parseEvent(event, anz) {
     if (!event) return;
     if (logEventFHEM) adapter.log.info('event (FHEM) "' + event + '"');
     // Sonos special
@@ -330,6 +332,7 @@ function parseEvent(event,anz) {
    }
    adapter.log.warn('[parseEvent] no action ' + event);
 }
+
 function syncStates(states, cb) {
     if (!states || !states.length) {
         adapter.log.debug('end [syncStates]');
@@ -345,6 +348,7 @@ function syncStates(states, cb) {
         setImmediate(syncStates, states, cb);
     });
 }
+
 function syncObjects(objects, cb) {
     if (!objects || !objects.length) {
         adapter.log.debug('end [syncObjects]');
@@ -378,8 +382,8 @@ function syncObjects(objects, cb) {
             }
         }
     });
-
 }
+
 function syncRoom(room, members, cb) {
     adapter.log.debug('[syncRoom] (' + room + ') ' + members);
     adapter.getForeignObject('enum.rooms.' + room, (err, obj) => {
@@ -420,6 +424,7 @@ function syncRoom(room, members, cb) {
         }
     });
 }
+
 function syncRooms(rooms, cb) {
     for (const r in rooms) {
         if (!rooms.hasOwnProperty(r)) continue;
@@ -431,9 +436,10 @@ function syncRooms(rooms, cb) {
     }
     if (cb) cb();
 }
+
 function syncFunction(funktion, members, cb) {
     adapter.log.debug('[syncFunction] (' + funktion + ') ' + members);
-    adapter.getForeignObject('enum.functions.' + funktion, function(err, obj) {
+    adapter.getForeignObject('enum.functions.' + funktion, (err, obj) => {
         if (!obj) {
             obj = {
                 _id: 'enum.functions.' + funktion,
@@ -445,7 +451,7 @@ function syncFunction(funktion, members, cb) {
                 native: {}
             };
             adapter.log.debug('create' + obj._id + '"');
-            adapter.setForeignObject(obj._id, obj, function(err) {
+            adapter.setForeignObject(obj._id, obj, err => {
                 if (err) adapter.log.error('[syncFunction] ' + err);
                 cb();
             });
@@ -461,7 +467,7 @@ function syncFunction(funktion, members, cb) {
             }
             if (changed) {
                 adapter.log.debug('update "' + obj._id + '"');
-                adapter.setForeignObject(obj._id, obj, function(err) {
+                adapter.setForeignObject(obj._id, obj, err => {
                     if (err) adapter.log.error('[syncFunction] ' + err);
                     cb();
                 });
@@ -472,6 +478,7 @@ function syncFunction(funktion, members, cb) {
     });
 
 }
+
 function syncFunctions(functions, cb) {
     for (const f in functions) {
         if (!functions.hasOwnProperty(f)) continue;
@@ -483,10 +490,23 @@ function syncFunctions(functions, cb) {
     }
     if (cb) cb();
 }
+
+function executeTasks(points, cb) {
+    if (!points || !points.length) {
+        cb && cb();
+    } else {
+        const point = points.shift();
+        adapter.setForeignObject(point._id, point, err => {
+            if (err) adapter.log.error('[executeTasks] ' + err);
+            setImmediate(() => executeTasks(points, cb));
+        });
+    }
+}
+
 function myObjects(cb) {
     adapter.log.debug ('[myObjects] start');
     adapter.log.info('check objects ' + adapter.namespace + '.info');
-    const newPoints =[
+    const newPoints = [
         // info.Commands
         {_id: adapter.namespace + '.info.Commands.lastCommand', type: 'state', common: {name: 'Last command to FHEM', type: 'string', read: true, write: false, role: 'text'},native: {}},
         {_id: adapter.namespace + '.info.Commands.resultFHEM', type: 'state', common: {name: 'Result of FHEM', type: 'string', read: true, write: false, role: 'text'},native: {}},
@@ -526,79 +546,79 @@ function myObjects(cb) {
         {_id: adapter.namespace + '.info.Settings.logUnhandledEventFHEM', type: 'state', common: {name: 'Log warn unhandled event FHEM', type: 'boolean', read: true, write: true, role: 'switch'},native: {}}, 
         {_id: adapter.namespace + '.info.Settings.logUpdateChannel', type: 'state', common: {name: 'Log info Update channel', type: 'boolean', read: true, write: true, role: 'switch'},native: {}}
     ];
-    for (let i = 0; i < newPoints.length; i++) {
-        adapter.setForeignObject(newPoints[i]._id, newPoints[i], err => {
-            if (err) adapter.log.error('[myObjects] ' + err);
-            if (i === newPoints.length-1) cb();
+
+    executeTasks(newPoints, () => {
+        // Delete old objects
+        adapter.getObject('info.Info.NumberObjects', (err, obj) => {
+            err && adapter.log.error('[myObjects] ' + err);
+            if (obj) {
+                adapter.delObject('info.Info.NumberObjects', err =>
+                    err && adapter.log.error('[myObjects] ' + 'info.Info.NumberObjects' + ' ' + err));
+            }
+            cb && cb();
         });
-       
-    }
-    // Alte Objekte löschen
-    adapter.getObject('info.Info.NumberObjects', (err, obj) => {
-        if (err) {adapter.log.error('[myObjects] ' + err);}
-        if (obj) {
-            adapter.delObject('info.Info.NumberObjects', err => {
-            if (err) adapter.log.error('[myObjects] ' + 'info.Info.NumberObjects' + ' ' + err);
-            });
-        }
     });
 }
+
 function getSetting(id, setting, callback) {
-    adapter.log.debug ('[getSetting] ' + id + ' ' + setting);
-    adapter.getState (id,function(err,obj) {
+    adapter.log.debug('[getSetting] ' + id + ' ' + setting);
+    adapter.getState(id, (err, obj) => {
          if (err) adapter.log.error ('getSetting: ' + err);
          if (obj) {
              adapter.log.info('> ' + id + ' = ' + obj.val);
              callback(obj.val);
          } else  {
-             adapter.setState(id,setting,true);
-             adapter.log.info('> ' + id + ' = ' + setting);
-             callback(setting);
+             adapter.setState(id, setting, true, () => {
+                 adapter.log.info('> ' + id + ' = ' + setting);
+                 callback(setting);
+             });
          }
    });
 }
+
 function getSettings(mode, cb) {
     adapter.log.debug ('[getSettings] ' + mode);
 
     if (mode === 'config' || mode === 'all') {
           adapter.log.info('check ' + adapter.namespace + '.' + 'info.Configurations');
-          getSetting('info.Configurations.autoRole', autoRole, function (wert){autoRole=wert;});
-          getSetting('info.Configurations.autoFunction', autoFunction, function (wert){autoFunction=wert;});
-          getSetting('info.Configurations.autoConfigFHEM', autoConfigFHEM, function (wert){autoConfigFHEM=wert;});
+          getSetting('info.Configurations.autoRole', autoRole, wert => autoRole = wert);
+          getSetting('info.Configurations.autoFunction', autoFunction, wert => autoFunction = wert);
+          getSetting('info.Configurations.autoConfigFHEM', autoConfigFHEM, wert => autoConfigFHEM = wert);
           /* coming soon
-          getSetting('info.Configurations.autoFunction', autoFunction, function (wert){autoFunction=wert});
-          getSetting('info.Configurations.allowedAttributes', allowedAttributes, function(wert){allowedAttributes=JSON.parse(wert)});
-          getSetting('info.Configurations.allowedInternals', allowedInternals, function (wert){allowedInternals=JSON.parse(wert)});;
-          getSetting('info.Configurations.ignoreReadings', ignoreReadings, function (wert){ignoreReadings=JSON.parse(wert)});
-          getSetting('info.Configurations.ignorePossibleSets', ignorePossibleSets, function (wert){ignorePossibleSets=JSON.parse(wert)});
-          getSetting('info.Configurations.ignoreObjectsInternalsTYPE', ignoreObjectsInternalsTYPE, function (wert){ignoreObjectsInternalsTYPE=JSON.parse(wert)});
-          getSetting('info.Configurations.ignoreObjectsInternalsNAME', ignoreObjectsInternalsNAME, function (wert){ignoreObjectsInternalsNAME=JSON.parse(wert)});
-          getSetting('info.Configurations.ignoreObjectsAttributesroom', ignoreObjectsAttributesroom, function (wert){ignoreObjectsAttributesroom=JSON.parse(wert)});
-          getSetting('info.Configurations.RdimPossibleSets', dimPossibleSets, function (wert){dimPossibleSets=JSON.parse(wert)});
-          getSetting('info.Configurations.RvolumePossibleSets', volumePossibleSets, function (wert){volumePossibleSets=JSON.parse(wert)});
-          getSetting('info.Configurations.RtemperaturePossibleSets', temperaturePossibleSets, function (wert){temperaturePossibleSets=JSON.parse(wert)});
-          getSetting('info.Configurations.RlevelPossibleSets', levelPossibleSets, function (wert){levelPossibleSets=JSON.parse(wert)});
-          getSetting('info.Configurations.RbuttonPossibleSets', buttonPossibleSets, function (wert){buttonPossibleSets=JSON.parse(wert)});
-          getSetting('info.Configurations.Utemperature', Utemperature, function (wert){Utemperature=JSON.parse(wert)});
+          getSetting('info.Configurations.autoFunction', autoFunction, wert => autoFunction = wert});
+          getSetting('info.Configurations.allowedAttributes', allowedAttributes, wert => allowedAttributes = JSON.parse(wert));
+          getSetting('info.Configurations.allowedInternals', allowedInternals, wert => allowedInternals = JSON.parse(wert));
+          getSetting('info.Configurations.ignoreReadings', ignoreReadings, wert => ignoreReadings = JSON.parse(wert));
+          getSetting('info.Configurations.ignorePossibleSets', ignorePossibleSets, wert => ignorePossibleSets = JSON.parse(wert));
+          getSetting('info.Configurations.ignoreObjectsInternalsTYPE', ignoreObjectsInternalsTYPE, wert => ignoreObjectsInternalsTYPE = JSON.parse(wert));
+          getSetting('info.Configurations.ignoreObjectsInternalsNAME', ignoreObjectsInternalsNAME, wert => ignoreObjectsInternalsNAME = JSON.parse(wert));
+          getSetting('info.Configurations.ignoreObjectsAttributesroom', ignoreObjectsAttributesroom, wert => ignoreObjectsAttributesroom = JSON.parse(wert));
+          getSetting('info.Configurations.RdimPossibleSets', dimPossibleSets, wert => dimPossibleSets = JSON.parse(wert));
+          getSetting('info.Configurations.RvolumePossibleSets', volumePossibleSets, wert => volumePossibleSets = JSON.parse(wert));
+          getSetting('info.Configurations.RtemperaturePossibleSets', temperaturePossibleSets, wert => temperaturePossibleSets = JSON.parse(wert));
+          getSetting('info.Configurations.RlevelPossibleSets', levelPossibleSets, wert => levelPossibleSets = JSON.parse(wert));
+          getSetting('info.Configurations.RbuttonPossibleSets', buttonPossibleSets, wert => buttonPossibleSets = JSON.parse(wert));
+          getSetting('info.Configurations.Utemperature', Utemperature, wert => Utemperature = JSON.parse(wert));
           */
     }
 
     if (mode === 'settings' || mode === 'all') {
          adapter.log.info('check ' + adapter.namespace + '.' + 'info.Settings');
-         getSetting('info.Settings.logCheckObject', logCheckObject, function (wert){logCheckObject=wert;});
-         getSetting('info.Settings.logUpdateChannel', logUpdateChannel, function (wert){logUpdateChannel=wert;});
-         getSetting('info.Settings.logCreateChannel', logCreateChannel, function (wert){logCreateChannel=wert;});
-         getSetting('info.Settings.logDeleteChannel', logDeleteChannel, function (wert){logDeleteChannel=wert;});
-         getSetting('info.Settings.logEventIOB', logEventIOB, function (wert){logEventIOB=wert;});
-         getSetting('info.Settings.logEventFHEM', logEventFHEM, function (wert){logEventFHEM=wert;});
-         getSetting('info.Settings.logEventFHEMglobal', logEventFHEMglobal, function (wert){logEventFHEMglobal=wert;});
-         getSetting('info.Settings.logEventFHEMreading', logEventFHEMreading, function (wert){logEventFHEMreading=wert;});
-         getSetting('info.Settings.logEventFHEMstate', logEventFHEMstate, function (wert){logEventFHEMstate=wert;});
-         getSetting('info.Settings.logUnhandledEventFHEM', logUnhandledEventFHEM, function (wert){logUnhandledEventFHEM=wert;});
+         getSetting('info.Settings.logCheckObject', logCheckObject, wert => logCheckObject = wert);
+         getSetting('info.Settings.logUpdateChannel', logUpdateChannel, wert => logUpdateChannel = wert);
+         getSetting('info.Settings.logCreateChannel', logCreateChannel, wert => logCreateChannel = wert);
+         getSetting('info.Settings.logDeleteChannel', logDeleteChannel, wert => logDeleteChannel = wert);
+         getSetting('info.Settings.logEventIOB', logEventIOB, wert => logEventIOB = wert);
+         getSetting('info.Settings.logEventFHEM', logEventFHEM, wert => logEventFHEM = wert);
+         getSetting('info.Settings.logEventFHEMglobal', logEventFHEMglobal, wert => logEventFHEMglobal = wert);
+         getSetting('info.Settings.logEventFHEMreading', logEventFHEMreading, wert => logEventFHEMreading = wert);
+         getSetting('info.Settings.logEventFHEMstate', logEventFHEMstate, wert => logEventFHEMstate = wert);
+         getSetting('info.Settings.logUnhandledEventFHEM', logUnhandledEventFHEM, wert => logUnhandledEventFHEM = wert);
 
     }
     if (cb) cb();
 }
+
 function parseObjects(objs, cb) {
     adapter.log.debug ('[parseObjects]');
     const rooms = {};
@@ -622,7 +642,6 @@ function parseObjects(objs, cb) {
                 }
                 if (suche.indexOf('ioBroker') !== -1) {
                     iobroker = true;
-                    continue;
                 }
             } catch (err) {
                      adapter.log.error('[parseObjects] Cannot check room of object: ' + JSON.stringify(objs[i]));
@@ -850,8 +869,8 @@ function parseObjects(objs, cb) {
                             const _slider = parts[1].split(',');
                             obj.common.type = 'number';
                             obj.common.role = 'level';
-                            obj.common.min = parseInt(_slider[1]);
-                            obj.common.max = parseInt(_slider[3]);
+                            obj.common.min = parseFloat(_slider[1]);
+                            obj.common.max = parseFloat(_slider[3]);
                             //special
                             if (parts[0] === 'sat') obj.common.role = 'level.color.saturation';
                         }
@@ -915,8 +934,8 @@ function parseObjects(objs, cb) {
                         obj.common.type = 'number';
                         obj.common.role = 'level.color.temperature';
                         obj.common.unit = 'K';
-                        obj.common.min =2000;
-                        obj.common.max =6500;
+                        obj.common.min = 2000;
+                        obj.common.max = 6500;
                         obj.native.ct = true;
                         if (adapter.namespace === 'fhem.0') {
                             obj.common.smartName = {
@@ -1132,6 +1151,7 @@ function parseObjects(objs, cb) {
     });
 
 }
+
 function startSync(cb) {
     adapter.log.debug('[startSync]');
     // send command JsonList2
@@ -1173,8 +1193,9 @@ function startSync(cb) {
         }
     });
 }
-function setFunction(id,Funktion,name) {
-    let fff = Funktion.split(',');
+
+function setFunction(id, func, name) {
+    let fff = func.split(',');
     for (let f = 0; f < fff.length; f++) {
         fff[f] = fff[f].trim();
         if (logCheckObject) adapter.log.info('> function = ' + fff[f] + ' | ' + id);
@@ -1182,6 +1203,7 @@ function setFunction(id,Funktion,name) {
         functions[fff[f]].push(id);
     }
 }
+
 function sendFHEM(cmd,detect) {
     if (autoConfigFHEM) {
         adapter.setState('info.Commands.sendFHEM', cmd, false);
@@ -1190,6 +1212,7 @@ function sendFHEM(cmd,detect) {
         if (detect) adapter.log.warn('detect ' + detect + ' "' + cmd + '" or "' + adapter.name + '.info.Configuration.autoConfigFhem" = true | more info README.md');
     }
 }
+
 function convertAttr(attr,val) {
     if (attr === 'rgb') return '#' + val;
     if (attr === 'Mute') return convertBol0(val);
@@ -1262,8 +1285,9 @@ function writeValue(id, val, cb) {
     adapter.log.debug('[writeValue] ' + id + ' ' + val);
     let cmd;
     let parts;
-    if (val === undefined || val === null)
+    if (val === undefined || val === null) {
         val = '';
+    }
     parts = id.split('.');
     // switch?
     if (id.indexOf('state_switch') !== -1) {
@@ -1272,59 +1296,59 @@ function writeValue(id, val, cb) {
         if (val === '0' || val === 0 || val === 'off' || val === 'false' || val === false)
             val = 'off';
         cmd = 'set ' + fhemObjects[id].native.Name + ' ' + val;
-        if (logEventIOB)
+        if (logEventIOB) {
             adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + cmd);
-        telnetOut.send(cmd, function (err, result) {
-            if (err)
+        }
+
+        telnetOut.send(cmd, (err, result) => {
+            if (err) {
                 adapter.log.error('[writeValue] ' + err);
-            if (cb)
-                cb();
+            }
+            cb && cb();
         });
         return;
     }
     // change settings?
     if (id.indexOf(adapter.namespace + '.info.Settings.') !== -1) {
         getSettings('settings');
-        if (cb)
-            cb();
+        cb && cb();
         return;
     }
     // sendFHEM?
     if (id === adapter.namespace + '.info.Commands.sendFHEM') {
-        if (logEventIOB)
+        if (logEventIOB) {
             adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + val);
-        telnetOut.send(val, function (err, result) {
-            if (err)
-                adapter.log.error('[writeValue] ' + err);
-            adapter.setState('info.Commands.resultFHEM', result.replace(/(\r\n)|(\r)|(\n)/g, '<br />'), function (err) {
-                if (err)
-                    adapter.log.error('[writeValueDo] ' + err);
-            });
-            adapter.setState('info.Commands.lastCommand', cmd, function (err) {
-                if (err)
-                    adapter.log.error('[writeValueDo] ' + err);
-            });
-            if (cb)
-                cb();
+        }
+        telnetOut.send(val, (err, result) => {
+            err && adapter.log.error('[writeValue] ' + err);
+
+            adapter.setState('info.Commands.resultFHEM', result.replace(/(\r\n)|(\r)|(\n)/g, '<br />'), err =>
+                err && adapter.log.error('[writeValueDo] ' + err));
+
+            adapter.setState('info.Commands.lastCommand', cmd, err =>
+                err && adapter.log.error('[writeValueDo] ' + err));
+
+            cb && cb();
         });
         return;
     }
     // attr?
     if (allowedAttributes.indexOf(parts[4]) !== -1) {
         cmd = 'attr ' + fhemObjects[id].native.Name + ' ' + parts[4] + ' ' + val;
-        if (logEventIOB)
+        if (logEventIOB) {
             adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + cmd);
-        telnetOut.send(cmd, function (err, result) {
-            if (err)
-                adapter.log.error('[writeValue] ' + err);
-            if (cb)
-                cb();
+        }
+
+        telnetOut.send(cmd, (err, result) => {
+            err && adapter.log.error('[writeValue] ' + err);
+            cb && cb();
         });
         return;
     }
     // rgb?
-    if (fhemObjects[id].native.Attribute === 'rgb')
+    if (fhemObjects[id].native.Attribute === 'rgb') {
         val = val.substring(1);
+    }
     // bol0?
     if (fhemObjects[id].native.bol0) {
         //convertBol0(val);
@@ -1347,13 +1371,12 @@ function writeValue(id, val, cb) {
             cmd = 'set ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute;
         }
     }
-    if (logEventIOB)
+    if (logEventIOB) {
         adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + cmd);
-    telnetOut.send(cmd, function (err, result) {
-        if (err)
-            adapter.log.error('[writeValue] ' + err);
-        if (cb)
-            cb();
+    }
+    telnetOut.send(cmd, (err, result) => {
+        err && adapter.log.error('[writeValue] ' + err);
+        cb && cb();
     });
 }
 function requestMeta(name, attr, value, event, cb) {
@@ -1391,21 +1414,21 @@ function deleteChannel(name, cb) {
     adapter.log.debug ('[deleteChannel] ' + name);
     delete fhemObjects[adapter.namespace + '.' + name];
     adapter.deleteChannel(name, err => {
-        if (err) {if (err !== 'Not exists') adapter.log.error('[deleteChannel] ' + name + ' ' + err);}
+        if (err && err !== 'Not exists') adapter.log.error('[deleteChannel] ' + name + ' ' + err);
         if (cb) cb();
     });
 }
 function deleteObject(name, cb) {
     adapter.log.debug('[deleteObject] ' + name);
     adapter.delObject(name, err => {
-        if (err) {if (err !== 'Not exists') adapter.log.error('[deleteObject] ' + name + ' ' + err);}
+        if (err && err !== 'Not exists') adapter.log.error('[deleteObject] ' + name + ' ' + err);
         if (cb) cb();
     });
 }
 function deleteState(name, cb) {
     adapter.log.debug('[deleteState] ' + name);
      adapter.delState(name, err => {
-        if (err) {if (err !== 'Not exists') adapter.log.error('[deleteState] ' + name + ' ' + err);}
+        if (err && err !== 'Not exists') adapter.log.error('[deleteState] ' + name + ' ' + err);
         if (cb) cb();
     });
 }
@@ -1472,6 +1495,7 @@ function unusedObjects(check, cb) {
     });
     if (cb) cb();
 }
+
 function processQueue() {
     //adapter.log.debug ('[processQueue]');
     if (telnetOut.isCommandRunning() || !queue.length) return;
@@ -1491,6 +1515,7 @@ function processQueue() {
         setImmediate(processQueue);
     }
 }
+
 function processQueueL() {
     //adapter.log.debug ('[processQueueL]');
     if (!queueL.length) return;
@@ -1512,7 +1537,9 @@ function main() {
     adapter.config.host = adapter.config.host || '127.0.0.1';
     adapter.config.port = parseInt(adapter.config.port, 10) || 7072;
     adapter.config.reconnectTimeout = parseInt(adapter.config.reconnectTimeout, 10) || 30000;
-    if (adapter.config.prompt === undefined) adapter.config.prompt = 'fhem>';
+    if (adapter.config.prompt === undefined) {
+        adapter.config.prompt = 'fhem>';
+    }
 
     // in this template all states changes inside the adapters namespace are subscribed
     adapter.subscribeStates('*');
@@ -1536,13 +1563,11 @@ function main() {
         prompt: adapter.config.prompt
     });
 
-    telnetOut.on('ready', function() {
+    telnetOut.on('ready', () => {
         if (!connected) {
-            myObjects((cb) => {
-                getSettings('all', (cb) => {
-                    startSync(cb);
-               });
-           });
+            myObjects(() =>
+                getSettings('all', () =>
+                    startSync()));
         }
     });
     
