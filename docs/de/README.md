@@ -273,16 +273,16 @@ Objekt                    | Zugriff | Bescheibung
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
-Objekt                    | Zugriff | Bescheibung
-:-------------------------|:-------:|:-----------
+Objekt                                                 | Zugriff | Bescheibung                                     | Werrt
+:------------------------------------------------------|:-------:|:------------------------------------------------|:------:
 **[fhem.o](#objekte)**                                 |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**info**                                         |     | Information und mehr
 &emsp;&emsp;**[Commands](#info_commands)**             |     | Befehlszeile FHEM
 &emsp;&emsp;**[Configurations](#info_configurations)** |     | 
-&emsp;&emsp;**[Info](#info_info)**                     |     |
-&emsp;&emsp;**[Settings](#info_settings)**             |     | Auswahl Einträge für Admin-Oberfläche Bereich `LOG`
-&emsp;&emsp;**connection**                             |  R  | Status Verbindung zu FHEM true/false
-&emsp;&emsp;**resync**                                 |  RW | im Moment nicht möglich :-(
+&emsp;&emsp;**[Info](#info_info)**                     |     | 
+&emsp;&emsp;**[Settings](#info_settings)**             |     | Auswahl Einträge für Admin-Oberfläche Bereich `LOG`  
+&emsp;&emsp;**connection**                             |  R  | Status Verbindung zu FHEM                            | true/false
+&emsp;&emsp;**resync**                                 |  RW | Start Resync FHEM                                    | true/false
 
 <a name="info_commands"/>
 
@@ -295,14 +295,14 @@ Objekt                    | Zugriff | Bescheibung
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
-Objekt                    | Zugriff | Bescheibung
-:-------------------------|:-------:|:-----------
+Objekt                    | Zugriff | Bescheibung | Wert 
+:-------------------------|:-------:|:------------|:----:
 **[fhem.o](#objekte)**            |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[info](#objekte_i)**      |     | Information und mehr
 &emsp;&emsp;**Commands**          |     | Befehlszeile FHEM
-&emsp;&emsp;&emsp;**lastCommand** |  R  | Letzer Befehl von ioBroker an FHEM
-&emsp;&emsp;&emsp;**resultFHEM**  |  R  | Liefert Ergebnis von sendFHEM
-&emsp;&emsp;&emsp;**sendFHEM**    |  RW | Entspricht Befehlszeile in FHEM zB update check
+&emsp;&emsp;&emsp;**lastCommand** |  R  | Letzer Befehl von ioBroker an FHEM | Zeichenkette
+&emsp;&emsp;&emsp;**resultFHEM**  |  R  | Liefert Ergebnis von sendFHEM | Zeichenkette
+&emsp;&emsp;&emsp;**sendFHEM**    |  RW | Entspricht Befehlszeile in FHEM zB update check | Zeichenkette
 
 <a name="info_configurations"/>
 
@@ -314,25 +314,27 @@ Objekt                    | Zugriff | Bescheibung
 *Objekt info - Configurations*</span>
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
+`true` oder `false` Startwert bei Installation
 
-Objekt                                           | Zugriff | Bescheibung
-:-------------------------------------------------|:---:|:-----------
+Objekt                                           | Zugriff | Bescheibung | Wert
+:-------------------------------------------------|:---:|:-----------|:-------:
 **[fhem.o](#objekte)**                            |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[info](#objekte_i)**                      |     | Information und mehr
 &emsp;&emsp;**[Commands](#info_commands)**        |     | Befehlszeile FHEM 
 &emsp;&emsp;**Configurations**                    |     | Configurations
-&emsp;&emsp;&emsp;**allowedAttributes**           |  RW | Sync Attributtes = room, alias, comment +
-&emsp;&emsp;&emsp;**allowedIOBin**                |  RW | Erlaubte Objekte zum Übertrag nach FHEM
-&emsp;&emsp;&emsp;**allowedInternals**            |  RW | Sync Internals = TYPE, NAME +
-&emsp;&emsp;&emsp;**autoConfigFHEM**              |  RW | (true) Erlaubt Änderungen in FHEM
-&emsp;&emsp;&emsp;**autoFunction**                |  RW | (true) Funktionen werden bei Neustart nach Stand Adaper vergeben
-&emsp;&emsp;&emsp;**autoRole**                    |  RW | (true) Rollen werden bei Neustart nach Stand Adaper vergeben  (false) Rollen werden nur beim 1.Start Adapter vergeben
-&emsp;&emsp;&emsp;**ignoreObjectsAttributesroom** |  RW | Kein Sync von Modulen mit Raum =
-&emsp;&emsp;&emsp;**ignoreObjectsInternalsNAME**  |  RW | Kein Sync von Modulen mit NAME = info +
-&emsp;&emsp;&emsp;**ignoreObjectsInternalsTYPE**  |  RW | Kein Sync von Modulen mit TYPE =
+&emsp;&emsp;&emsp;**allowedAttributes**           |  RW | Sync Attributtes = room, alias, comment | Attribut1,Attribut2 usw
+&emsp;&emsp;&emsp;**allowedIOBin**                |  RW | Erlaubte Objekte zum Übertrag nach FHEM ACHTUNG! Es wird auf die Zeichenkette am Anfang des Objects geprüft zb alexa2.x.History überträgt alle Objekte die mit alexa2.x.History beginnen | Wert1,Wert2 usw
+&emsp;&emsp;&emsp;**allowedInternals**            |  RW | Sync Internals = TYPE, NAME | zB NR,STATE
+&emsp;&emsp;&emsp;**autoConfigFHEM**              |  RW | Erlaubt Änderungen in FHEM | true/`false`
+&emsp;&emsp;&emsp;**autoFunction**                |  RW | Funktionen werden bei Neustart nach Stand Adaper vergeben | true/`false`
+&emsp;&emsp;&emsp;**autoRole**                    |  RW | Rollen werden bei Neustart nach Stand Adaper vergeben  | true/`false`
+&emsp;&emsp;&emsp;**ignoreObjectsAttributesroom** |  RW | Kein Sync von Modulen mit Attributes:room | Raum1,Raum2,Raum3 usw
+&emsp;&emsp;&emsp;**ignoreObjectsInternalsNAME**  |  RW | Kein Sync von Modulen mit Internals:NAME  
+&emsp;&emsp;&emsp;**ignoreObjectsInternalsTYPE**  |  RW | Kein Sync von Modulen mit Internals:TYPE 
 &emsp;&emsp;&emsp;**ignorePossibleSets**          |  RW | Kein Sync von PossibleSets =
 &emsp;&emsp;&emsp;**ignoreReadings**              |  RW | Kein Sync von Readings =
 &emsp;&emsp;&emsp;**onlySyncRoom**                |  RW | Sync nur aus Raum = ioBroker, ioB.OUT +
+
 
 Funktionen autoConfigFHEM = true (über fhem.0.info.Commands.sendFHEM)        |                
 :----------------------------------|
@@ -350,18 +352,18 @@ Am Ende der Synchronisation `save` |
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
-Objekt                    | Zugriff | Bescheibung
-:-------------------------|:-------:|:-----------
+Objekt                    | Zugriff | Bescheibung | Wert
+:-------------------------|:-------:|:------------|:----:
 **[fhem.o](#objekte)**                                  |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[info](#objekte_i)**                            |     | 
 &emsp;&emsp;**[Commands](#info_commands)**              |     | Befehlszeile FHEM
 &emsp;&emsp;**[Configurations](#info_configurations)**  |     | 
 &emsp;&emsp;**Info**                                    |     | Info
-&emsp;&emsp;&emsp;**buildDate**                         |  R  | Datum Version
-&emsp;&emsp;&emsp;**numberDevicesFHEM**                 |  R  | Anzahl Module in FHEM
-&emsp;&emsp;&emsp;**numberObjectsIOBin**                |  R  | Anzahl Objekte aus FHEM
-&emsp;&emsp;&emsp;**numberObjectsIOBout**               |  R  | Anzahl Objekte zu FHEM
-&emsp;&emsp;&emsp;**roomioBroker**                      |  R  | (true) Raum aus Configurations.onlySyncRoom vorhanden
+&emsp;&emsp;&emsp;**buildDate**                         |  R  | Datum Version | 18.10.18
+&emsp;&emsp;&emsp;**numberDevicesFHEM**                 |  R  | Anzahl Module in FHEM | Zahl
+&emsp;&emsp;&emsp;**numberObjectsIOBin**                |  R  | Anzahl Objekte aus FHEM | Zahl
+&emsp;&emsp;&emsp;**numberObjectsIOBout**               |  R  | Anzahl Objekte zu FHEM | Zahl
+&emsp;&emsp;&emsp;**roomioBroker**                      |  R  | Raum aus Configurations.onlySyncRoom vorhanden |true/false
 
 <a name="info_settings"/>
 
@@ -372,27 +374,28 @@ Objekt                    | Zugriff | Bescheibung
 ![alt-Objektename](media/objekte3infoSettings.PNG "Objekt info - Settings")<span style="color:grey">  
 *Objekt info - Settings*</span>
 
-> Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
+> Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert: 
+`true` oder `false` Startwert bei Installation
 
-Objekt                    | Zugriff | Bescheibung
-:-------------------------|:-------:|:-----------
+Objekt                    | Zugriff | Bescheibung | Wert
+:-------------------------|:-------:|:------------|:-----:
 **[fhem.o](#objekte)**                                 |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[info](#objekte_i)**                           |     | Information und mehr
 &emsp;&emsp;**[Commands](#info_commands)**             |     | Befehlszeile FHEM
 &emsp;&emsp;**[Configurations](#info_configurations)** |     | 
 &emsp;&emsp;**[Info](#info_info)**                     |     | 
 &emsp;&emsp;**Settings**                               |     | Einträge für Admin-Oberfläche Bereich `LOG`
-&emsp;&emsp;&emsp;**logCheckObject**         |  RW | (true) Erzeugt info check cannel im LOG
-&emsp;&emsp;&emsp;**logCreateChannel**       |  RW | (true) Erzeugt info Create channel im LOG
-&emsp;&emsp;&emsp;**logDeleteChannel**       |  RW | (true) Erzeugt info Delete channel im LOG
-&emsp;&emsp;&emsp;**logEventFHEM**           |  RW | (true) Erzeugt info eventFHEM im LOG
-&emsp;&emsp;&emsp;**logEventFHEMglobal**     |  RW | (true) Erzeugt info eventFHEM(g) im LOG
-&emsp;&emsp;&emsp;**logEventFHEMreading**    |  RW | (true) Erzeugt info eventFHEM(r) im LOG
-&emsp;&emsp;&emsp;**logEventFHEMstate**      |  RW | (true) Erzeugt info eventFHEM(s) im LOG
-&emsp;&emsp;&emsp;**logEventIOB**            |  RW | (true) Erzeugt info eventIOB im LOG
-&emsp;&emsp;&emsp;**logIgnoreConfigurations**|  RW | (true) Erzeugt info ignore objec im LOG
-&emsp;&emsp;&emsp;**logUnhandeledEventFHEM** |  RW | (true) Erzeugt warn unhandeled event FHEM im LOG
-&emsp;&emsp;&emsp;**logUpdateChannel**       |  RW | (true) Erzeugt info Update channel im LOG
+&emsp;&emsp;&emsp;**logCheckObject**         |  RW | Erzeugt info check cannel im LOG | true/`false`
+&emsp;&emsp;&emsp;**logCreateChannel**       |  RW | Erzeugt info Create channel im LOG | `true`/false
+&emsp;&emsp;&emsp;**logDeleteChannel**       |  RW | Erzeugt info Delete channel im LOG | `true`/false
+&emsp;&emsp;&emsp;**logEventFHEM**           |  RW | Erzeugt info eventFHEM im LOG | true/`false`
+&emsp;&emsp;&emsp;**logEventFHEMglobal**     |  RW | Erzeugt info eventFHEM(g) im LOG | `true`false 
+&emsp;&emsp;&emsp;**logEventFHEMreading**    |  RW | Erzeugt info eventFHEM(r) im LOG | true/`false`
+&emsp;&emsp;&emsp;**logEventFHEMstate**      |  RW | Erzeugt info eventFHEM(s) im LOG | true/`false`
+&emsp;&emsp;&emsp;**logEventIOB**            |  RW | Erzeugt info eventIOB im LOG | `true`/false
+&emsp;&emsp;&emsp;**logIgnoreConfigurations**|  RW | Erzeugt info ignore objec im LOG | `true`/false
+&emsp;&emsp;&emsp;**logUnhandeledEventFHEM** |  RW | Erzeugt warn unhandeled event FHEM im LOG | `true`/false
+&emsp;&emsp;&emsp;**logUpdateChannel**       |  RW | Erzeugt info Update channel im LOG | true/`false`
 
 <a name="besonderheiten"/>
 
