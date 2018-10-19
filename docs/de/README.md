@@ -13,6 +13,8 @@ Der FHEM-Adapter ermöglicht die einfache Einbindung eines oder auch mehrerer FH
 
 Alle Module aus FHEM können eingelesen, über ioBroker gesteuert und zur Visualisierung verwendet werden.
 
+Ebenso ist eine Sychronisation ausgewählter Objekte aus iobroker nach FHEM möglich
+
 <!-- Einführungsbild-->
 ![{alt BildName}](media/titel.png "FHEM Oberfläche") <span style="color:grey">  
 *FHEM Oberfläche*</span>
@@ -81,9 +83,9 @@ Nach der Synchronisation mit FHEM werden alle Zuständsänderungen von FHEM zum 
 
 Möglichkeiten zur Einschränkung der angelegten Objekte im ioBroker ist die Verwendung von definierten Räumen in FHEM oder blocken von einzelnen Modulen.
 
-Durch die automatische Zuordnung von Rollen und Funktionen werden viele Module aus FHEM (SONOSPLAYER, HUEDevice, Homematic usw) auch sofort im Adapter `Material UI` angezeigt.
+Durch die automatische Zuordnung von Rollen und Funktionen durch den Adapter werden viele Module aus FHEM (SONOSPLAYER, HUEDevice, Homematic usw) auch im Adapter `Material UI` erkannt und angezeigt.
 
-Definierte Objekte aus ioBroker können nach FHEM übertragen.
+Definierte Objekte aus ioBroker können auch nach FHEM übertragen werden.
 
 
 <a name="voraussetzungen"/>
