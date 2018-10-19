@@ -235,7 +235,7 @@ Objekt                    | Zugriff | Bescheibung
 
 #### Attributes
 > Attributes werden aus FHEM ausgelesen und können über ioBroker auch geändert werden.
-In der Default Einstellung werden `alias,comment,room`synchronisiert.
+In der Default Einstellung werden falls vorhanden `alias,comment,room` synchronisiert.
 Unter `fhem.x.info.Configurations.allowedAttributes` können weitere Atrributes hinzugefügt werden.
 
 ![alt-Objektename](media/objekte2attributes.PNG "Objekte-Attributes")<span style="color:grey">  
@@ -333,18 +333,18 @@ Objekt                                           | Zugriff | Bescheibung | Wert
 &emsp;**[info](#objekte_i)**                      |     | Information und mehr
 &emsp;&emsp;**[Commands](#info_commands)**        |     | Befehlszeile FHEM 
 &emsp;&emsp;**Configurations**                    |     | Configurations
-&emsp;&emsp;&emsp;**allowedAttributes**           |  RW | Sync Attributtes default = `room,alias,comment` | Attribut oder Attribut1,Attribut2 usw
-&emsp;&emsp;&emsp;**allowedIOBin**                |  RW | Erlaubte Objekte zum Übertrag nach FHEM ACHTUNG! Es wird auf die Zeichenkette am Anfang des Objects geprüft zb alexa2.x.History überträgt alle Objekte die mit alexa2.x.History beginnen | Wert oder Wert1,Wert2 usw
-&emsp;&emsp;&emsp;**allowedInternals**            |  RW | Sync Internals default = `TYPE,NAME`| Internals oder Internals1,Internals2 usw
-&emsp;&emsp;&emsp;**autoConfigFHEM**              |  RW | Erlaube folgende Änderungen in FHEM 1.Für TYPE=SONOSPLAYER `attr xxx generateVolumeEvent 1` damit Lautstärke übertragen wird.  Am Ende der Synchronisation `save` zum Speichern der Änderungen. default=`false` | true/false
-&emsp;&emsp;&emsp;**autoFunction**                |  RW | Funktionen werden bei Neustart nach Stand Adaper vergeben default=`false` | true/false
-&emsp;&emsp;&emsp;**autoRole**                    |  RW | Rollen werden bei Neustart nach Stand Adaper vergeben  default=`false` | true/false
+&emsp;&emsp;&emsp;**allowedAttributes**           |  RW | Sync Attributtes (default = `room,alias,comment`) | Attribut oder Attribut1,Attribut2 usw
+&emsp;&emsp;&emsp;**allowedIOBin**                |  RW | Erlaubte Objekte zum Übertrag nach FHEM. Es wird auf die Zeichenkette am Anfang des Objects geprüft zb "alexa2.x.History" überträgt alle Objekte die mit alexa2.x.History beginnen. Objekte werden in FHEM im Raum ioB.IN als Modul dummy angelegt.  | Wert oder Wert1,Wert2 usw
+&emsp;&emsp;&emsp;**allowedInternals**            |  RW | Sync Internals (default = `TYPE,NAME`) | Internals oder Internals1,Internals2 usw
+&emsp;&emsp;&emsp;**autoConfigFHEM**              |  RW | Erlaubt folgende Änderungen in FHEM 1.Für TYPE=SONOSPLAYER `attr xxx generateVolumeEvent 1` damit Lautstärke übertragen wird.  Am Ende der Synchronisation `save` zum Speichern der Änderungen. (default=`false`) | true/false
+&emsp;&emsp;&emsp;**autoFunction**                |  RW | Funktionen werden bei Neustart abhängig von Version FHEM Adaper vergeben (default=`false`) Für Adapter `Material UI`wird deshalb `true`empfohlen. Bei `false` können Funktionen selber vergeben werden und es erfolgt keine Änderung durch den Adapter | true/false
+&emsp;&emsp;&emsp;**autoRole**                    |  RW | Rollen werden bei Neustart abhängig von Version FHEM Adaper vergeben  (default=`false`) Für Adapter `Material UI` wird `true`empfohlen. Bei `false` können Rollen selber vergeben werden und es erfolgt keine Änderung durch den Adapter. | true/false
 &emsp;&emsp;&emsp;**ignoreObjectsAttributesroom** |  RW | Kein Sync von Modulen mit Attributes:room | room oder room1,room2 usw
-&emsp;&emsp;&emsp;**ignoreObjectsInternalsNAME**  |  RW | Kein Sync von Modulen mit Internals:NAME default=`info` | NAME oder NAME1,NAME2 usw
+&emsp;&emsp;&emsp;**ignoreObjectsInternalsNAME**  |  RW | Kein Sync von Modulen mit Internals:NAME (default=`info`) | NAME oder NAME1,NAME2 usw
 &emsp;&emsp;&emsp;**ignoreObjectsInternalsTYPE**  |  RW | Kein Sync von Modulen mit Internals:TYPE | TYPE oder TYPE1,TYPE2 usw
-&emsp;&emsp;&emsp;**ignorePossibleSets**          |  RW | Kein Sync von PossibleSets default=` `
-&emsp;&emsp;&emsp;**ignoreReadings**              |  RW | Kein Sync von Readings default=` `
-&emsp;&emsp;&emsp;**onlySyncRoom**                |  RW | Sync wenn Raum/Räume vorhanden nur Module aus Raum/Räume default=`ioBroker,ioB.OUT`| Raum oder Raum1,Raum2 usw 
+&emsp;&emsp;&emsp;**ignorePossibleSets**          |  RW | Kein Sync von PossibleSets (default=`getConfig,etRegRaw,gBulk,regSet,deviceMsg,CommandAccepted`)
+&emsp;&emsp;&emsp;**ignoreReadings**              |  RW | Kein Sync von Readings (default=`currentTrackPositionSimulated, currentTrackPositionSimulatedSec`)
+&emsp;&emsp;&emsp;**onlySyncRoom**                |  RW | Sync wenn Raum/Räume vorhanden nur Module aus Raum/Räume (default=`ioBroker,ioB.OUT`) | room oder room1,room2 usw
 
 <a name="info_info"/>
 
