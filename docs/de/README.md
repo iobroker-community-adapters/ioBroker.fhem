@@ -76,9 +76,15 @@ FHEM bietet eine Vielzahl an Modulen mit diversen Protokollen.
 Durch die Einbindung in ioBroker können alle FHEM Module in Verbindung mit sämtlichen ioBroker-Adaptern wie Alexa, VIS, Material usw genutzt werden.
 
 ### FHEM-Adapter
-Nach erfolgreicher Verbindung zum FHEM Server werden alle Module automatisch eingelsen (jsonlist2)
-Eine Möglichkeit zur Einschränkung der eingelesenen Module ist die Verwendung von einem Raum `room = ioBroker` in FHEM.
-Nach der Synchronisation mit FHEM werden alle Zustände / Änderungen und auch neue Module übertragen.
+Nach erfolgreicher Verbindung zum FHEM Server werden für alle Module aus FHEM automatisch Objekte im ioBroker angelegt.
+Nach der Synchronisation mit FHEM werden alle Zuständsänderungen von FHEM zum ioBroker übertragen.
+
+Möglichkeiten zur Einschränkung der angelegten Objekte im ioBroker ist die Verwendung von definierten Räumen in FHEM oder blocken von einzelnen Modulen.
+
+Durch die automatische Zuordnung von Rollen und Funktionen werden viele Module aus FHEM (SONOSPLAYER, HUEDevice, Homematic usw) auch sofort im Adapter `Material UI` angezeigt.
+
+Definierte Objekte aus ioBroker können nach FHEM übertragen.
+
 
 <a name="voraussetzungen"/>
 
