@@ -181,6 +181,8 @@ Auf einem ioBroker Server können mehere Instanzen installiert werden.
   wird mit der Farbe des Status-Feldes der Instanz verdeutlicht. Zeigt der
   Mauszeiger auf das Symbol, werden weitere Detailinformationen dargestellt.
 
+![Start Instanz fhem.o - ioBroker Admin-Oberfläche Bereich `Log`](media/LOGstart.PNG "Start Instanz fhem.o - ioBroker Admin-Oberfläche Bereich `Log`")<span style="color:grey">  
+*Start Instanz fhem.o - ioBroker Admin-Oberfläche Bereich `Log`*</span>
 
 
 <a name="objekte"/>
@@ -320,7 +322,7 @@ Objekt                    | Zugriff | Bescheibung | Wert
 
 #### Configurations
 
-> Unter Configurations können verschiedene Funktionen aktiviert/deaktiviert werden. Bei Änderungen wird ein Resync FHEM `fhem.x.info.resync` = teue ausgeführt.
+> Unter Configurations können verschiedene Funktionen aktiviert/deaktiviert werden. Bei Änderungen wird ein Resync FHEM `fhem.x.info.resync` = true ausgeführt.
 
 ![alt-Objektename](media/objekte3infoConfiguratios.PNG "Objekt info - Configurations")<span style="color:grey">  
 *Objekt info - Configurations*</span>
