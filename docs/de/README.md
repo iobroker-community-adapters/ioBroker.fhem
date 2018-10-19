@@ -1,6 +1,6 @@
 ---
 title:       "FHEM-Adapter"
-lastChanged: "22.09.2018"
+lastChanged: "19.10.2018"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
 ---)
 
@@ -227,6 +227,8 @@ Objekt                    | Zugriff | Bescheibung
 
 #### Attributes
 > Attributes werden aus FHEM ausgelesen und können über ioBroker auch geändert werden.
+In der Default Einstellung werden `alias,comment,room`synchronisiert.
+Unter `fhem.x.info.Configurations.allowedAttributes` können weitere Atrributes hinzugefügt werden.
 
 ![alt-Objektename](media/objekte2attributes.PNG "Objekte-Attributes")<span style="color:grey">  
 *Objekte-Attributes*</span>
@@ -237,7 +239,7 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **[fhem.o](#objekte)**                     |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[HUEDevice1](#objekte_c)**         |     | HUEDevice1 (Beispiel)
-&emsp;&emsp;**Attributes**        |     | Mögliche Attribute: alias, room, disable, comment
+&emsp;&emsp;**Attributes**        |     | 
 &emsp;&emsp;&emsp;**alias**       |  RW | alias = Name Objekt + Übertrag in FHEM
 &emsp;&emsp;&emsp;**room**        |  RW | room = Raum Objekt + Übertrag in FHEM
 
@@ -245,6 +247,8 @@ Objekt                    | Zugriff | Bescheibung
 
 #### Internals
 > Internals werden aus FHEM ausgelesen und sind nur als Info zB Anzeige in VIS gedacht.
+In der Default Einstellung werden `TYPE,NAME`synchronisiert.
+Unter `fhem.x.info.Configurations.allowedInternals` können weitere Internals hinzugefügt werden.
 
 ![alt-Objektename](media/objekte2internals.PNG "Objekte-Internals")<span style="color:grey">  
 *Objekte-Internals*</span>
@@ -308,13 +312,12 @@ Objekt                    | Zugriff | Bescheibung | Wert
 
 #### Configurations
 
-> Unter Configurations können verschiedene Funktionen aktiviert/deaktiviert werden. Bei Änderungen ist ein Neustart des FHEM Adaptes notwendig.
+> Unter Configurations können verschiedene Funktionen aktiviert/deaktiviert werden. Bei Änderungen wird ein Resync FHEM `fhem.x.info.resync` = teue ausgeführt.
 
 ![alt-Objektename](media/objekte3infoConfiguratios.PNG "Objekt info - Configurations")<span style="color:grey">  
 *Objekt info - Configurations*</span>
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
-`true` oder `false` Startwert bei Installation
 
 Objekt                                           | Zugriff | Bescheibung | Wert
 :-------------------------------------------------|:---:|:-----------|:-------:
@@ -322,24 +325,18 @@ Objekt                                           | Zugriff | Bescheibung | Wert
 &emsp;**[info](#objekte_i)**                      |     | Information und mehr
 &emsp;&emsp;**[Commands](#info_commands)**        |     | Befehlszeile FHEM 
 &emsp;&emsp;**Configurations**                    |     | Configurations
-&emsp;&emsp;&emsp;**allowedAttributes**           |  RW | Sync Attributtes = room, alias, comment | Attribut1,Attribut2 usw
-&emsp;&emsp;&emsp;**allowedIOBin**                |  RW | Erlaubte Objekte zum Übertrag nach FHEM ACHTUNG! Es wird auf die Zeichenkette am Anfang des Objects geprüft zb alexa2.x.History überträgt alle Objekte die mit alexa2.x.History beginnen | Wert1,Wert2 usw
-&emsp;&emsp;&emsp;**allowedInternals**            |  RW | Sync Internals = TYPE, NAME | zB NR,STATE
-&emsp;&emsp;&emsp;**autoConfigFHEM**              |  RW | Erlaubt Änderungen in FHEM | true/`false`
-&emsp;&emsp;&emsp;**autoFunction**                |  RW | Funktionen werden bei Neustart nach Stand Adaper vergeben | true/`false`
-&emsp;&emsp;&emsp;**autoRole**                    |  RW | Rollen werden bei Neustart nach Stand Adaper vergeben  | true/`false`
-&emsp;&emsp;&emsp;**ignoreObjectsAttributesroom** |  RW | Kein Sync von Modulen mit Attributes:room | Raum1,Raum2,Raum3 usw
-&emsp;&emsp;&emsp;**ignoreObjectsInternalsNAME**  |  RW | Kein Sync von Modulen mit Internals:NAME  
-&emsp;&emsp;&emsp;**ignoreObjectsInternalsTYPE**  |  RW | Kein Sync von Modulen mit Internals:TYPE 
-&emsp;&emsp;&emsp;**ignorePossibleSets**          |  RW | Kein Sync von PossibleSets =
-&emsp;&emsp;&emsp;**ignoreReadings**              |  RW | Kein Sync von Readings =
-&emsp;&emsp;&emsp;**onlySyncRoom**                |  RW | Sync nur aus Raum = ioBroker, ioB.OUT +
-
-
-Funktionen autoConfigFHEM = true (über fhem.0.info.Commands.sendFHEM)        |                
-:----------------------------------|
-Für TYPE=SONOSPLAYER `attr xxx generateVolumeEvent 1` damit Lautstärke übertragen wird                                  |  
-Am Ende der Synchronisation `save` |
+&emsp;&emsp;&emsp;**allowedAttributes**           |  RW | Sync Attributtes default = `room,alias,comment` | Attribut oder Attribut1,Attribut2 usw
+&emsp;&emsp;&emsp;**allowedIOBin**                |  RW | Erlaubte Objekte zum Übertrag nach FHEM ACHTUNG! Es wird auf die Zeichenkette am Anfang des Objects geprüft zb alexa2.x.History überträgt alle Objekte die mit alexa2.x.History beginnen | Wert oder Wert1,Wert2 usw
+&emsp;&emsp;&emsp;**allowedInternals**            |  RW | Sync Internals default = `TYPE,NAME`| Internals oder Internals1,Internals2 usw
+&emsp;&emsp;&emsp;**autoConfigFHEM**              |  RW | Erlaube folgende Änderungen in FHEM 1.Für TYPE=SONOSPLAYER `attr xxx generateVolumeEvent 1` damit Lautstärke übertragen wird.  Am Ende der Synchronisation `save` zum Speichern der Änderungen. default=`false` | true/false
+&emsp;&emsp;&emsp;**autoFunction**                |  RW | Funktionen werden bei Neustart nach Stand Adaper vergeben default=`false` | true/false
+&emsp;&emsp;&emsp;**autoRole**                    |  RW | Rollen werden bei Neustart nach Stand Adaper vergeben  default=`false` | true/false
+&emsp;&emsp;&emsp;**ignoreObjectsAttributesroom** |  RW | Kein Sync von Modulen mit Attributes:room | room oder room1,room2 usw
+&emsp;&emsp;&emsp;**ignoreObjectsInternalsNAME**  |  RW | Kein Sync von Modulen mit Internals:NAME default=`info` | NAME oder NAME1,NAME2 usw
+&emsp;&emsp;&emsp;**ignoreObjectsInternalsTYPE**  |  RW | Kein Sync von Modulen mit Internals:TYPE | TYPE oder TYPE1,TYPE2 usw
+&emsp;&emsp;&emsp;**ignorePossibleSets**          |  RW | Kein Sync von PossibleSets default=` `
+&emsp;&emsp;&emsp;**ignoreReadings**              |  RW | Kein Sync von Readings default=` `
+&emsp;&emsp;&emsp;**onlySyncRoom**                |  RW | Sync wenn Raum/Räume vorhanden nur Module aus Raum/Räume default=`ioBroker,ioB.OUT`| Raum oder Raum1,Raum2 usw 
 
 <a name="info_info"/>
 
@@ -369,13 +366,12 @@ Objekt                    | Zugriff | Bescheibung | Wert
 
 #### Settings
 
-> Unter Settings können bestimmte Einträge für die ioBroker Admin-Oberfläche Bereich `Log` ausgewählt werden. Bei Änderungen ist kein Neustart FHEM-Adapter notwendig.
+> Unter Settings können bestimmte Einträge für die ioBroker Admin-Oberfläche Bereich `Log` ausgewählt werden. Jede Änderung ist sofort wirksam.
 
 ![alt-Objektename](media/objekte3infoSettings.PNG "Objekt info - Settings")<span style="color:grey">  
 *Objekt info - Settings*</span>
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert: 
-`true` oder `false` Startwert bei Installation
 
 Objekt                    | Zugriff | Bescheibung | Wert
 :-------------------------|:-------:|:------------|:-----:
@@ -385,17 +381,17 @@ Objekt                    | Zugriff | Bescheibung | Wert
 &emsp;&emsp;**[Configurations](#info_configurations)** |     | 
 &emsp;&emsp;**[Info](#info_info)**                     |     | 
 &emsp;&emsp;**Settings**                               |     | Einträge für Admin-Oberfläche Bereich `LOG`
-&emsp;&emsp;&emsp;**logCheckObject**         |  RW | Erzeugt info check cannel im LOG | true/`false`
-&emsp;&emsp;&emsp;**logCreateChannel**       |  RW | Erzeugt info Create channel im LOG | `true`/false
-&emsp;&emsp;&emsp;**logDeleteChannel**       |  RW | Erzeugt info Delete channel im LOG | `true`/false
-&emsp;&emsp;&emsp;**logEventFHEM**           |  RW | Erzeugt info eventFHEM im LOG | true/`false`
-&emsp;&emsp;&emsp;**logEventFHEMglobal**     |  RW | Erzeugt info eventFHEM(g) im LOG | `true`false 
-&emsp;&emsp;&emsp;**logEventFHEMreading**    |  RW | Erzeugt info eventFHEM(r) im LOG | true/`false`
-&emsp;&emsp;&emsp;**logEventFHEMstate**      |  RW | Erzeugt info eventFHEM(s) im LOG | true/`false`
-&emsp;&emsp;&emsp;**logEventIOB**            |  RW | Erzeugt info eventIOB im LOG | `true`/false
-&emsp;&emsp;&emsp;**logIgnoreConfigurations**|  RW | Erzeugt info ignore objec im LOG | `true`/false
-&emsp;&emsp;&emsp;**logUnhandeledEventFHEM** |  RW | Erzeugt warn unhandeled event FHEM im LOG | `true`/false
-&emsp;&emsp;&emsp;**logUpdateChannel**       |  RW | Erzeugt info Update channel im LOG | true/`false`
+&emsp;&emsp;&emsp;**logCheckObject**         |  RW | Erzeugt info check cannel im LOG default=`false` | true/false
+&emsp;&emsp;&emsp;**logCreateChannel**       |  RW | Erzeugt info Create channel im LOG default=`true`| true/false
+&emsp;&emsp;&emsp;**logDeleteChannel**       |  RW | Erzeugt info Delete channel im LOG default=`true` | true/false
+&emsp;&emsp;&emsp;**logEventFHEM**           |  RW | Erzeugt info eventFHEM im LOG - alle events aus FHEM default=`false`| true/false
+&emsp;&emsp;&emsp;**logEventFHEMglobal**     |  RW | Erzeugt info eventFHEM(g) im LOG - event global aus FHEM default=`true` | true/false 
+&emsp;&emsp;&emsp;**logEventFHEMreading**    |  RW | Erzeugt info eventFHEM(r) im LOG - event readings aus FHEM default=`false` | true/false
+&emsp;&emsp;&emsp;**logEventFHEMstate**      |  RW | Erzeugt info eventFHEM(s) im LOG - event state aus FHEM default=`false`| true/false
+&emsp;&emsp;&emsp;**logEventIOB**            |  RW | Erzeugt info eventIOB im LOG default=`true` | true/false
+&emsp;&emsp;&emsp;**logIgnoreConfigurations**|  RW | Erzeugt info ignore objec im LOG default=`true`| true/false
+&emsp;&emsp;&emsp;**logUnhandeledEventFHEM** |  RW | Erzeugt warn unhandeled event FHEM im LOG default=`true`| true/false
+&emsp;&emsp;&emsp;**logUpdateChannel**       |  RW | Erzeugt info Update channel im LOG default=`false` | true/false
 
 <a name="besonderheiten"/>
 
