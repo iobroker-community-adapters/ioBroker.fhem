@@ -150,8 +150,9 @@ adapter.on('message', obj => {
             // e.g. send email or pushover or whatever
             console.log('send command');
             // Send response in callback if required
-            if (obj.callback)
+            if (obj.callback) {
                 adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
+            }
         }
     }
 });
