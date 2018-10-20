@@ -1826,13 +1826,10 @@ function main() {
     });
     telnetOut.on('ready', function () {
         if (!connected) {
-            myObjects((cb) => {
-                getSettings((cb) => {
-                    getConfigurations((cb) => {
-                        startSync(cb);
-                    });
-                });
-            });
+            myObjects(() => 
+                getSettings(() => 
+                    getConfigurations(() => 
+                       startSync())));
         }
     });
     telnetOut.on('end', () => {
