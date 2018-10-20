@@ -48,6 +48,9 @@ Actually only following attributes are supported:
 
 
 ## Changelog
+### 1.1.0 (2018-10-22)
+* (LausiD) Big changes
+
 ### 1.0.0 (2018-10-15)
 * (LausiD) Min/max were defined as number
 

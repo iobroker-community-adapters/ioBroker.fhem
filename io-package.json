@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "fhem",
-        "version":                  "1.0.0",
+        "version":                  "1.1.0",
         "title":                    "FHEM connection",
         "desc":                     {
            "en": "FHEM",
@@ -9,6 +9,17 @@
            "ru": "FHEM"
 	    },
         "news": {
+            "1.1.0": {
+              "en": "Big changes",
+              "de": "Große veränderungen",
+              "ru": "Большие изменения",
+              "pt": "Grandes mudanças",
+              "nl": "Grote veranderingen",
+              "fr": "Grands changements",
+              "it": "Grandi cambiamenti",
+              "es": "Grandes cambios",
+              "pl": "Duże zmiany"
+            },
             "1.0.0": {
               "en": "Min/max are defined as number now",
               "de": "Min / Max sind jetzt als Nummer definiert",
