@@ -23,7 +23,7 @@ let iobroker = false;
 let firstRun = true;
 let synchro = true;
 let resync = false;
-const buildDate = '21.10.18';
+const buildDate = '21.10.18a';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -609,8 +609,10 @@ function myObjects(cb) {
         adapter.setForeignObject(newPoints[i]._id, newPoints[i], err => {
             err &&
                     adapter.log.error('[myObjects] ' + err);
-            if (i === newPoints.length - 1)
+            if (i === newPoints.length - 1) {
+                adapter.log.debug('[myObjects] end');
                 cb();
+            }
         });
     }
     // Alte Objekte löschen
@@ -726,13 +728,14 @@ function startSync(cb) {
     // send command JsonList2
     telnetOut.send('jsonlist2', (err, result) => {
         err && adapter.log.error(err);
-
+        adapter.log.debug('[startSync] nach jsonlist2 connected = ' + connected);
         if (!connected) {
             adapter.log.info('Connected FHEM telnet ' + adapter.config.host + ':' + adapter.config.port);
             connected = true;
             adapter.setState('info.connection', true, true);
         }
         if (result) {
+            adapter.log.debug('[startSync] result');
             let objects = null;
             try {
                 objects = JSON.parse(result);
@@ -740,6 +743,7 @@ function startSync(cb) {
                 adapter.log.error('[startSync] Cannot parse answer for jsonlist2: ' + e);
             }
             if (objects) {
+                adapter.log.debug('[startSync] objects');
                 parseObjects(objects.Results, () => {
                     unusedObjects('*', (cb) => {
                         sendFHEM('save');
@@ -766,7 +770,7 @@ function startSync(cb) {
     });
 }
 function parseObjects(objs, cb) {
-    adapter.log.debug('[parseObjects]');
+    adapter.log.debug('[parseObjects] start');
     const rooms = {};
     const objects = [];
     const states = [];
@@ -789,7 +793,7 @@ function parseObjects(objs, cb) {
                     suche = objs[i].Attributes.room.split(',');
                     for (const r in suche) {
                         if (onlySyncRoom.indexOf(suche[r]) !== -1) {
-                            adapter.log.debug(i + ' ' + onlySyncRoom + ' gefunden');
+                            adapter.log.debug('[parseObjects] ' + i + ' ' + onlySyncRoom + ' gefunden');
                             iobroker = true;
                         }
                     }
@@ -847,7 +851,7 @@ function parseObjects(objs, cb) {
                 let searchRoom = objs[i].Attributes.room.split(',');
                 for (const r in searchRoom) {
                     if (onlySyncRoom.indexOf(searchRoom[r]) !== -1) {
-                        adapter.log.debug('gefunden ' + r + ' ' + searchRoom[r]);
+                        adapter.log.debug('[parseObjects] gefunden ' + r + ' ' + searchRoom[r]);
                         weiter = false;
                     }
                 }
@@ -1790,7 +1794,7 @@ function main() {
         prompt: adapter.config.prompt
     });
     telnetOut.on('ready', () => {
-        adapter.log.debug ('[main] telnetOut.on ready');
+        adapter.log.debug('[main] telnetOut.on ready');
         if (!connected) {
             myObjects(() =>
                 getSettings(() =>
@@ -1799,7 +1803,7 @@ function main() {
         }
     });
     telnetOut.on('end', () => {
-        adapter.log.debug ('[main] telnetOut.on end');
+        adapter.log.debug('[main] telnetOut.on end');
         if (connected) {
             adapter.log.debug('Disconnected');
             connected = false;
@@ -1807,7 +1811,7 @@ function main() {
         }
     });
     telnetOut.on('close', () => {
-        adapter.log.debug ('[main] telnetOut.on close');
+        adapter.log.debug('[main] telnetOut.on close');
         if (connected) {
             adapter.log.debug('Disconnected');
             connected = false;
