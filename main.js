@@ -23,7 +23,7 @@ let iobroker = false;
 let firstRun = true;
 let synchro = true;
 let resync = false;
-const buildDate = '21.10.18a';
+const buildDate = '23.10.18';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -726,7 +726,7 @@ function startSync(cb) {
     ts_update = Date.now();
     adapter.log.debug('[startSync] start ts_update = ' + ts_update + ' connected = ' + connected);
     // send command JsonList2
-    telnetOut.send('jsonlist2', (err, result) => {
+    telnetOut.send('jsonlist2\n', (err, result) => {
         err && adapter.log.error(err);
         adapter.log.debug('[startSync] nach jsonlist2 connected = ' + connected);
         if (!connected) {
@@ -811,7 +811,7 @@ function parseObjects(objs, cb) {
 
         try {
             if (resync) {
-                adapter.log.warn('Abbruch parseObjects');
+                adapter.log.debug('[parseObjects] stop resync');
                 return;
             }
             //ignore Internals TYPE,NAME & Attributtes room
@@ -1591,7 +1591,7 @@ function writeValue(id, val, cb) {
 function requestMeta(name, attr, value, event, cb) {
     adapter.log.info('check channel ' + name + ' > jsonlist2');
     // send command JsonList2
-    telnetOut.send('jsonlist2 ' + name, (err, result) => {
+    telnetOut.send('jsonlist2 ' + name + '\n', (err, result) => {
         err && adapter.log.error('[requestMeta] ' + err);
         if (result) {
             let objects = null;
