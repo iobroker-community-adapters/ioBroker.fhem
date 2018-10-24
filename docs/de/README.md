@@ -92,6 +92,7 @@ Definierte Objekte aus ioBroker können auch nach FHEM übertragen werden.
 
 ## Voraussetzungen vor der Installation
 > Bei der Installation FHEM-Server wird ein telnet-Modul mit Namen `telnetPort` automatisch angelegt.
+Ab FHEM 5.9 keine automatische Anlage von 'telnetPort'
 
 Der FHEM Befehl `list telnetPort` sollte deshalb folgendes Ergebnis bringen:
 
@@ -346,6 +347,7 @@ Objekt                                           | Zugriff | Bescheibung | Wert
 &emsp;&emsp;&emsp;**ignoreObjectsInternalsTYPE**  |  RW | Kein Sync von Modulen mit Internals:TYPE | TYPE oder TYPE1,TYPE2 usw
 &emsp;&emsp;&emsp;**ignorePossibleSets**          |  RW | Kein Sync von PossibleSets (default=`getConfig,etRegRaw,gBulk,regSet,deviceMsg,CommandAccepted`)
 &emsp;&emsp;&emsp;**ignoreReadings**              |  RW | Kein Sync von Readings (default=`currentTrackPositionSimulated, currentTrackPositionSimulatedSec`)
+&emsp;&emsp;&emsp;**onlySyncNAME**                |  RW | Sync nur Module mit Internals:NAME | NAME oder NAME1,NAME2 usw
 &emsp;&emsp;&emsp;**onlySyncRoom**                |  RW | Sync wenn Raum/Räume vorhanden nur Module aus Raum/Räume (default=`ioBroker,ioB_OUT`) | room oder room1,room2 usw
 
 <a name="info_info"/>
