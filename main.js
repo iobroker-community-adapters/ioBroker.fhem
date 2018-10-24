@@ -23,11 +23,12 @@ let iobroker = false;
 let firstRun = true;
 let synchro = true;
 let resync = false;
-const buildDate = '23.10.18';
+const buildDate = '24.10.18';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
 let autoConfigFHEM = false;
+let onlySyncNAME;
 const onlySyncRoomS = ['ioBroker', 'ioB_OUT'];
 let onlySyncRoom = [];
 const ignoreObjectsInternalsTYPES = [];
@@ -586,6 +587,7 @@ function myObjects(cb) {
         {_id: adapter.namespace + '.info.Configurations.ignoreReadings', type: 'state', common: {name: 'ignore Readings = ' + ignoreReadingsS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: adapter.namespace + '.info.Configurations.ignorePossibleSets', type: 'state', common: {name: 'ignore PossibleSets = ' + ignorePossibleSetsS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: adapter.namespace + '.info.Configurations.onlySyncRoom', type: 'state', common: {name: 'only sync devices in room = ' + onlySyncRoomS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
+        {_id: adapter.namespace + '.info.Configurations.onlySyncNAME', type: 'state', common: {name: 'only sync devices NAME = ', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         // info.Info
         {_id: adapter.namespace + '.info.Info.buildDate', type: 'state', common: {name: 'Date of Version', type: 'string', read: true, write: false, role: 'text'}, native: {}},
         {_id: adapter.namespace + '.info.Info.numberDevicesFHEM', type: 'state', common: {name: 'Number of devices FHEM', type: 'number', read: true, write: false, role: 'value'}, native: {}},
@@ -716,6 +718,7 @@ function getConfigurations(cb) {
     ignorePossibleSets = ignorePossibleSetsS.slice();
     getConfig('info.Configurations.ignorePossibleSets', ignorePossibleSets, value => {
     });
+    getSetting('info.Configurations.onlySyncNAME', onlySyncNAME, value => onlySyncNAME = value);
     onlySyncRoom = onlySyncRoomS.slice();
     getConfig('info.Configurations.onlySyncRoom', onlySyncRoom, value => {
         adapter.log.debug('[getConfigurations] end');
@@ -725,8 +728,13 @@ function getConfigurations(cb) {
 function startSync(cb) {
     ts_update = Date.now();
     adapter.log.debug('[startSync] start ts_update = ' + ts_update + ' connected = ' + connected);
+    let send = 'jsonlist2';
+    if (onlySyncNAME) {
+        adapter.log.debug ('[startSync] onlySyncNAME = ' + onlySyncNAME);
+        send = send + ' ' + onlySyncNAME;
+    }
     // send command JsonList2
-    telnetOut.send('jsonlist2\r\n', (err, result) => {
+    telnetOut.send(send, (err, result) => {
         err && adapter.log.error(err);
         adapter.log.debug('[startSync] nach jsonlist2 connected = ' + connected);
         if (!connected) {
@@ -1591,7 +1599,7 @@ function writeValue(id, val, cb) {
 function requestMeta(name, attr, value, event, cb) {
     adapter.log.info('check channel ' + name + ' > jsonlist2');
     // send command JsonList2
-    telnetOut.send('jsonlist2 ' + name + '\r\n', (err, result) => {
+    telnetOut.send('jsonlist2 ' + name, (err, result) => {
         err && adapter.log.error('[requestMeta] ' + err);
         if (result) {
             let objects = null;
