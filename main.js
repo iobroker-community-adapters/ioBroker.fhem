@@ -23,7 +23,7 @@ let iobroker = false;
 let firstRun = true;
 let synchro = true;
 let resync = false;
-const buildDate = '24.10.18';
+const buildDate = '26.10.18';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -730,7 +730,7 @@ function startSync(cb) {
     adapter.log.debug('[startSync] start ts_update = ' + ts_update + ' connected = ' + connected);
     let send = 'jsonlist2';
     if (onlySyncNAME) {
-        adapter.log.debug ('[startSync] onlySyncNAME = ' + onlySyncNAME);
+        adapter.log.debug('[startSync] onlySyncNAME = ' + onlySyncNAME);
         send = send + ' ' + onlySyncNAME;
     }
     // send command JsonList2
@@ -822,7 +822,11 @@ function parseObjects(objs, cb) {
                 adapter.log.debug('[parseObjects] stop resync');
                 return;
             }
-            //ignore Internals TYPE,NAME & Attributtes room
+            //onlySyncNAME,ignore Internals TYPE,NAME & Attributtes room
+            if (onlySyncNAME && onlySyncNAME.indexOf(objs[i].Internals.NAME) === -1) {
+                logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | NAME <> ' + onlySyncNAME);
+                continue;
+            }
             if (ignoreObjectsInternalsTYPE.indexOf(objs[i].Internals.TYPE) !== -1) {
                 logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | TYPE: ' + ignoreObjectsInternalsTYPE);
                 continue;
@@ -1597,7 +1601,7 @@ function writeValue(id, val, cb) {
 }
 
 function requestMeta(name, attr, value, event, cb) {
-    adapter.log.info('check channel ' + name + ' > jsonlist2');
+    adapter.log.info('check channel ' + name + ' > jsonlist2 ' + name);
     // send command JsonList2
     telnetOut.send('jsonlist2 ' + name, (err, result) => {
         err && adapter.log.error('[requestMeta] ' + err);
