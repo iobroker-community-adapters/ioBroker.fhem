@@ -1786,8 +1786,9 @@ function main() {
         adapter.config.prompt = 'fhem>';
     }
     // in this template all states changes inside the adapters namespace are subscribed
-    //adapter.subscribeStates('*');
-    adapter.subscribeForeignStates('*'); // subscribe on variable "forecast.html" of all adapter instances "yr"                     
+    adapter.subscribeStates('*');
+    // try to avoid subscribe on all states, because it creates huge load.
+    adapter.subscribeForeignStates('yr.*'); // subscribe on variable "forecast.html" of all adapter instances "yr"
 
     telnetIn = new Telnet({
         host: adapter.config.host,
