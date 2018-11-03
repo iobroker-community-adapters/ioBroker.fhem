@@ -337,7 +337,7 @@ Objekt                                           | Zugriff | Bescheibung | Wert
 &emsp;&emsp;**[Commands](#info_commands)**        |     | Befehlszeile FHEM 
 &emsp;&emsp;**Configurations**                    |     | Configurations
 &emsp;&emsp;&emsp;**allowedAttributes**           |  RW | Sync Attributtes (default = `room,alias,comment`) | Attribut oder Attribut1,Attribut2 usw
-&emsp;&emsp;&emsp;**allowedIOBin**                |  RW | Erlaubte Objekte zum Übertrag nach FHEM. Es wird auf die Zeichenkette am Anfang des Objects geprüft zb "alexa2.x.History" überträgt alle Objekte die mit alexa2.x.History beginnen. Objekte werden in FHEM im Raum ioB_IN als Modul dummy angelegt.  | Wert oder Wert1,Wert2 usw
+&emsp;&emsp;&emsp;**allowedIOBin**                |  RW | Erlaubte Objekte zum Übertrag nach FHEM. Es wird auf die Zeichenkette am Anfang des Objects geprüft zb "alexa2.x.History" überträgt alle Objekte die mit alexa2.x.History beginnen. Objekte werden werden nach einer Änderung state in FHEM im Raum ioB_IN als Modul dummy angelegt.  | Wert oder Wert1,Wert2 usw
 &emsp;&emsp;&emsp;**allowedInternals**            |  RW | Sync Internals (default = `TYPE,NAME`) | Internals oder Internals1,Internals2 usw
 &emsp;&emsp;&emsp;**autoConfigFHEM**              |  RW | Erlaubt folgende Änderungen in FHEM 1.Für TYPE=SONOSPLAYER `attr xxx generateVolumeEvent 1` damit Lautstärke übertragen wird.  Am Ende der Synchronisation `save` zum Speichern der Änderungen. (default=`false`) | true/false
 &emsp;&emsp;&emsp;**autoFunction**                |  RW | Funktionen werden bei Neustart abhängig von Version FHEM Adaper vergeben (default=`false`) Für Adapter `Material UI`wird `true`empfohlen. Bei `false` können Funktionen selber vergeben werden und es erfolgt keine Änderung durch den Adapter | true/false
@@ -371,7 +371,8 @@ Objekt                    | Zugriff | Bescheibung | Wert
 &emsp;&emsp;&emsp;**buildDate**                         |  R  | Datum Version | 18.10.18
 &emsp;&emsp;&emsp;**numberDevicesFHEM**                 |  R  | Anzahl Module in FHEM | Zahl
 &emsp;&emsp;&emsp;**numberObjectsIOBin**                |  R  | Anzahl Objekte aus FHEM | Zahl
-&emsp;&emsp;&emsp;**numberObjectsIOBout**               |  R  | Anzahl Objekte zu FHEM | Zahl
+&emsp;&emsp;&emsp;**numberObjectsIOBout**               |  R  | Anzahl Objekte zu FHEM übertragen | Zahl
+&emsp;&emsp;&emsp;**numberObjectsIOBoutSub**            |  R  | Mögliche Anzahl Objekte zu FHEM aus fhem.x.info.Configurations.fhem.0.info.Configurations.allowedIOBin | Zahl
 &emsp;&emsp;&emsp;**roomioBroker**                      |  R  | Raum aus Configurations.onlySyncRoom vorhanden |true/false
 
 <a name="info_settings"/>
