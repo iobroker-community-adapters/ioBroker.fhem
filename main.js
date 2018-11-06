@@ -23,7 +23,7 @@ let iobroker = false;
 let firstRun = true;
 let synchro = true;
 let resync = false;
-const buildDate = '03.11.18';
+const buildDate = '06.11.18';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -633,12 +633,12 @@ function getSetting(id, setting, callback, cb) {
     adapter.getState(id, (err, obj) => {
         err && adapter.log.error('getSetting: ' + err);
         if (obj) {
-            adapter.log.info('> ' + id + ' = ' + obj.val);
+            obj.val && adapter.log.info('> ' + id + ' = ' + obj.val);
             callback(obj.val);
             cb && cb();
         } else {
             adapter.setState(id, setting, true);
-            adapter.log.info('> ' + id + ' = ' + setting);
+            setting && adapter.log.info('> ' + id + ' = ' + setting);
             callback(setting);
             cb && cb();
         }
@@ -646,7 +646,7 @@ function getSetting(id, setting, callback, cb) {
 }
 function getSettings(cb) {
     adapter.log.debug('[getSettings] start');
-    adapter.log.info('check ' + adapter.namespace + '.' + 'info.Settings');
+    adapter.log.info('check ' + adapter.namespace + '.' + 'info.Settings true');
     getSetting('info.Settings.logCheckObject', logCheckObject, value => logCheckObject = value);
     getSetting('info.Settings.logUpdateChannel', logUpdateChannel, value => logUpdateChannel = value);
     getSetting('info.Settings.logCreateChannel', logCreateChannel, value => logCreateChannel = value);
@@ -678,12 +678,12 @@ function getConfig(id, config, cb) {
         } else {
             cb && cb();
         }
-        adapter.log.info('> ' + id + ' = ' + config);
+        config.length && adapter.log.info('> ' + id + ' = ' + config);
     });
 }
 function getConfigurations(cb) {
     adapter.log.debug('[getConfigurations] start');
-    adapter.log.info('check ' + adapter.namespace + '.' + 'info.Configurations');
+    adapter.log.info('check ' + adapter.namespace + '.' + 'info.Configurations true or value');
     getSetting('info.Configurations.autoRole', autoRole, value => autoRole = value);
     getSetting('info.Configurations.autoFunction', autoFunction, value => autoFunction = value);
     getSetting('info.Configurations.autoConfigFHEM', autoConfigFHEM, value => autoConfigFHEM = value);
