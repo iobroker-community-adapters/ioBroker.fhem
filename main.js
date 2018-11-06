@@ -1001,6 +1001,7 @@ function parseObjects(objs, cb) {
                         }
                     };
                     obj.native.ts = Date.now();
+                    adapter.log.debug('[parseObjects] check Attributes "' + id + '"');
                     objects.push(obj);
                     states.push({
                         id: obj._id,
@@ -1037,6 +1038,7 @@ function parseObjects(objs, cb) {
                         }
                     };
                     obj.native.ts = Date.now();
+                    adapter.log.debug('[parseObjects] check Internals "' + id + '"');
                     objects.push(obj);
                     states.push({
                         id: obj._id,
@@ -1205,6 +1207,7 @@ function parseObjects(objs, cb) {
 
                     obj.native.ts = Date.now();
                     obj.common.write = true;
+                    adapter.log.debug('[parseObjects] check PossibleSets "' + id + '"');
                     objects.push(obj);
                     setStates[stateName] = obj;
                     if (logCheckObject && obj.common.role.indexOf('state') === -1) {
@@ -1369,6 +1372,7 @@ function parseObjects(objs, cb) {
                             ack: true
                         });
                         if (!combined) {
+                            adapter.log.debug('[parseObjects] check Readings "' + id + '"');
                             objects.push(obj);
                             if (logCheckObject && obj.common.role.indexOf('value') === -1 && obj.common.role.indexOf('state') === -1 && obj.common.role.indexOf('text') === -1) {
                                 adapter.log.info('> role = ' + obj.common.role + ' | ' + id);
