@@ -14,16 +14,16 @@ let connected = false;
 const queue = [];
 const queueL = [];
 let fhemIN = {};
+let fhemINs = {};
 const fhemObjects = {};
 const functions = {};
-
 let lastNameQueue;
 let lastNameTS = '0';
 let iobroker = false;
 let firstRun = true;
 let synchro = true;
 let resync = false;
-const buildDate = '26.10.18';
+const buildDate = '06.11.18';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -88,41 +88,36 @@ adapter.on('unload', callback => {
 });
 // is called if a subscribed state changes
 adapter.on('stateChange', (id, state) => {
-    if (!allowedIOBin.length && id.indexOf(adapter.namespace) === -1) {
+    if (!Object.keys(fhemINs).length && id.indexOf(adapter.namespace) === -1) {
         return;
     }
-
-    allowedIOBin.forEach(search => {
-        if (id.substring(0, search.length).indexOf(search) !== -1) {
-            adapter.log.debug('[stateChange] ' + id + ' ' + JSON.stringify(state));
-            let idFHEM = id.replace(/-/g, '_');
-            if (!fhemIN[idFHEM]) {
-                queue.push({
-                    command: 'write',
-                    id: 'fhem.0.info.Commands.sendFHEM',
-                    val: 'define ' + idFHEM + ' dummy'
-                });
-                processQueue();
-                queue.push({
-                    command: 'write',
-                    id: 'fhem.0.info.Commands.sendFHEM',
-                    val: 'attr ' + idFHEM + ' room ioB_IN;attr ' + idFHEM + ' comment Auto-created by ioBroker;set ' + idFHEM + ' ' + state.val
-                });
-                processQueue();
-                fhemIN[idFHEM] = {id: idFHEM};
-                adapter.setState('info.Info.numberObjectsIOBout', Object.keys(fhemIN).length, true);
-
-            } else {
-                queue.push({
-                    command: 'write',
-                    id: 'fhem.0.info.Commands.sendFHEM',
-                    val: 'set ' + idFHEM + ' ' + state.val
-                });
-                processQueue();
-            }
+    let idFHEM = id.replace(/-/g, '_');
+    if (fhemINs[idFHEM]) {
+        adapter.log.debug('[stateChange] ' + id + ' ' + JSON.stringify(state));
+        if (!fhemIN[idFHEM]) {
+            queue.push({
+                command: 'write',
+                id: 'fhem.0.info.Commands.sendFHEM',
+                val: 'define ' + idFHEM + ' dummy'
+            });
+            processQueue();
+            queue.push({
+                command: 'write',
+                id: 'fhem.0.info.Commands.sendFHEM',
+                val: 'attr ' + idFHEM + ' room ioB_IN;attr ' + idFHEM + ' comment Auto-created by ioBroker;set ' + idFHEM + ' ' + state.val
+            });
+            processQueue();
+            fhemIN[idFHEM] = {id: idFHEM};
+            adapter.setState('info.Info.numberObjectsIOBout', Object.keys(fhemIN).length, true);
+        } else {
+            queue.push({
+                command: 'write',
+                id: 'fhem.0.info.Commands.sendFHEM',
+                val: 'set ' + idFHEM + ' ' + state.val
+            });
+            processQueue();
         }
-    });
-
+    }
     // you can use the ack flag to detect if it is status (true) or command (false)
     if (state && !state.ack) {
         if (!connected) {
@@ -220,7 +215,7 @@ function parseEvent(event, anz) {
     if (!fhemObjects[adapter.namespace + '.' + parts[1].replace(/\./g, '_')] && parts[1] !== 'global') {
         return;
     }
-// Global global ?
+    // Global global ?
     if (parts[0] === 'Global' && parts[1] === 'global') {
         if (!parts[3]) {
             logUnhandledEventFHEM && adapter.log.warn('unhandled event FHEM(g) "' + event);
@@ -233,7 +228,6 @@ function parseEvent(event, anz) {
         // Global global DEFINED ?
         if (parts[2] === 'DEFINED') {
             logEventFHEMglobal && adapter.log.info('event FHEM(g) "' + event + '"');
-
             queue.push({
                 command: 'meta',
                 name: parts[3],
@@ -251,7 +245,6 @@ function parseEvent(event, anz) {
         // Global global ATTR ?
         if (parts[2] === 'ATTR' && allowedAttributes.indexOf(parts[4]) !== -1) {
             logEventFHEMglobal && adapter.log.info('event FHEM(g) "' + event + '"');
-
             queue.push({
                 command: 'meta',
                 name: parts[3],
@@ -593,6 +586,7 @@ function myObjects(cb) {
         {_id: adapter.namespace + '.info.Info.numberDevicesFHEM', type: 'state', common: {name: 'Number of devices FHEM', type: 'number', read: true, write: false, role: 'value'}, native: {}},
         {_id: adapter.namespace + '.info.Info.roomioBroker', type: 'state', common: {name: 'room of fhem.x.info.Configurations.onlySyncRoom exist', type: 'boolean', read: true, write: false, role: 'indicator'}, native: {}},
         {_id: adapter.namespace + '.info.Info.numberObjectsIOBout', type: 'state', common: {name: 'Number of objects IOB out', type: 'number', read: true, write: false, role: 'value'}, native: {}},
+        {_id: adapter.namespace + '.info.Info.numberObjectsIOBoutSub', type: 'state', common: {name: 'Number of objects IOB out Subscripe', type: 'number', read: true, write: false, role: 'value'}, native: {}},
         {_id: adapter.namespace + '.info.Info.numberObjectsIOBin', type: 'state', common: {name: 'Number of objects IOB in', type: 'number', read: true, write: false, role: 'value'}, native: {}},
         // info.Settings
         {_id: adapter.namespace + '.info.Settings.logCheckObject', type: 'state', common: {name: 'Log info Check channel', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
@@ -639,12 +633,12 @@ function getSetting(id, setting, callback, cb) {
     adapter.getState(id, (err, obj) => {
         err && adapter.log.error('getSetting: ' + err);
         if (obj) {
-            adapter.log.info('> ' + id + ' = ' + obj.val);
+            obj.val && adapter.log.info('> ' + id + ' = ' + obj.val);
             callback(obj.val);
             cb && cb();
         } else {
             adapter.setState(id, setting, true);
-            adapter.log.info('> ' + id + ' = ' + setting);
+            setting && adapter.log.info('> ' + id + ' = ' + setting);
             callback(setting);
             cb && cb();
         }
@@ -652,7 +646,7 @@ function getSetting(id, setting, callback, cb) {
 }
 function getSettings(cb) {
     adapter.log.debug('[getSettings] start');
-    adapter.log.info('check ' + adapter.namespace + '.' + 'info.Settings');
+    adapter.log.info('check ' + adapter.namespace + '.' + 'info.Settings true');
     getSetting('info.Settings.logCheckObject', logCheckObject, value => logCheckObject = value);
     getSetting('info.Settings.logUpdateChannel', logUpdateChannel, value => logUpdateChannel = value);
     getSetting('info.Settings.logCreateChannel', logCreateChannel, value => logCreateChannel = value);
@@ -673,7 +667,6 @@ function getConfig(id, config, cb) {
     adapter.log.debug('[getConfig] ' + id + config);
     adapter.getState(id, (err, obj) => {
         err && adapter.log.error('[getConfig] ' + err);
-
         if (obj) {
             const part = obj.val.split(",");
             if (part[0]) {
@@ -685,12 +678,12 @@ function getConfig(id, config, cb) {
         } else {
             cb && cb();
         }
-        adapter.log.info('> ' + id + ' = ' + config);
+        config.length && adapter.log.info('> ' + id + ' = ' + config);
     });
 }
 function getConfigurations(cb) {
     adapter.log.debug('[getConfigurations] start');
-    adapter.log.info('check ' + adapter.namespace + '.' + 'info.Configurations');
+    adapter.log.info('check ' + adapter.namespace + '.' + 'info.Configurations true or value');
     getSetting('info.Configurations.autoRole', autoRole, value => autoRole = value);
     getSetting('info.Configurations.autoFunction', autoFunction, value => autoFunction = value);
     getSetting('info.Configurations.autoConfigFHEM', autoConfigFHEM, value => autoConfigFHEM = value);
@@ -752,19 +745,23 @@ function startSync(cb) {
             }
             if (objects) {
                 adapter.log.debug('[startSync] objects');
-                parseObjects(objects.Results, () => {
-                    unusedObjects('*', (cb) => {
-                        sendFHEM('save');
-                        adapter.setState('info.Info.numberObjectsIOBin', Object.keys(fhemObjects).length, true);
-                        adapter.log.info('> info.Info.numberObjectsIOBin = ' + Object.keys(fhemObjects).length);
-                        adapter.setState('info.Info.numberObjectsIOBout', Object.keys(fhemIN).length, true);
-                        adapter.log.info('> info.Info.numberObjectsIOBout = ' + Object.keys(fhemIN).length);
-                        adapter.log.info('Synchronised FHEM!');
-                        synchro = false;
-                        if (cb) {
-                            cb();
-                            cb = null;
-                        }
+                checkSubscribe((cb) => {
+                    parseObjects(objects.Results, () => {
+                        unusedObjects('*', (cb) => {
+                            sendFHEM('save');
+                            adapter.log.info('check fhem.0.info.Info end')
+                            adapter.setState('info.Info.numberObjectsIOBin', Object.keys(fhemObjects).length, true);
+                            adapter.log.info('> info.Info.numberObjectsIOBin = ' + Object.keys(fhemObjects).length);
+                            adapter.setState('info.Info.numberObjectsIOBout', Object.keys(fhemIN).length, true);
+                            adapter.log.info('> info.Info.numberObjectsIOBout = ' + Object.keys(fhemIN).length);
+                            adapter.log.info('> info.Info.numberObjectsIOBoutSub = ' + Object.keys(fhemINs).length);
+                            adapter.log.info('Synchronised FHEM!');
+                            synchro = false;
+                            if (cb) {
+                                cb();
+                                cb = null;
+                            }
+                        });
                     });
                 });
             } else if (cb) {
@@ -777,6 +774,41 @@ function startSync(cb) {
         }
     });
 }
+function checkSubscribe(cb) {
+    adapter.log.debug('[checkSubscribe] start ');
+    if (!allowedIOBin.length) {
+        adapter.log.debug('[checkSubscribe] no end');
+        cb && cb();
+        return;
+    }
+    adapter.log.info('check fhem.0.info.Configurations.allowedIOBin');
+    let end = 0;
+    allowedIOBin.forEach(search => {
+        adapter.getForeignStates(search + '*', (err, states) => {
+            if (err) {
+                adapter.log.error('[checkSubscribe] error: ' + err);
+            } else {
+                adapter.log.debug('[checkSubscribe] found' + JSON.stringify(states));
+                adapter.log.info('> ' + Object.keys(states).length + ' state(s) of "' + search + '" detected');
+                for (const id in states) {
+                    if (!states.hasOwnProperty(id)) {
+                        continue;
+                    }
+                    adapter.subscribeForeignStates(id);
+                    let idFHEM = id.replace(/-/g, '_');
+                    fhemINs[idFHEM] = {id: idFHEM};
+                    adapter.log.debug('[checkSubscribe] id = ' + id + ' / idFHEM = ' + idFHEM);
+                }
+                end++;
+                if (end === allowedIOBin.length) {
+                    adapter.setState('info.Info.numberObjectsIOBoutSub', Object.keys(fhemINs).length, true);
+                    adapter.log.debug('[checkSubscribe] end');
+                    cb && cb();
+                }
+            }
+        });
+    });
+}
 function parseObjects(objs, cb) {
     adapter.log.debug('[parseObjects] start');
     const rooms = {};
@@ -787,6 +819,7 @@ function parseObjects(objs, cb) {
     let name;
     let suche = 'no';
     if (firstRun) {
+        adapter.log.info('check fhem.0.info.Info start');
         adapter.setState('info.Info.buildDate', buildDate, true);
         adapter.log.info('> info.Info.buildDate = ' + buildDate);
         adapter.setState('info.Info.numberDevicesFHEM', objs.length, true);
@@ -822,33 +855,36 @@ function parseObjects(objs, cb) {
                 adapter.log.debug('[parseObjects] stop resync');
                 return;
             }
-            //onlySyncNAME,ignore Internals TYPE,NAME & Attributtes room
+            //onlySyncNAME,ignore Internals TYPE,NAME & Attributtes room 
             if (onlySyncNAME && onlySyncNAME.indexOf(objs[i].Internals.NAME) === -1) {
-                logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | NAME <> ' + onlySyncNAME);
+                logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | NAME <> ' + onlySyncNAME + ' | ' + ' ' + (i + 1) + '/' + objs.length);
                 continue;
             }
             if (ignoreObjectsInternalsTYPE.indexOf(objs[i].Internals.TYPE) !== -1) {
-                logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | TYPE: ' + ignoreObjectsInternalsTYPE);
+                logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | TYPE: ' + ignoreObjectsInternalsTYPE + ' | ' + ' ' + (i + 1) + '/' + objs.length);
                 continue;
             }
             if (ignoreObjectsInternalsNAME.indexOf(objs[i].Internals.NAME) !== -1) {
-                logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | NAME: ' + ignoreObjectsInternalsNAME);
+                logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | NAME: ' + ignoreObjectsInternalsNAME + ' | ' + ' ' + (i + 1) + '/' + objs.length);
                 continue;
             }
             if (ignoreObjectsAttributesroom.indexOf(objs[i].Attributes.room) !== -1) {
-                logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | room: ' + ignoreObjectsAttributesroom);
+                logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | room: ' + ignoreObjectsAttributesroom + ' | ' + ' ' + (i + 1) + '/' + objs.length);
                 continue;
             }
             if (objs[i].Attributes.comment && objs[i].Attributes.comment.indexOf('Auto-created by ioBroker') !== -1) {
-                if (firstRun) {
+                adapter.log.debug('[parseObjects] Auto-created by ioBroker = ' + objs[i].Name);
+                if (!fhemINs[objs[i].Name]) {
                     queue.push({
                         command: 'write',
                         id: 'fhem.0.info.Commands.sendFHEM',
                         val: 'delete ' + objs[i].Name
                     });
                     processQueue();
+                    logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | comment: Auto-created by ioBroker' + ' | ' + ' ' + (i + 1) + '/' + objs.length);
+                } else {
+                    fhemIN[objs[i].Name] = {id: objs[i].Name};
                 }
-                logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | comment: Auto-created by ioBroker');
                 continue;
             }
 
@@ -965,6 +1001,7 @@ function parseObjects(objs, cb) {
                         }
                     };
                     obj.native.ts = Date.now();
+                    adapter.log.debug('[parseObjects] check Attributes "' + id + '"');
                     objects.push(obj);
                     states.push({
                         id: obj._id,
@@ -1001,6 +1038,7 @@ function parseObjects(objs, cb) {
                         }
                     };
                     obj.native.ts = Date.now();
+                    adapter.log.debug('[parseObjects] check Internals "' + id + '"');
                     objects.push(obj);
                     states.push({
                         id: obj._id,
@@ -1169,6 +1207,7 @@ function parseObjects(objs, cb) {
 
                     obj.native.ts = Date.now();
                     obj.common.write = true;
+                    adapter.log.debug('[parseObjects] check PossibleSets "' + id + '"');
                     objects.push(obj);
                     setStates[stateName] = obj;
                     if (logCheckObject && obj.common.role.indexOf('state') === -1) {
@@ -1333,6 +1372,7 @@ function parseObjects(objs, cb) {
                             ack: true
                         });
                         if (!combined) {
+                            adapter.log.debug('[parseObjects] check Readings "' + id + '"');
                             objects.push(obj);
                             if (logCheckObject && obj.common.role.indexOf('value') === -1 && obj.common.role.indexOf('state') === -1 && obj.common.role.indexOf('text') === -1) {
                                 adapter.log.info('> role = ' + obj.common.role + ' | ' + id);
@@ -1547,7 +1587,6 @@ function writeValue(id, val, cb) {
             err && adapter.log.error('[writeValue] ' + err);
             adapter.setState('info.Commands.resultFHEM', result.replace(/(\r\n)|(\r)|(\n)/g, '<br />'), err =>
                 err && adapter.log.error('[writeValue] ' + err));
-
             adapter.setState('info.Commands.lastCommand', cmd, err => err && adapter.log.error('[writeValue] ' + err));
             cb && cb();
         });
@@ -1632,7 +1671,6 @@ function requestMeta(name, attr, value, event, cb) {
 function deleteChannel(name, cb) {
     adapter.log.debug('[deleteChannel] ' + name);
     delete fhemObjects[adapter.namespace + '.' + name];
-
     adapter.deleteChannel(name, err => {
         if (err && err !== 'Not exists') {
             adapter.log.error('[deleteChannel] ' + name + ' ' + err);
@@ -1733,11 +1771,12 @@ function resyncFHEM() {
     synchro = true;
     firstRun = true;
     fhemIN = {};
+    fhemINs = {};
     adapter.setState('info.resync', false, true);
     startSync();
 }
 function processQueue() {
-//adapter.log.debug ('[processQueue]');
+    //adapter.log.debug ('[processQueue]');
     if (telnetOut.isCommandRunning() || !queue.length) {
         return;
     }
@@ -1787,9 +1826,6 @@ function main() {
     }
     // in this template all states changes inside the adapters namespace are subscribed
     adapter.subscribeStates('*');
-    // try to avoid subscribe on all states, because it creates huge load.
-    adapter.subscribeForeignStates('yr.*'); // subscribe on variable "forecast.html" of all adapter instances "yr"
-
     telnetIn = new Telnet({
         host: adapter.config.host,
         port: adapter.config.port,
