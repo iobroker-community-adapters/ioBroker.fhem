@@ -294,6 +294,7 @@ Objekt                                                 | Zugriff | Bescheibung  
 &emsp;**info**                                         |     | Information und mehr
 &emsp;&emsp;**[Commands](#info_commands)**             |     | Befehlszeile FHEM
 &emsp;&emsp;**[Configurations](#info_configurations)** |     | 
+&emsp;&emsp;**[Debug](#info_debug)**                   |     | Debug Modus
 &emsp;&emsp;**[Info](#info_info)**                     |     | 
 &emsp;&emsp;**[Settings](#info_settings)**             |     | Auswahl Einträge für Admin-Oberfläche Bereich `LOG`  
 &emsp;&emsp;**connection**                             |  R  | Status Verbindung zu FHEM                            | true/false
@@ -350,6 +351,27 @@ Objekt                                           | Zugriff | Bescheibung | Wert
 &emsp;&emsp;&emsp;**onlySyncNAME**                |  RW | Sync nur Module mit Internals:NAME | NAME oder NAME1,NAME2 usw
 &emsp;&emsp;&emsp;**onlySyncRoom**                |  RW | Sync wenn Raum/Räume vorhanden nur Module aus Raum/Räume (default=`ioBroker,ioB_OUT`) | room oder room1,room2 usw
 
+<a name="info_debug"/>
+
+#### Debug
+
+> Unter Debug sind verschiedene Möglichkeiten zum Test.
+
+![alt-Objektename](media/objekte3infoInfo.PNG "Objekt info - Info")<span style="color:grey">  
+*Objekt info - Info*</span>
+
+> Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
+
+Objekt                    | Zugriff | Bescheibung | Wert
+:-------------------------|:-------:|:------------|:----:
+**[fhem.o](#objekte)**                                  |     | Name der ersten *Instanz* des FHEM Adapters
+&emsp;**[info](#objekte_i)**                            |     | 
+&emsp;&emsp;**[Commands](#info_commands)**              |     | Befehlszeile FHEM
+&emsp;&emsp;**[Configurations](#info_configurations)**  |     | 
+&emsp;&emsp;**Debug**                                   |     | Debug Modus
+&emsp;&emsp;&emsp;**jsonlist2**                         |  RW | jsonlist2 Device aus FHEM | json
+&emsp;&emsp;&emsp;**meta**                              |  RW | Name Device aus FHEM | Text
+
 <a name="info_info"/>
 
 #### Info
@@ -367,12 +389,13 @@ Objekt                    | Zugriff | Bescheibung | Wert
 &emsp;**[info](#objekte_i)**                            |     | 
 &emsp;&emsp;**[Commands](#info_commands)**              |     | Befehlszeile FHEM
 &emsp;&emsp;**[Configurations](#info_configurations)**  |     | 
+&emsp;&emsp;**[Debug](#info_debug)**                    |     | Debug Modus
 &emsp;&emsp;**Info**                                    |     | Info
 &emsp;&emsp;&emsp;**buildDate**                         |  R  | Datum Version | 18.10.18
 &emsp;&emsp;&emsp;**numberDevicesFHEM**                 |  R  | Anzahl Module in FHEM | Zahl
 &emsp;&emsp;&emsp;**numberObjectsIOBin**                |  R  | Anzahl Objekte aus FHEM | Zahl
 &emsp;&emsp;&emsp;**numberObjectsIOBout**               |  R  | Anzahl Objekte zu FHEM übertragen | Zahl
-&emsp;&emsp;&emsp;**numberObjectsIOBoutSub**            |  R  | Mögliche Anzahl Objekte zu FHEM aus fhem.x.info.Configurations.fhem.0.info.Configurations.allowedIOBin | Zahl
+&emsp;&emsp;&emsp;**numberObjectsIOBoutSub**            |  R  | Mögliche Anzahl Objekte zu FHEM aus fhem.x.info.Configurations.allowedIOBin | Zahl
 &emsp;&emsp;&emsp;**roomioBroker**                      |  R  | Raum aus Configurations.onlySyncRoom vorhanden |true/false
 
 <a name="info_settings"/>
@@ -392,6 +415,7 @@ Objekt                    | Zugriff | Bescheibung | Wert
 &emsp;**[info](#objekte_i)**                           |     | Information und mehr
 &emsp;&emsp;**[Commands](#info_commands)**             |     | Befehlszeile FHEM
 &emsp;&emsp;**[Configurations](#info_configurations)** |     | 
+&emsp;&emsp;**[Debug](#info_debug)**                   |     | Debug Modus
 &emsp;&emsp;**[Info](#info_info)**                     |     | 
 &emsp;&emsp;**Settings**                               |     | Einträge für Admin-Oberfläche Bereich `LOG`
 &emsp;&emsp;&emsp;**logCheckObject**         |  RW | Erzeugt info check cannel im LOG default=`false` | true/false
