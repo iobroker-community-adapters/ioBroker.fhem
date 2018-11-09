@@ -23,7 +23,8 @@ let iobroker = false;
 let firstRun = true;
 let synchro = true;
 let resync = false;
-const buildDate = '06.11.18';
+let debug = false;
+const buildDate = '09.11.18';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -130,7 +131,7 @@ adapter.on('stateChange', (id, state) => {
                 command: 'resync'
             });
             processQueue();
-        } else if (fhemObjects[id] || id === adapter.namespace + '.info.Commands.sendFHEM' || id.indexOf(adapter.namespace + '.info.Settings') !== -1 || id.indexOf(adapter.namespace + '.info.Configurations') !== -1) {
+        } else if (fhemObjects[id] || id === adapter.namespace + '.info.Commands.sendFHEM' || id.indexOf(adapter.namespace + '.info.Debug') !== -1 || id.indexOf(adapter.namespace + '.info.Settings') !== -1 || id.indexOf(adapter.namespace + '.info.Configurations') !== -1) {
             adapter.log.debug('in: ' + id + ' ' + state.val);
             queue.push({
                 command: 'write',
@@ -581,6 +582,9 @@ function myObjects(cb) {
         {_id: adapter.namespace + '.info.Configurations.ignorePossibleSets', type: 'state', common: {name: 'ignore PossibleSets = ' + ignorePossibleSetsS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: adapter.namespace + '.info.Configurations.onlySyncRoom', type: 'state', common: {name: 'only sync devices in room = ' + onlySyncRoomS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: adapter.namespace + '.info.Configurations.onlySyncNAME', type: 'state', common: {name: 'only sync devices NAME = ', type: 'string', read: true, write: true, role: 'state'}, native: {}},
+        // info.Debug
+        {_id: adapter.namespace + '.info.Debug.jsonlist2', type: 'state', common: {name: 'jsonlist2 of FHEM', type: 'string', read: true, write: true, role: 'json'}, native: {}},
+        {_id: adapter.namespace + '.info.Debug.meta', type: 'state', common: {name: 'Device NAME of FHEM', type: 'string', read: true, write: true, role: 'text'}, native: {}},
         // info.Info
         {_id: adapter.namespace + '.info.Info.buildDate', type: 'state', common: {name: 'Date of Version', type: 'string', read: true, write: false, role: 'text'}, native: {}},
         {_id: adapter.namespace + '.info.Info.numberDevicesFHEM', type: 'state', common: {name: 'Number of devices FHEM', type: 'number', read: true, write: false, role: 'value'}, native: {}},
@@ -1001,7 +1005,8 @@ function parseObjects(objs, cb) {
                         }
                     };
                     obj.native.ts = Date.now();
-                    adapter.log.debug('[parseObjects] check Attributes "' + id + '"');
+                    debug && adapter.log.info('> check Attributes "' + id + '" = ' + val);
+                    adapter.log.debug('[parseObjects] check Attributes "' + id + '" = ' + val);
                     objects.push(obj);
                     states.push({
                         id: obj._id,
@@ -1038,7 +1043,8 @@ function parseObjects(objs, cb) {
                         }
                     };
                     obj.native.ts = Date.now();
-                    adapter.log.debug('[parseObjects] check Internals "' + id + '"');
+                    debug && adapter.log.info('> check Internals "' + id + '" = ' + val);
+                    adapter.log.debug('[parseObjects] check Internals "' + id + '" = ' + val);
                     objects.push(obj);
                     states.push({
                         id: obj._id,
@@ -1207,7 +1213,8 @@ function parseObjects(objs, cb) {
 
                     obj.native.ts = Date.now();
                     obj.common.write = true;
-                    adapter.log.debug('[parseObjects] check PossibleSets "' + id + '"');
+                    debug && adapter.log.info('> check PossibleSets "' + id + '" = ' + parts[0] + ' | type: ' + obj.common.type);
+                    adapter.log.debug('[parseObjects] check PossibleSets "' + id + '" = ' + parts[0]);
                     objects.push(obj);
                     setStates[stateName] = obj;
                     if (logCheckObject && obj.common.role.indexOf('state') === -1) {
@@ -1372,7 +1379,8 @@ function parseObjects(objs, cb) {
                             ack: true
                         });
                         if (!combined) {
-                            adapter.log.debug('[parseObjects] check Readings "' + id + '"');
+                            debug && adapter.log.info('> check Readings "' + id + '" = ' + val);
+                            adapter.log.debug('[parseObjects] check Readings "' + id + '" = ' + val);
                             objects.push(obj);
                             if (logCheckObject && obj.common.role.indexOf('value') === -1 && obj.common.role.indexOf('state') === -1 && obj.common.role.indexOf('text') === -1) {
                                 adapter.log.info('> role = ' + obj.common.role + ' | ' + id);
@@ -1396,6 +1404,7 @@ function parseObjects(objs, cb) {
         }
     }
     firstRun = false;
+    debug = false;
     adapter.log.debug('start [syncObjects]');
     adapter.log.debug('start [syncRooms]');
     adapter.log.debug('start [syncFunctions]');
@@ -1561,6 +1570,32 @@ function writeValue(id, val, cb) {
             err && adapter.log.error('[writeValue] ' + err);
             cb && cb();
         });
+        return;
+    }
+    // change Debug?
+    if (id.indexOf(adapter.namespace + '.info.Debug.') !== -1) {
+        if (id.indexOf('jsonlist2') !== -1) {
+            adapter.log.warn('Debug mode jsonlist2');
+            let objects = null;
+            try {
+                objects = JSON.parse(val);
+            } catch (e) {
+                adapter.log.error('[writeValue] Cannot parse answer for ' + adapter.namespace + '.info.Debug.jsonlist2 ' + e);
+            }
+            if (objects) {
+                debug = true;
+                parseObjects(objects.Results, cb);
+            }
+        }
+        if (id.indexOf('meta') !== -1) {
+            adapter.log.warn('Debug mode meta');
+            debug = true;
+            queue.push({
+                command: 'meta',
+                name: val
+            });
+            processQueue();
+        }
         return;
     }
     // change Settings?
