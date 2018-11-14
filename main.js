@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '09.11.18';
+const buildDate = '14.11.18';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -822,6 +822,7 @@ function parseObjects(objs, cb) {
     let obj;
     let name;
     let suche = 'no';
+    const debugShow = '';
     if (firstRun) {
         adapter.log.info('check fhem.0.info.Info start');
         adapter.setState('info.Info.buildDate', buildDate, true);
@@ -859,21 +860,26 @@ function parseObjects(objs, cb) {
                 adapter.log.debug('[parseObjects] stop resync');
                 return;
             }
+            debug && adapter.log.info('[debug] check FHEM Device: ' + objs[i].Name);
             //onlySyncNAME,ignore Internals TYPE,NAME & Attributtes room 
             if (onlySyncNAME && onlySyncNAME.indexOf(objs[i].Internals.NAME) === -1) {
                 logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | NAME <> ' + onlySyncNAME + ' | ' + ' ' + (i + 1) + '/' + objs.length);
+                debug && adapter.log.warn('[debug] > ' + objs[i].Name + ' | not included in fhem.x.info.Config.onlySyncNAME');
                 continue;
             }
             if (ignoreObjectsInternalsTYPE.indexOf(objs[i].Internals.TYPE) !== -1) {
                 logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | TYPE: ' + ignoreObjectsInternalsTYPE + ' | ' + ' ' + (i + 1) + '/' + objs.length);
+                debug && adapter.log.warn('[debug] > ' + objs[i].Name + ' | included in fhem.x.info.Config.ignoreObjectsInternalsTYPE');
                 continue;
             }
             if (ignoreObjectsInternalsNAME.indexOf(objs[i].Internals.NAME) !== -1) {
                 logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | NAME: ' + ignoreObjectsInternalsNAME + ' | ' + ' ' + (i + 1) + '/' + objs.length);
+                debug && adapter.log.warn('[debug] > ' + objs[i].Name + ' | included in fhem.x.info.Config.ignoreObjectsInternalsNAME');
                 continue;
             }
             if (ignoreObjectsAttributesroom.indexOf(objs[i].Attributes.room) !== -1) {
                 logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | room: ' + ignoreObjectsAttributesroom + ' | ' + ' ' + (i + 1) + '/' + objs.length);
+                debug && adapter.log.warn('[debug] > ' + objs[i].Name + ' | included in fhem.x.info.Config.ignoreObjectsAttributesroom');
                 continue;
             }
             if (objs[i].Attributes.comment && objs[i].Attributes.comment.indexOf('Auto-created by ioBroker') !== -1) {
@@ -976,11 +982,13 @@ function parseObjects(objs, cb) {
 
             //-----------------------------------------
             if (objs[i].Attributes) {
+                debug && adapter.log.info('[debug] > check Attributes');
                 let alias = name;
                 for (const attr in objs[i].Attributes) {
                     id = adapter.namespace + '.' + name + '.' + 'Attributes.' + attr.replace(/\./g, '_');
                     // allowed Attributes?
                     if (allowedAttributes.indexOf(attr) === -1) {
+                        debug && adapter.log.warn('[debug] >> ' + attr + ' = ' + objs[i].Attributes[attr] + ' | not included in fhem.x.info.Config.allowedAttributes');
                         continue;
                     }
                     const val = objs[i].Attributes[attr];
@@ -994,7 +1002,7 @@ function parseObjects(objs, cb) {
                         common: {
                             name: objs[i].Name + ' ' + attr,
                             type: 'string',
-                            role: 'state',
+                            role: 'text',
                             read: true,
                             write: true
                         },
@@ -1005,7 +1013,7 @@ function parseObjects(objs, cb) {
                         }
                     };
                     obj.native.ts = Date.now();
-                    debug && adapter.log.info('> check Attributes "' + id + '" = ' + val);
+                    debug && adapter.log.info('[debug] >> ' + attr + ' = ' + objs[i].Attributes[attr] + ' -> ' + obj._id + ' = ' + val + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | min: ' + obj.common.min + ' | max: ' + obj.common.max + ' | unit: ' + obj.common.unit);
                     adapter.log.debug('[parseObjects] check Attributes "' + id + '" = ' + val);
                     objects.push(obj);
                     states.push({
@@ -1019,9 +1027,11 @@ function parseObjects(objs, cb) {
 
             //-----------------------------------------
             if (objs[i].Internals) {
+                debug && adapter.log.info('[debug] > check Internals');
                 for (const attr in objs[i].Internals) {
                     // allowed Internals?
                     if (!objs[i].Internals.hasOwnProperty(attr) || allowedInternals.indexOf(attr) === -1) {
+                        debug && adapter.log.warn('[debug] >> ' + attr + ' = ' + objs[i].Internals[attr] + ' | not included in fhem.x.info.Config.allowedInternals');
                         continue;
                     }
                     id = adapter.namespace + '.' + name + '.' + 'Internals.' + attr.replace(/\./g, '_');
@@ -1043,7 +1053,7 @@ function parseObjects(objs, cb) {
                         }
                     };
                     obj.native.ts = Date.now();
-                    debug && adapter.log.info('> check Internals "' + id + '" = ' + val);
+                    debug && adapter.log.info('[debug] >> ' + attr + ' = ' + objs[i].Internals[attr] + ' -> ' + obj._id + ' = ' + val + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | min: ' + obj.common.min + ' | max: ' + obj.common.max + ' | unit: ' + obj.common.unit);
                     adapter.log.debug('[parseObjects] check Internals "' + id + '" = ' + val);
                     objects.push(obj);
                     states.push({
@@ -1057,6 +1067,7 @@ function parseObjects(objs, cb) {
 
             //-----------------------------------------
             if (objs[i].PossibleSets && objs[i].PossibleSets.length > 1) {
+                debug && adapter.log.info('[debug] > check PossibleSets');
                 const attrs = objs[i].PossibleSets.split(' ');
                 for (let a = 0; a < attrs.length; a++) {
                     if (!attrs[a]) {
@@ -1066,6 +1077,7 @@ function parseObjects(objs, cb) {
                     Funktion = 'no';
                     // ignore PossibleSets
                     if (ignorePossibleSets.indexOf(parts[0]) !== -1) {
+                        debug && adapter.log.warn('[debug] >> ' + parts[0] + ' | included in fhem.x.info.Config.ignorePossibleSets');
                         continue;
                     }
                     const stateName = parts[0].replace(/\./g, '_');
@@ -1213,7 +1225,7 @@ function parseObjects(objs, cb) {
 
                     obj.native.ts = Date.now();
                     obj.common.write = true;
-                    debug && adapter.log.info('> check PossibleSets "' + id + '" = ' + parts[0] + ' | type: ' + obj.common.type);
+                    debug && adapter.log.info('[debug] >> ' + parts[0] + ' = ' + parts[1] + ' -> ' + id + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | min: ' + obj.common.min + ' | max: ' + obj.common.max + ' | unit: ' + obj.common.unit);
                     adapter.log.debug('[parseObjects] check PossibleSets "' + id + '" = ' + parts[0]);
                     objects.push(obj);
                     setStates[stateName] = obj;
@@ -1229,12 +1241,14 @@ function parseObjects(objs, cb) {
 
             //-----------------------------------------
             if (objs[i].Readings) {
+                debug && adapter.log.info('[debug] > check Readings');
                 for (const attr in objs[i].Readings) {
                     if (!objs[i].Readings.hasOwnProperty(attr)) {
                         continue;
                     }
                     // ignore Readings ?
                     if (ignoreReadings.indexOf(attr) !== -1) {
+                        debug && adapter.log.warn('[debug] >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' | included in fhem.x.info.Config.ignorePossibleSets');
                         continue;
                     }
                     const stateName = attr.replace(/\./g, '_');
@@ -1379,7 +1393,7 @@ function parseObjects(objs, cb) {
                             ack: true
                         });
                         if (!combined) {
-                            debug && adapter.log.info('> check Readings "' + id + '" = ' + val);
+                            debug && adapter.log.info('[debug] >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' -> ' + obj._id + ' = ' + val + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | min: ' + obj.common.min + ' | max: ' + obj.common.max + ' | unit: ' + obj.common.unit);
                             adapter.log.debug('[parseObjects] check Readings "' + id + '" = ' + val);
                             objects.push(obj);
                             if (logCheckObject && obj.common.role.indexOf('value') === -1 && obj.common.role.indexOf('state') === -1 && obj.common.role.indexOf('text') === -1) {
@@ -1404,6 +1418,7 @@ function parseObjects(objs, cb) {
         }
     }
     firstRun = false;
+    debug && adapter.log.info('[debug] check finished!!!');
     debug = false;
     adapter.log.debug('start [syncObjects]');
     adapter.log.debug('start [syncRooms]');
@@ -1575,7 +1590,7 @@ function writeValue(id, val, cb) {
     // change Debug?
     if (id.indexOf(adapter.namespace + '.info.Debug.') !== -1) {
         if (id.indexOf('jsonlist2') !== -1) {
-            adapter.log.warn('Debug mode jsonlist2');
+            adapter.log.info('[debug] jsonlist2 ' + val);
             let objects = null;
             try {
                 objects = JSON.parse(val);
@@ -1588,7 +1603,7 @@ function writeValue(id, val, cb) {
             }
         }
         if (id.indexOf('meta') !== -1) {
-            adapter.log.warn('Debug mode meta');
+            adapter.log.info('[debug] meta "jsonlist2 ' + val + '"');
             debug = true;
             queue.push({
                 command: 'meta',
