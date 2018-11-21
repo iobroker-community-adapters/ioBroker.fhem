@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '14.11.18';
+const buildDate = '21.11.18';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -1340,6 +1340,13 @@ function parseObjects(objs, cb) {
                                     ts: Date.now()
                                 }
                             };
+                            //Schaltaktor aus FHEM in Cloud-Adapter hinzufügen                            
+                            if (adapter.namespace === 'fhem.0') {
+                                obj_switch.common.smartName = {
+                                    'de': alias
+                                };
+                            }
+                           
                             if (objs[i].Internals.TYPE === 'HUEDevice') {
                                 obj_switch.common.role = 'switch.light';
                             }
