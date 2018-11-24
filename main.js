@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '21.11.18';
+const buildDate = '24.11.18';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
