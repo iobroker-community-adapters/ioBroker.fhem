@@ -1107,7 +1107,6 @@ function parseObjects(objs, cb) {
                             obj.common.role = 'button';
                         }
                         if (parts[0] === 'dim') {
-                            adapter.log.warn(':' + parts[0] + ':');
                             obj.common.desc = 'Funktion ist eingeschränkt! Nur feste Werte (6,12,18 usw) möglich';
                         }
                     }
