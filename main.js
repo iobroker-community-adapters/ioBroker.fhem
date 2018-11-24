@@ -1100,6 +1100,17 @@ function parseObjects(objs, cb) {
                             possibleSets: true
                         }
                     };
+                    //special FS20
+                    if (objs[i].Internals.TYPE === 'FS20') {                               //============================================
+                        if (['on', 'off', 'toggle', 'dimup', 'dimdown', 'dimupdown', 'dim06%', 'dim12%', 'dim18%', 'dim25%', 'dim31%', 'dim37%', 'dim43%', 'dim50%', 'dim56%', 'dim62%', 'dim68%', 'dim75%', 'dim81%', 'dim87%', 'dim93%', 'dim100%'].indexOf(parts[0]) !== -1) {
+                            obj.common.type = 'boolean';
+                            obj.common.role = 'button';
+                        }
+                        if (parts[0] === 'dim') {
+                            adapter.log.warn(':' + parts[0] + ':');
+                            obj.common.desc = 'Funktion ist eingeschränkt! Nur feste Werte (6,12,18 usw) möglich';
+                        }
+                    }
                     if (parts[1]) {
                         if (parts[1].indexOf('noArg') !== -1) {
                             obj.common.type = 'boolean';
