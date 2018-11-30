@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '24.11.18';
+const buildDate = '30.11.18';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -1468,8 +1468,7 @@ function sendFHEM(cmd, detect) {
         processQueue();
         adapter.log.info('"' + adapter.name + '.info.Configurations.autoConfigFHEM" = true  > ' + cmd + ' | more info README.md');
     } else if (detect) {
-        adapter.log.warn('detect ' + detect + ' "' + cmd + '" or "' + adapter.name + '.info.Configuration.autoConfigFhem" = true | more info README.md');
-    }
+        adapter.log.warn('detect ' + detect + ': missing "' + cmd + '" > set manuelly in FHEM or automatically with "' + adapter.namespace + '.info.Configuration.autoConfigFhem" = true | more info README.md');    }
 }
 function convertAttr(attr, val) {
     if (attr === 'rgb') {
