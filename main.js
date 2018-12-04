@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '02.12.18';
+const buildDate = '04.12.18';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -208,30 +208,30 @@ function parseEvent(event, anz) {
     let parts = event.split(' ');
     // ignore ioB.IN
     if (fhemIN[parts[1].replace(/-/g, '_')]) {
-//adapter.log.warn('found: ' + parts[1].replace(/_/g, '-') + ' event: ' + event);
-//adapter.setForeignState(parts[1].replace(/_/g, '-'), parts[2], true);
+        //adapter.log.warn('found: ' + parts[1].replace(/_/g, '-') + ' event: ' + event);
+        //adapter.setForeignState(parts[1].replace(/_/g, '-'), parts[2], true);
         return;
     }
-// ignore Reading?
+    // ignore Reading?
     if (parts[2] && parts[2].substr(parts[2].length - 1) === ':' && ignoreReadings.indexOf(parts[2].substr(0, parts[2].length - 1)) !== -1) {
         return;
     }
 
-// No cannel for event and not global?
+    // No cannel for event and not global?
     if (!fhemObjects[adapter.namespace + '.' + parts[1].replace(/\./g, '_')] && parts[1] !== 'global') {
         return;
     }
-// Global global ?
+    // Global global ?
     if (parts[0] === 'Global' && parts[1] === 'global') {
         if (!parts[3]) {
             logUnhandledEventFHEM && adapter.log.warn('unhandled event FHEM(g) "' + event);
             return;
         }
-// ignore ioB.IN
+        // ignore ioB.IN
         if (parts[3] && fhemIN[parts[3].replace(/-/g, '_')]) {
             return;
         }
-// Global global DEFINED ?
+        // Global global DEFINED ?
         if (parts[2] === 'DEFINED') {
             logEventFHEMglobal && adapter.log.info('event FHEM(g) "' + event + '"');
             queue.push({
@@ -244,11 +244,11 @@ function parseEvent(event, anz) {
             processQueue();
             return;
         }
-// No channel for event and not room?
+        // No channel for event and not room?
         if (!fhemObjects[adapter.namespace + '.' + parts[3].replace(/\./g, '_')] && parts[4] !== 'room') {
             return;
         }
-// Global global ATTR ?
+        // Global global ATTR ?
         if (parts[2] === 'ATTR' && allowedAttributes.indexOf(parts[4]) !== -1) {
             logEventFHEMglobal && adapter.log.info('event FHEM(g) "' + event + '"');
             queue.push({
@@ -261,7 +261,7 @@ function parseEvent(event, anz) {
             processQueue();
             return;
         }
-// Global global DELETEATTR ?
+        // Global global DELETEATTR ?
         if (parts[2] === 'DELETEATTR' && allowedAttributes.indexOf(parts[4]) !== -1) {
             logEventFHEMglobal && adapter.log.info('event FHEM(g) "' + event + '"');
             if (parts[4] === 'room' && iobroker) {
@@ -281,7 +281,7 @@ function parseEvent(event, anz) {
             }
             return;
         }
-// Global global DELETED ?
+        // Global global DELETED ?
         if (parts[2] === 'DELETED') {
             logEventFHEMglobal && adapter.log.info('event FHEM(g) "' + event + '"');
             unusedObjects(parts[3].replace(/\./g, '_') + '.*');
@@ -299,7 +299,7 @@ function parseEvent(event, anz) {
         return;
     }
 
-// state?
+    // state?
     if (pos === -1) {
         if (oldState) {
             val = convertFhemValue(event.substring(parts[0].length + parts[1].length + 2));
@@ -353,13 +353,13 @@ function parseEvent(event, anz) {
         return;
     }
 
-// reading or state?
+    // reading or state?
     if (pos !== -1) {
         const stelle = event.substring(parts[0].length + parts[1].length + parts[2].length + 1);
         let typ;
         // reading
         if (stelle.indexOf(':') === 0) {
-// special?
+            // special?
             if (parts[0] === 'at' && parts[2] === 'Next:' || parts[2] === 'T:' || parts[0] === 'FRITZBOX' && parts[2] === 'WLAN:' || parts[0] === 'CALVIEW' && parts[2] === 't:') {
                 val = convertFhemValue(event.substring(parts[0].length + parts[1].length + 2));
                 // val = event.substring(parts[0].length + parts[1].length + 2);
@@ -376,7 +376,7 @@ function parseEvent(event, anz) {
                 typ = 'reading';
             }
         }
-// state
+        // state
         if (stelle.indexOf(':') !== 0) {
             val = convertFhemValue(event.substring(parts[0].length + parts[1].length + 2));
             id = checkID(event, val, parts[1], 'state', id);
@@ -889,7 +889,6 @@ function parseObjects(objs, cb) {
     }
 
     for (let i = 0; i < objs.length; i++) {
-
         try {
             if (resync) {
                 adapter.log.debug('[parseObjects] stop resync');
@@ -976,7 +975,12 @@ function parseObjects(objs, cb) {
                 },
                 native: objs[i]
             };
-            //Function?
+            //Function & autoConfigFHEM?
+            if (objs[i].Internals.TYPE === 'HUEBridge') {
+                if (!objs[i].Attributes.createGroupReadings) {
+                    sendFHEM('attr ' + objs[i].Name + ' createGroupReadings 1', 'HUEBridge');
+                }
+            }
             if (objs[i].Internals.TYPE === 'HUEDevice') {
                 Funktion = 'light';
             }
@@ -1014,8 +1018,7 @@ function parseObjects(objs, cb) {
                     rooms[rrr[r]].push(adapter.namespace + '.' + name);
                 }
             }
-
-//-----------------------------------------
+            //-----------------------------------------
             if (objs[i].Attributes) {
                 debug && adapter.log.info('[debug] > check Attributes');
                 let alias = name;
@@ -1300,8 +1303,7 @@ function parseObjects(objs, cb) {
 
                 }
             }
-
-//-----------------------------------------
+            //-----------------------------------------
             if (objs[i].Readings) {
                 debug && adapter.log.info('[debug] > check Readings');
                 for (const attr in objs[i].Readings) {
@@ -1774,7 +1776,7 @@ function writeValue(id, val, cb) {
         });
         return;
     }
-// change Debug?
+    // change Debug?
     if (id.indexOf(adapter.namespace + '.info.Debug.') !== -1) {
         if (id.indexOf('jsonlist2') !== -1) {
             adapter.log.info('[debug] jsonlist2 ' + val);
@@ -1800,13 +1802,13 @@ function writeValue(id, val, cb) {
         }
         return;
     }
-// change Settings?
+    // change Settings?
     if (id.indexOf(adapter.namespace + '.info.Settings.') !== -1) {
         getSettings(cb);
         cb && cb();
         return;
     }
-// change Configurations?
+    // change Configurations?
     if (id.indexOf(adapter.namespace + '.info.Configurations.') !== -1) {
         adapter.log.debug('Configurations changed >>> Start Resync FHEM ');
         getConfigurations(cb);
@@ -1817,7 +1819,7 @@ function writeValue(id, val, cb) {
         cb && cb();
         return;
     }
-// sendFHEM?
+    // sendFHEM?
     if (id === adapter.namespace + '.info.Commands.sendFHEM') {
         logEventIOB && adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + val);
         telnetOut.send(val, (err, result) => {
@@ -1829,7 +1831,7 @@ function writeValue(id, val, cb) {
         });
         return;
     }
-// attr?
+    // attr?
     if (allowedAttributes.indexOf(parts[4]) !== -1) {
         cmd = 'attr ' + fhemObjects[id].native.Name + ' ' + parts[4] + ' ' + val;
         logEventIOB && adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + cmd);
@@ -1839,13 +1841,13 @@ function writeValue(id, val, cb) {
         });
         return;
     }
-// rgb?
+    // rgb?
     if (fhemObjects[id].native.Attribute === 'rgb') {
         val = val.substring(1);
     }
-// bol0?
+    // bol0?
     if (fhemObjects[id].native.bol0) {
-//convertBol0(val);
+        //convertBol0(val);
         if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true) {
             val = '1';
         }
@@ -1853,7 +1855,7 @@ function writeValue(id, val, cb) {
             val = '0';
         }
     }
-// state?
+    // state?
     if (fhemObjects[id].native.Attribute === 'state') {
         if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true) {
             val = 'on';
@@ -2013,7 +2015,7 @@ function resyncFHEM() {
     startSync();
 }
 function processQueue() {
-//adapter.log.debug ('[processQueue]');
+    //adapter.log.debug ('[processQueue]');
     if (telnetOut.isCommandRunning() || !queue.length) {
         return;
     }
@@ -2061,7 +2063,7 @@ function main() {
     if (adapter.config.prompt === undefined) {
         adapter.config.prompt = 'fhem>';
     }
-// in this template all states changes inside the adapters namespace are subscribed
+    // in this template all states changes inside the adapters namespace are subscribed
     adapter.subscribeStates('*');
     telnetIn = new Telnet({
         host: adapter.config.host,
