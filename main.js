@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '04.12.18';
+const buildDate = '07.12.18';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -472,7 +472,7 @@ function syncObjects(objects, cb) {
                     oldObj.common.desc = obj.common.desc;
                 }
                 if (obj.type === 'channel' && logUpdateChannel) {
-                    adapter.log.info('Update channel ' + obj._id + '  | ' + oldObj.common.name);
+                    adapter.log.info('Update channel ' + obj._id + '  (' + oldObj.common.name + ')');
                 }
                 adapter.setForeignObject(obj._id, oldObj, err => {
                     err && adapter.log.error('[syncObjects] ' + err);
@@ -924,7 +924,7 @@ function parseObjects(objs, cb) {
                         id: adapter.namespace + '.info.Commands.sendFHEM',
                         val: 'delete ' + objs[i].Name
                     });
-                    processQueue();
+                    //processQueue();
                     logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | comment: Auto-created by ioBroker' + ' | ' + ' ' + (i + 1) + '/' + objs.length);
                 } else {
                     fhemIN[objs[i].Name] = {id: objs[i].Name};
@@ -976,6 +976,9 @@ function parseObjects(objs, cb) {
                 native: objs[i]
             };
             //Function & autoConfigFHEM?
+            // if (objs[i].Internals.TYPE === 'XiaomiMQTTDevice') {
+            //     Funktion = 'sensor';
+            // }
             if (objs[i].Internals.TYPE === 'HUEBridge') {
                 if (!objs[i].Attributes.createGroupReadings) {
                     sendFHEM('attr ' + objs[i].Name + ' createGroupReadings 1', 'HUEBridge');
@@ -983,6 +986,11 @@ function parseObjects(objs, cb) {
             }
             if (objs[i].Internals.TYPE === 'HUEDevice') {
                 Funktion = 'light';
+                if (objs[i].Internals.type) {
+                    if (objs[i].Internals.type.indexOf('ZLL') !== -1 || objs[i].Internals.type === 'MotionDetector') {
+                        Funktion = 'sensor';
+                    }
+                }
             }
             if (objs[i].Internals.TYPE === 'SONOSPLAYER') {
                 Funktion = 'audio';
@@ -997,11 +1005,11 @@ function parseObjects(objs, cb) {
             }
             if (objs[i].Attributes.subType === 'thermostat') {
                 Funktion = 'heating';
-                obj.common.role = 'thermostate';
+                //obj.common.role = 'thermostate';
             }
             if (objs[i].Attributes.subType === 'smokeDetector') {
                 Funktion = 'security';
-                obj.common.role = 'sensor.alarm.fire';
+                //obj.common.role = 'sensor.alarm.fire';
             }
             if (Funktion !== 'no' && autoFunction) {
                 setFunction(id, Funktion, name);
@@ -1021,18 +1029,23 @@ function parseObjects(objs, cb) {
             //-----------------------------------------
             if (objs[i].Attributes) {
                 debug && adapter.log.info('[debug] > check Attributes');
-                let alias = name;
+                if (!objs[i].Attributes.alias) {
+                    adapter.log.warn(objs[i].Name + ': no alias found! set alias "' + alias + '" automatically in FHEM');
+                    queue.push({
+                        command: 'write',
+                        id: adapter.namespace + '.info.Commands.sendFHEM',
+                        val: 'attr ' + objs[i].Name + ' alias ' + objs[i].Name
+                    });
+                    //processQueue();
+                }
                 for (const attr in objs[i].Attributes) {
-                    id = adapter.namespace + '.' + name + '.' + 'Attributes.' + attr.replace(/\./g, '_');
                     // allowed Attributes?
                     if (allowedAttributes.indexOf(attr) === -1) {
                         debug && adapter.log.warn('[debug] >> ' + attr + ' = ' + objs[i].Attributes[attr] + ' | not included in fhem.x.info.Config.allowedAttributes');
                         continue;
                     }
+                    id = adapter.namespace + '.' + name + '.' + 'Attributes.' + attr.replace(/\./g, '_');
                     const val = objs[i].Attributes[attr];
-                    if (attr === 'alias') {
-                        alias = val;
-                    }
 
                     obj = {
                         _id: id,
@@ -1442,13 +1455,25 @@ function parseObjects(objs, cb) {
                                 });
                             }
                             // (create state_boolean)
-                            if (typeof (convertFhemStateBoolean(valOrg)) === "boolean") {
+                            if (typeof (convertFhemStateBoolean(valOrg)) === "boolean" && 'sonos myBroker HM_CFG_USB2 FB_Callmonitor'.indexOf(name) === -1) {
                                 obj.native.StateBoolean = true;
                                 let SBrole = 'bol';
                                 if (valOrg === 'present' || valOrg === 'absent')
                                     SBrole = 'indicator.presence';
-                                if (valOrg === 'open' || valOrg === 'close' || valOrg === 'opened' || valOrg === 'closed')
+                                if (valOrg === 'open' || valOrg === 'close' || valOrg === 'opened' || valOrg === 'closed') {
                                     SBrole = 'sensor';
+                                    Funktion = 'sensor';
+                                    if (alias.toLowerCase().indexOf('tür') !== -1 || alias.toLowerCase().indexOf('tuer') !== -1 || alias.toLowerCase().indexOf('door') !== -1)
+                                        SBrole = 'sensor.door';
+                                    if (alias.toLowerCase().indexOf('fenster') !== -1 || alias.toLowerCase().indexOf('window') !== -1)
+                                        SBrole = 'sensor.window';
+                                    if (SBrole === 'sensor')
+                                        adapter.log.warn('for full function of sensor "' + name + '" use door,window,Tür,Fenster in alias of device');
+                                }
+                                if (valOrg === 'motion' || valOrg === 'nomotion') {
+                                    SBrole = 'sensor.motion';
+                                    Funktion = 'sensor';
+                                }
                                 let obj_sensor = {
                                     _id: adapter.namespace + '.' + name + '.state_boolean',
                                     type: 'state',
@@ -1575,6 +1600,7 @@ function parseObjects(objs, cb) {
     firstRun = false;
     debug && adapter.log.info('[debug] check finished!!!');
     debug = false;
+    processQueue();    //===============================================================
     adapter.log.debug('start [syncObjects]');
     adapter.log.debug('start [syncRooms]');
     adapter.log.debug('start [syncFunctions]');
@@ -1591,7 +1617,7 @@ function setFunction(id, Funktion, name) {
     let fff = Funktion.split(',');
     for (let f = 0; f < fff.length; f++) {
         fff[f] = fff[f].trim();
-        logCheckObject && adapter.log.info('> function = ' + fff[f] + ' | ' + id);
+        //logCheckObject && adapter.log.info('> function = ' + fff[f] + ' | ' + id);
         functions[fff[f]] = functions[fff[f]] || [];
         functions[fff[f]].push(id);
     }
@@ -1726,6 +1752,10 @@ function convertFhemStateBoolean(val) {                //=======================
     if (val === 'present')
         return true;
     if (val === 'absent')
+        return false;
+    if (val === 'motion')
+        return true;
+    if (val === 'nomotion')
         return false;
     return val;
 }
