@@ -32,6 +32,9 @@ Ebenso ist eine Sychronisation ausgewählter Objekte aus iobroker nach FHEM mög
 | 5  [Instanz](#instanz)              |
 | 6  [Objekte des Adapters](#objekte)           |
 | 6.1 [Objekt HUEDevice1 (Bsp)](#objekte_c)  |
+| 6.1.1 [Reading state aus FHEM](#objekte_c_r)  |
+| 6.1.2 [Attributes](#objekte_c_a)  |
+| 6.1.3 [Internals](#objekte_c_i)  |
 | 6.2 [Objekt info](#objekte_i)            |
 | 7  [Besonderheiten](#besonderheiten)|
 | 7.1 [Übersicht Rollen](#besonderheiten_rollen)|
@@ -224,21 +227,36 @@ Objekt                    | Zugriff | Bescheibung
 :-------------------------|:-------:|:-----------
 **[fhem.o](#objekte)**                     |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**HUEDevice1**                       |     | HUEDevice1 (Beispiel)
-&emsp;&emsp;**[Attributes](#objekte_c_a)** |     | Mögliche Attribute: alias, room, disable, comment
-&emsp;&emsp;**[Internals](#objekte_c_i)**  |     | Mögliche Internals: NAME, TYPE, manufacturname, modellid, swversion
+&emsp;&emsp;**[Attributes](#objekte_c_a)** |     | Mögliche Attribute: alias, room, comment
+&emsp;&emsp;**[Internals](#objekte_c_i)**  |     | Mögliche Internals: NAME, TYPE
 &emsp;&emsp;**alert**                      |  RW | 
 &emsp;&emsp;**blink**                      |  RW | 
 &emsp;&emsp;**:**                          |  R  | 
 &emsp;&emsp;**:**                          |  RW | 
 
-> Einem state ist immer eine Rolle zugeordnet. **[Übersicht Rollen](#besonderheiten_rollen)** **[Übersicht Funktionen](#besonderheiten_funktionen)** 
+> Einem Objekt state ist immer eine Rolle zugeordnet. **[Übersicht Rollen](#besonderheiten_rollen)** **[Übersicht Funktionen](#besonderheiten_funktionen)** 
 
+<a name="objekte_c_a"/>
+
+#### Reading state aus FHEM
+
+> Das Reading state hat in FHEM unterschiedliche Zustände/Funktionen. Bei Bedarf werden deshalb weitere Objekte:state in Abhängigkeit von state FHEM automatisch hinzugefügt. Diese zusätzliche Objekte:state werden jedoch nicht in FHEM angelegt. Eine Zustandsänderung von fhem.x.Device.state oder fhem.x.Device.state_switch wird an FHEM übertragen.
+
+Objekt                        | Zugriff | Bescheibung | Wert
+:-----------------------------|:-------:|:------------|:---:
+fhem.x.Device.state           |   RW    | Wert aus FHEM 1:1 | text
+fhem.x.Device.state_switch    |   RW    | if fhem.x.Device.state = on/off oder PossibleSets on und off vorhanden.   | true/false
+fhem.x.Device.state_boolean   |   R     | if fhem.x.Device.state = open/opened/close/closed/present/absent/motion/nomotion | treu/false 
+fhem.x.Device.state_value     |   R     | Abhängigkeit von fhem.x.Device.state_boolean | 0,2
+fhem.x.Device.state_media     |   R     | Für Media Player            | 0,1
 
 <a name="objekte_c_a"/>
 
 #### Attributes
 > Attributes werden aus FHEM ausgelesen und können über ioBroker auch geändert werden.
 In der Default Einstellung werden falls vorhanden `alias,comment,room` synchronisiert.
+Ist `alias` nicht vorhanden wird automatisch fhem.x.Device.Attributes.alias mit Wert Internals:NAME angelegt.
+Jede Änderung an Atrributes wird an FHEM übertragen.
 Unter `fhem.x.info.Configurations.allowedAttributes` können weitere Atrributes hinzugefügt werden.
 
 ![alt-Objektename](media/objekte2attributes.PNG "Objekte-Attributes")<span style="color:grey">  
@@ -246,13 +264,13 @@ Unter `fhem.x.info.Configurations.allowedAttributes` können weitere Atrributes 
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
-Objekt                    | Zugriff | Bescheibung
+Objekt                    | Zugriff | Bescheibung | Wert
 :-------------------------|:-------:|:-----------
 **[fhem.o](#objekte)**                     |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[HUEDevice1](#objekte_c)**         |     | HUEDevice1 (Beispiel)
 &emsp;&emsp;**Attributes**        |     | 
-&emsp;&emsp;&emsp;**alias**       |  RW | alias = Name Objekt + Übertrag in FHEM
-&emsp;&emsp;&emsp;**room**        |  RW | room = Raum Objekt + Übertrag in FHEM
+&emsp;&emsp;&emsp;**alias**       |  RW | alias = Name Objek:channel,bei Instanz fhem.0 SmartName für Adapter Cloud, Beschriftung Kachel Adapter Material UI + Übertrag in FHEM | text
+&emsp;&emsp;&emsp;**room**        |  RW | room = Raum Objekt + Übertrag in FHEM | text
 
 <a name="objekte_c_i"/>
 
