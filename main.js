@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '07.12.18';
+const buildDate = '09.12.18';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -223,12 +223,21 @@ function parseEvent(event, anz) {
     }
     // Global global ?
     if (parts[0] === 'Global' && parts[1] === 'global') {
+        if (parts[2] === 'SAVE' || parts[2] === 'UPDATE') {
+            logUnhandledEventFHEM && adapter.log.info('unhandled event FHEM(g) "' + event);
+            return;
+        }
+        if (parts[2] === 'ATTR' && parts[4] === 'model') {
+            logUnhandledEventFHEM && adapter.log.info('unhandled event FHEM(g) "' + event);
+            return;
+        }
         if (!parts[3]) {
             logUnhandledEventFHEM && adapter.log.warn('unhandled event FHEM(g) "' + event);
             return;
         }
         // ignore ioB.IN
         if (parts[3] && fhemIN[parts[3].replace(/-/g, '_')]) {
+            logUnhandledEventFHEM && adapter.log.info('unhandled event FHEM(g) "' + event);
             return;
         }
         // Global global DEFINED ?
@@ -383,7 +392,7 @@ function parseEvent(event, anz) {
             typ = 'state';
         }
         if (!fhemObjects[id]) {
-            logUnhandledEventFHEM && adapter.log.warn('unhandled event FHEM "' + event + '" > jsonlist2');
+            logUnhandledEventFHEM && adapter.log.info('unhandled event FHEM "' + event + '" > jsonlist2');
             if (parts[1] !== lastNameQueue || parts[1] === lastNameQueue && lastNameTS + 2000 < Date.now()) {
                 queue.push({
                     command: 'meta',
@@ -1011,7 +1020,7 @@ function parseObjects(objs, cb) {
                 Funktion = 'security';
                 //obj.common.role = 'sensor.alarm.fire';
             }
-            if (Funktion !== 'no' && autoFunction) {
+            if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
                 setFunction(id, Funktion, name);
             }
 
@@ -1214,7 +1223,7 @@ function parseObjects(objs, cb) {
                         obj.common.min = 5;
                         obj.common.max = 30;
                         obj.native.level_temperature = true;
-                        if (adapter.namespace === 'fhem.0') {
+                        if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
                             obj.common.smartName = {
                                 'de': alias
                             };
@@ -1226,7 +1235,7 @@ function parseObjects(objs, cb) {
                         obj.common.role = 'level.dimmer';
                         obj.common.unit = '%';
                         obj.native.level_dimmer = true;
-                        if (adapter.namespace === 'fhem.0') {
+                        if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
                             obj.common.smartName = {
                                 'de': alias
                             };
@@ -1241,7 +1250,7 @@ function parseObjects(objs, cb) {
                         if (parts[0].indexOf('Group') !== -1) {
                             obj.common.role = 'level.volume.group';
                         }
-                        if (adapter.namespace === 'fhem.0') {
+                        if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
                             obj.common.smartName = {
                                 'de': alias
                             };
@@ -1252,7 +1261,7 @@ function parseObjects(objs, cb) {
                         states = false;
                         obj.common.role = 'level.color.rgb';
                         obj.native.rgb = true;
-                        if (adapter.namespace === 'fhem.0') {
+                        if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
                             obj.common.smartName = {
                                 'de': alias
                             };
@@ -1264,7 +1273,7 @@ function parseObjects(objs, cb) {
                         obj.common.role = 'level.color.temperature';
                         obj.common.unit = 'K';
                         obj.native.ct = true;
-                        if (adapter.namespace === 'fhem.0') {
+                        if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
                             obj.common.smartName = {
                                 'de': alias
                             };
@@ -1310,7 +1319,7 @@ function parseObjects(objs, cb) {
                     objects.push(obj);
                     setStates[stateName] = obj;
                     //Function?
-                    if (Funktion !== 'no' && autoFunction) {
+                    if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
                         setFunction(id, Funktion, name);
                     }
 
@@ -1433,7 +1442,7 @@ function parseObjects(objs, cb) {
                                     }
                                 };
                                 //Schaltaktor aus FHEM in Cloud-Adapter hinzufügen                            
-                                if (adapter.namespace === 'fhem.0') {
+                                if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
                                     obj_switch.common.smartName = {
                                         'de': alias
                                     };
@@ -1577,9 +1586,8 @@ function parseObjects(objs, cb) {
                         });
                         combined && debug && adapter.log.info('[debug] >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' -> ' + obj._id + ' = ' + val + ' | read: ' + obj.common.read + ' (Value Possible Set)');
                         !combined && debug && adapter.log.info('[debug] >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' -> ' + obj._id + ' = ' + val + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | role: ' + obj.common.role + ' | Funktion: ' + Funktion);
-                        //adapter.log.debug('[parseObjects] check Readings "' + id + '" = ' + val);
                         objects.push(obj);
-                        if (Funktion !== 'no' && autoFunction) {
+                        if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
                             if (Funktion === 'switch')
                                 id = adapter.namespace + '.' + name;
                             if (Funktion === 'switch' && objs[i].Internals.TYPE === 'HUEDevice')
