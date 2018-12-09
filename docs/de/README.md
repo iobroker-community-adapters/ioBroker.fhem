@@ -265,7 +265,7 @@ Unter `fhem.x.info.Configurations.allowedAttributes` können weitere Atrributes 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
 Objekt                    | Zugriff | Bescheibung | Wert
-:-------------------------|:-------:|:-----------
+:-------------------------|:-------:|:------------|:-----:
 **[fhem.o](#objekte)**                     |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[HUEDevice1](#objekte_c)**         |     | HUEDevice1 (Beispiel)
 &emsp;&emsp;**Attributes**        |     | 
