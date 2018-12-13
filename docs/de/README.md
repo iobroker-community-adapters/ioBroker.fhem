@@ -1,6 +1,6 @@
 ---
 title:       "FHEM-Adapter"
-lastChanged: "25.11.2018"
+lastChanged: "13.12.2018"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
 ---)
 
@@ -35,12 +35,19 @@ Ebenso ist eine Sychronisation ausgewählter Objekte aus iobroker nach FHEM mög
 | 6.1.1 [Reading state aus FHEM](#objekte_c_r)  |
 | 6.1.2 [Attributes](#objekte_c_a)  |
 | 6.1.3 [Internals](#objekte_c_i)  |
-| 6.2 [Objekt info](#objekte_i)            |
+| 6.2 [Objekte info](#objekte_i)      |
+| 6.2.1 [Commands](#info_commands)      |
+| 6.2.2 [Configurations](#info_configurations)      |
+| 6.2.3 [Debug](#info_debug)      |
+| 6.2.4 [Info](#info_info)      |
+| 6.2.5 [Settings](#info_settings)      |
 | 7  [Besonderheiten](#besonderheiten)|
 | 7.1 [Übersicht Rollen](#besonderheiten_rollen)|
 | 7.2 [Übersicht Funktionen](#besonderheiten_funktionen)|
 | 8  [FAQ](#faq)                      |
 | 9  [Beispiele](#beispiele)          |
+| 9.1  [Adapter Material UI](#beispiele_material)          |
+| 9.2  [Adapter VIS](#beispiele_vis)          |
 | 10 [Deinstallation](#deinstallation)|
 | 11 [Links](#links)                  |
 | 12 [Historie](#historie)            |
@@ -50,7 +57,7 @@ Ebenso ist eine Sychronisation ausgewählter Objekte aus iobroker nach FHEM mög
 
 <a name="steckbrief"/>
 
-## Steckbrief
+## 1 Steckbrief
 > Achtung! Die folgende Tabelle dient nur als Beispiel. Sie wird vom
   Dokumentengenerator dynamisch erzeugt und an dieser Stelle eingefügt.
   Je nach den ausgewählten Feldern sind die Datenquellen z.B. `frontmatter`,
@@ -74,7 +81,7 @@ Ebenso ist eine Sychronisation ausgewählter Objekte aus iobroker nach FHEM mög
 
 <a name="überblick"/>
 
-## Überblick
+## 2 Überblick
 
 ### FHEM
 FHEM bietet eine Vielzahl an Modulen mit diversen Protokollen.
@@ -138,7 +145,7 @@ Falls nicht vorhanden oder unvollständig, mit folgenden Befehlen anlegen/ergän
 
 <a name="installation"/>
 
-## Installation
+## 3 Installation
 
 > Eine Instanz des Adapters wird über die ioBroker Admin-Oberfläche installiert.
   Die ausführliche Anleitung für die dazu notwendigen Installatonschritte ist
@@ -147,7 +154,7 @@ Falls nicht vorhanden oder unvollständig, mit folgenden Befehlen anlegen/ergän
 
 <a name="konfiguration"/>
 
-##  Konfiguration
+##  4 Konfiguration
 Die Adapterkonfiguration beschränkt sich auf Angaben zum FHEM Server und Telnet Schnittstelle.
 
 <a name="{Eindeutiger Fensterbezeichner}"/>
@@ -172,7 +179,7 @@ Alle Angaben beziehen sich auf bei der FHEM Installation automatisch angelegte M
 
 <a name="instanz"/>
 
-##  Instanzen
+##  5 Instanzen
 > Die Installation des Adapters hat in der ioBroker Admin-Oberfläche Bereich `Instanzen` eine aktive Instanz des
   FHEM-Adapters angelegt.
 
@@ -191,7 +198,7 @@ Auf einem ioBroker Server können mehere Instanzen installiert werden.
 
 <a name="objekte"/>
 
-## Objekte des Adapters
+## 6 Objekte des Adapters
 
 > In der ioBroker Admin-Oberfläche Bereich `Objekte` werden in einer Baumstruktur alle vom Adapter in FHEM
   erkannten Gerätemodule und Hilfs (Erweiterungs-) Module alphabetisch aufgelistet.
@@ -215,7 +222,7 @@ Objekt                    | Zugriff | Bescheibung
 
 <a name="objekte_c"/>
 
-### Objekt HUEDevice1 (Beispiel)
+### 6.1 Objekt HUEDevice1 (Beispiel)
 > Öffnet man ein Modul (channel), so erhält man eine Liste mit allen zum Modul gehörenden Funktionalitäten
 
 ![alt-Objektename](media/objekte2.PNG "Übersicht Objekte-Modul")<span style="color:grey">  
@@ -236,9 +243,9 @@ Objekt                    | Zugriff | Bescheibung
 
 > Einem Objekt state ist immer eine Rolle zugeordnet. **[Übersicht Rollen](#besonderheiten_rollen)** **[Übersicht Funktionen](#besonderheiten_funktionen)** 
 
-<a name="objekte_c_a"/>
+<a name="objekte_c_r"/>
 
-#### Reading state aus FHEM
+#### 6.1.1 Reading state aus FHEM
 
 > Das Reading state hat in FHEM unterschiedliche Zustände/Funktionen. Bei Bedarf werden deshalb weitere Objekte:state in Abhängigkeit von state FHEM automatisch hinzugefügt. Diese zusätzliche Objekte:state werden jedoch nicht in FHEM angelegt. Eine Zustandsänderung von fhem.x.Device.state oder fhem.x.Device.state_switch wird an FHEM übertragen.
 
@@ -252,7 +259,7 @@ fhem.x.Device.state_media     |   R     | Für Media Player            | 0,1
 
 <a name="objekte_c_a"/>
 
-#### Attributes
+#### 6.1.2 Attributes
 > Attributes werden aus FHEM ausgelesen und können über ioBroker auch geändert werden.
 In der Default Einstellung werden falls vorhanden `alias,comment,room` synchronisiert.
 Ist `alias` nicht vorhanden wird automatisch fhem.x.Device.Attributes.alias mit Wert Internals:NAME angelegt.
@@ -270,11 +277,12 @@ Objekt                    | Zugriff | Bescheibung | Wert
 &emsp;**[HUEDevice1](#objekte_c)**         |     | HUEDevice1 (Beispiel)
 &emsp;&emsp;**Attributes**        |     | 
 &emsp;&emsp;&emsp;**alias**       |  RW | alias = Name Objek:channel,bei Instanz fhem.0 SmartName für Adapter Cloud, Beschriftung Kachel Adapter Material UI + Übertrag in FHEM | text
+&emsp;&emsp;&emsp;**comment**     |  RW | zur Info
 &emsp;&emsp;&emsp;**room**        |  RW | room = Raum Objekt + Übertrag in FHEM | text
 
 <a name="objekte_c_i"/>
 
-#### Internals
+#### 6.1.3 Internals
 > Internals werden aus FHEM ausgelesen und sind nur als Info zB Anzeige in VIS gedacht.
 In der Default Einstellung werden `TYPE,NAME`synchronisiert.
 Unter `fhem.x.info.Configurations.allowedInternals` können weitere Internals hinzugefügt werden.
@@ -292,13 +300,11 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;**Internals**               |     | Mögliche Internals: NAME, TYPE + info.Configurations.allowedInternals
 &emsp;&emsp;&emsp;**NAME**              |  R  | Info zB zur Anzeige in VIS
 &emsp;&emsp;&emsp;**TYPE**              |  R  | Info zB zur Anzeige in VIS
-&emsp;&emsp;&emsp;**manufacturname**    |  R  | Info zB zur Anzeige in VIS
-&emsp;&emsp;&emsp;**modellid**          |  R  | Info zB zur Anzeige in VIS
-&emsp;&emsp;&emsp;**swversion**         |  R  | Info zB zur Anzeige in VIS
+
 
 <a name="objekte_i"/>
 
-## Objekt info
+## 6.2 Objekte info
 > Öffnet man das Objekt info, so erhält man eine Liste mit allen weiteren Funktionalitäten und Informationen. Es ist nicht möglich ein Modul mit dem Namen info aus FHEM zu übernehmen.
 
 ![alt-Objektename](media/objekte3info.PNG "Objekt info")<span style="color:grey">  
@@ -320,7 +326,7 @@ Objekt                                                 | Zugriff | Bescheibung  
 
 <a name="info_commands"/>
 
-#### Commands
+#### 6.2.1 Commands
 
 > Unter Commands ist es möglich einen beliebigen Befehl an FHEM zu senden.
 
@@ -340,7 +346,7 @@ Objekt                    | Zugriff | Bescheibung | Wert
 
 <a name="info_configurations"/>
 
-#### Configurations
+#### 6.2.2 Configurations
 
 > Unter Configurations können verschiedene Funktionen aktiviert/deaktiviert werden. Bei Änderungen wird ein Resync FHEM `fhem.x.info.resync` = true ausgeführt.
 
@@ -358,8 +364,7 @@ Objekt                                           | Zugriff | Bescheibung | Wert
 &emsp;&emsp;&emsp;**allowedAttributes**           |  RW | Sync Attributtes (default = `room,alias,comment`) | Attribut oder Attribut1,Attribut2 usw
 &emsp;&emsp;&emsp;**allowedIOBin**                |  RW | Erlaubte Objekte zum Übertrag nach FHEM. Es wird auf die Zeichenkette am Anfang des Objects geprüft zb "alexa2.x.History" überträgt alle Objekte die mit alexa2.x.History beginnen. Objekte werden werden nach einer Änderung state in FHEM im Raum ioB_IN als Modul dummy angelegt.  | Wert oder Wert1,Wert2 usw
 &emsp;&emsp;&emsp;**allowedInternals**            |  RW | Sync Internals (default = `TYPE,NAME`) | Internals oder Internals1,Internals2 usw
-&emsp;&emsp;&emsp;**autoConfigFHEM**              |  RW | Erlaubt folgende Änderungen in FHEM 1.Für TYPE=SONOSPLAYER `attr xxx generateVolumeEvent 1` damit Lautstärke übertragen wird. 2. TYPE =  	
-HUEBridge 'attr xxx createGroupReadings 1' Readings für HUEGroup 3.Am Ende der Synchronisation `save` zum Speichern der Änderungen. (default=`false`) | true/false
+&emsp;&emsp;&emsp;**autoConfigFHEM**              |  RW | Erlaubt folgende Änderungen in FHEM 1.Für TYPE=SONOSPLAYER `attr xxx generateVolumeEvent 1` damit Lautstärke übertragen wird. 2. TYPE = HUEBridge 'attr xxx createGroupReadings 1' Readings für HUEGroup 3.Am Ende der Synchronisation `save` zum Speichern der Änderungen. (default=`false`) | true/false
 &emsp;&emsp;&emsp;**autoFunction**                |  RW | Funktionen werden bei Neustart abhängig von Version FHEM Adaper vergeben (default=`false`) Für Adapter `Material UI`wird `true`empfohlen. Bei `false` können Funktionen selber vergeben werden und es erfolgt keine Änderung durch den Adapter | true/false
 &emsp;&emsp;&emsp;**autoRole**                    |  RW | Rollen werden bei Neustart abhängig von Version FHEM Adaper vergeben  (default=`false`) Für Adapter `Material UI` wird `true`empfohlen. Bei `false` können Rollen selber vergeben werden und es erfolgt keine Änderung durch den Adapter. | true/false
 &emsp;&emsp;&emsp;**autoSamrtName**               |  RW | Automatische Anlage Smart Geräte für Adapter Cloud (default=`true`) Nur Instanz fhem.0! | true/false
@@ -374,7 +379,7 @@ HUEBridge 'attr xxx createGroupReadings 1' Readings für HUEGroup 3.Am Ende der 
 
 <a name="info_debug"/>
 
-#### Debug
+#### 6.2.3 Debug
 
 > Unter Debug sind verschiedene Möglichkeiten zum Test.
 
@@ -395,7 +400,7 @@ Objekt                    | Zugriff | Bescheibung | Wert
 
 <a name="info_info"/>
 
-#### Info
+#### 6.2.4 Info
 
 > Unter Info sind verschiedene Parameter aus der Synchronisation sichtbar.
 
@@ -421,7 +426,7 @@ Objekt                    | Zugriff | Bescheibung | Wert
 
 <a name="info_settings"/>
 
-#### Settings
+#### 6.2.5 Settings
 
 > Unter Settings können bestimmte Einträge für die ioBroker Admin-Oberfläche Bereich `Log` ausgewählt werden. Jede Änderung ist sofort wirksam.
 
@@ -453,43 +458,57 @@ Objekt                    | Zugriff | Bescheibung | Wert
 
 <a name="besonderheiten"/>
 
-## Besonderheiten
+## 7 Besonderheiten
 
 > Zusätzliche Funktionen dieses Adapter
 
 <a name="besonderheiten_rollen"/>
 
-### Übersicht Rollen
+### 7.1 Übersicht Rollen
 > Rollen
 
 > Der FHEM Adapter ordnet folgende Rollen automatisch einem state-Objekt zu.
 
 Rolle                    | Zugriff | Art | min Wert | max Wert | Einheit |
-:------------------------|:-------:|:----|:--------:|:--------:|:---------  
-button                   | W  | Logikwert    | 
-button.next              | W  | Logikwert    |
-button.pause             | W  | Logikwert    | 
-button.play              | W  | Logikwert    |   
-button.prev              | W  | Logikwert    | 
-button.stop              | W  | Logikwert    | 
-indicator                | R  | Logikwert    |
-indicator.unreach        | R  | Logikwert    |
-indicator.reachable      | R  | Logikwert    |
-level                    | RW | Zahl         |
-level.color.rgb          | RW | Zeichenkette |
-level.color.saturation   | RW | Zahl         |    0 |  254 |
-level.color.temperature  | RW | Zahl         | 2000 | 6500 |
-level.dimmer             | RW | Zahl         |    0 |  100 | %
-level.temperature        | RW | Zahl         |    5 |   35 | °C
-level.volume             | RW | Zahl         |    0 |  100 | %  
-level.volume.group       | RW | Zahl         |    0 |  100 | %
-state                    | RW | Zeichenkette |
-switch                   | RW | Logikwert    |
-switch.light             | RW | Logikwert    |
-text                     | R  | Zeichenkette |
-value                    | R  | Zahl         |     
-value.temperature        | R  | Zahl         |      |      | °C
+:------------------------|:-------:|:---:|:--------:|:--------:|:---------  
+button                   | W  | Logikwert    |		|		|
+button.next              | W  | Logikwert    |		|		|
+button.pause             | W  | Logikwert    |		|		|
+button.play              | W  | Logikwert    |		|		|
+button.prev              | W  | Logikwert    |		|		|
+button.stop              | W  | Logikwert    |		|		|
+indicator                | R  | Logikwert    |		|		|
+indicator.indicator.lowbat| R  | Logikwert    |		|		|
+indicator.reachable      | R  | Logikwert    |		|		|
+indicator.unreach        | R  | Logikwert    |		|		|
+level                    | RW | Zahl         |		|		|
+level.color.rgb          | RW | Zeichenkette |		|		|
+level.color.saturation   | RW | Zahl         |    0 |   254 |
+level.color.temperature  | RW | Zahl         | 2000 |  6500 |
+level.dimmer             | RW | Zahl         |    0 |   100 | %
+level.temperature        | RW | Zahl         |    5 |    35 | °C
+level.volume             | RW | Zahl         |    0 |   100 | %
+level.volume.group       | RW | Zahl         |    0 |   100 | %
+media.cover              | R  | Zeichenkette |      |       |
+media.mode.repeat        | RW | Zahl         |      |       |
+media.mode.shuffle       | RW | Logikwert    |      |       |
+media.mute               | RW | Logikwert    |      |       |
+media.title     		 | R  | Zeichenkette |		|		|
+media.state     		 | R  | Logikwert    |		|		|
+state                    | RW | Zeichenkette |   	|       |
+switch                   | RW | Logikwert    |      |       |
+switch.light             | RW | Logikwert    |		|       |
+sensor.door 			 | R  |	Logikwert    |      |       |
+sensor.motion			 | R  |	Logikwert    |      |       |
+sensor.window			 | R  |	Logikwert    |      |       |
+state					 | RW |	Zeichenkette |      |       |
+text                     | R  | Zeichenkette |		|       |
+value                    | R  | Zahl         |      |       |
+value.power.consumption  | R  | Zahl         |      |       | Wh
+value.temperature        | R  | Zahl         |      |       | °C
+value.voltage            | R  | Zahl         |      |       | V
 
+indicator.lowbat
 
 Art                 | Mögliche Werte | Art | min Wert | max Wert | Einheit |
 :------------------------|:-------:|:----|:--------:|:--------:|:---------  
@@ -503,7 +522,7 @@ gemischt     |
 
 <a name="besonderheiten_funktionen"/>
  
-### Übersicht Funktionen
+### 7.2 Übersicht Funktionen
 > Funktionen
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
@@ -519,7 +538,7 @@ heating                  |    |
 
 <a name="faq"/>
 
-## FAQ
+## 8 FAQ
 
 #### Update FHEM Adapter von github ?
 1. Admin-Oberfläche Bereich `Adapter` oben links "Installieren aus eigener URL"
@@ -541,13 +560,34 @@ Aktuellle Version von FHEM Adapters installiert?
 
 <a name="beispiele"/>
 
-## Beispiele/Demo
-Lorem ipsum
+## 9 Beispiele/Demo
+
+<a name="beispiele_material"/>
+ 
+### 9.1 Adapter Material UI
+
+#### Motion / Bewegungsmelder
+
+![alt-Objektename](media/mat_motion.PNG "update_github")<span style="color:grey">  
+*Material UI*</span>
+
+![alt-Objektename](media/mat_motion_ob.PNG "update_github")<span style="color:grey">  
+*Objekte*</span>
+
+FHEM  | do |Rolle                |Art | Read | Write | min | max |
+:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
+OK    | use | sensor.motion  | Logikwert | x | x | x | x 
+no   | or |state.motion | Logikwert | x | x | x | x 
+no    | opt | brightness | Zahl | x | x | x | x 
+
+<a name="beispiele_vis"/>
+ 
+### 9.2 Adapter VIS
 
 
 <a name="deinstallation"/>
 
-## Deinstallation
+## 10 Deinstallation
 sollte die Instanz wieder entfernt werden sollen wird diese über das zugeordnete Mülleimer-Icon
 in der Rubrik Instanzen entfernt
 
@@ -568,7 +608,7 @@ in der Kachel des AdapterName-Adapters in der Rubrik Adapter geschehen.
 
 <a name="links"/>
 
-## Links
+## 11 Links
 
 FHEM-Adapter
 * ioBroker Forum / FHEM Adapter https://forum.iobroker.net/viewtopic.php?f=20&t=5387&start=200
@@ -584,9 +624,10 @@ FHEM
 * FHEMs Einstiegsseite https://fhem.de/fhem_DE.html
 * FHEM Forum           https://forum.fhem.de/
 
-## Entwicklerbereich
+## 12 Entwicklerbereich
 * github ioBroker.fhem https://github.com/ioBroker/ioBroker.fhem
 
 <a name=historie/> 
 
-## Historie
+## 13 Historie
+
