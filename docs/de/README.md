@@ -576,9 +576,9 @@ Aktuellle Version von FHEM Adapters installiert?
 
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-OK    | use | sensor.motion       | Logikwert | x | x | x | x 
-no    | or |state.motion          | Logikwert | x | x | x | x 
-no     | opt | brightness         | Zahl | x | x | x | x 
+OK    | use | sensor.motion       | Logikwert | true | x | x | x 
+no    | or |state.motion          | Logikwert | true | x | x | x 
+no     | opt | brightness         | Zahl | x | true | x | x 
 
 #### Door / Tür
 
@@ -590,8 +590,8 @@ no     | opt | brightness         | Zahl | x | x | x | x
 
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-OK    | use | sensor.door       | Logikwert | x | x | x | x 
-no    | or |state.door          | Logikwert | x | x | x | x 
+OK    | use | sensor.door       | Logikwert | true | x | x | x 
+no    | or |state.door          | Logikwert | true | x | x | x 
 
 #### Window / Fenster
 
@@ -603,8 +603,129 @@ no    | or |state.door          | Logikwert | x | x | x | x
 
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-OK    | use | sensor.window       | Logikwert | x | x | x | x 
-no    | or |state.window          | Logikwert | x | x | x | x 
+OK    | use | sensor.window       | Logikwert | true | x | x | x 
+no    | or |state.window          | Logikwert | true | x | x | x 
+
+oder nummerisch offen=0;gekippt=1;zu=2
+
+FHEM  | do |Rolle                |Art | Read | Write | min | max |
+:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
+no   | use | value.window       | Zahl | true | x | x | x 
+no    | or |state.window  ?       | Zahl | true | x | x | x 
+
+#### Thermostat / Heizung
+
+![alt-Objektename](media/mat_themostat.PNG "update_github")<span style="color:grey">  
+*Ansicht Material UI*</span>
+
+![alt-Objektename](media/mat_thermostat_ob.PNG "update_github")<span style="color:grey">  
+*Objekte*</span>
+
+FHEM  | do |Rolle                |Art | Read | Write | min | max |
+:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
+OK    | use | level.temperature    | Zahl | true | true | x | x 
+OK    | opt |value.temperature     | Zahl | true | x | x | x 
+no    | opt | value.humidity       | Zahl | true | x | x | x 
+no    | opt | switch.boost         | Zahl | true | x | x | x 
+
+#### Temperatur 
+
+![alt-Objektename](media/mat_temperatur.PNG "update_github")<span style="color:grey">  
+*Ansicht Material UI*</span>
+
+![alt-Objektename](media/mat_temperatur_ob.PNG "update_github")<span style="color:grey">  
+*Objekte*</span>
+
+FHEM  | do |Rolle                |Art | Read | Write | min | max |
+:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
+OK    | use | value.temperature       | Zahl | true | x | x | x 
+no    | opt | value.humidity          | Zahl | true | x | x | x 
+
+#### Blind / Rollladen
+
+![alt-Objektename](media/mat_themostat.PNG "update_github")<span style="color:grey">  
+*Ansicht Material UI*</span>
+
+![alt-Objektename](media/mat_thermostat_ob.PNG "update_github")<span style="color:grey">  
+*Objekte*</span>
+
+FHEM  | do |Rolle                |Art | Read | Write | min | max |
+:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
+no    | use | level.blind          | Zahl | true | true | x | x 
+no    | opt | value.blind          | Zahl | true | x | x | x 
+no    | opt | button.stop          | Logikwert | true | true | x | x 
+no    | or  | action.stop          | Logikwert | true | true | x | x 
+
+#### Light / Licht
+![alt-Objektename](media/mat_light.PNG "update_github")<span style="color:grey">  
+*Ansicht Material UI*</span>
+
+![alt-Objektename](media/mat_light_ob.PNG "update_github")<span style="color:grey">  
+*Objekte*</span>
+
+FHEM  | do |Rolle                |Art | Read | Write | min | max |
+:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
+OK    | use | switch.light        | Logikwert | true | true | x | x 
+no    | opt | switch.light           | Logikwert | true | false | x | x 
+
+#### Socket / Steckdose
+![alt-Objektename](media/mat_socket.PNG "update_github")<span style="color:grey">  
+*Ansicht Material UI*</span>
+
+![alt-Objektename](media/mat_socket_ob.PNG "update_github")<span style="color:grey">  
+*Objekte*</span>
+
+FHEM  | do |Rolle                |Art | Read | Write | min | max |
+:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
+OK    | use | switch                 | Logikwert | true | true | x | x 
+no    | or  | switch.active          | Logikwert | true | true | x | x 
+no    | or  | state                  | Logikwert | true | true | x | x 
+no    | opt | state                  | Logikwert | true | false | x | x 
+no    | opt | state.active           | Logikwert | true | false | x | x 
+
+#### Dimmer 
+
+![alt-Objektename](media/mat_dimmer.PNG "update_github")<span style="color:grey">  
+*Ansicht Material UI*</span>
+
+![alt-Objektename](media/mat_dimmer_ob.PNG "update_github")<span style="color:grey">  
+*Objekte*</span>
+
+FHEM  | do |Rolle                |Art | Read | Write | min | max |
+:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
+OK    | use | level.dimmer         | Zahl | true | true | x | x 
+no    | or  | level.brightness     | Zahl | true | true | x | x 
+no    | opt | value.dimmer         | Zahl | true | x | x | x 
+OK    | opt | switch.light         | Logikwert | true | true | x | x 
+no    | opt | switch.light         | Logikwert | true | false | x | x 
+
+#### Volume / Lautstärke
+
+![alt-Objektename](media/mat_volume.PNG "update_github")<span style="color:grey">  
+*Ansicht Material UI*</span>
+
+![alt-Objektename](media/mat_volume_ob.PNG "update_github")<span style="color:grey">  
+*Objekte*</span>
+
+FHEM  | do |Rolle                |Art | Read | Write | min | max |
+:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
+OK    | use | level.volume          | Zahl | true | true | Zahl | Zahl 
+OK    | opt | value.volume          | Zahl | true | x | Zahl | Zahl 
+OK    | opt | media.mute            | Logikwert | true | true | x | x 
+
+#### GroupVolume / Lautstärke Gruppe
+
+![alt-Objektename](media/mat_volume.PNG "update_github")<span style="color:grey">  
+*Ansicht Material UI*</span>
+
+![alt-Objektename](media/mat_volume_ob.PNG "update_github")<span style="color:grey">  
+*Objekte*</span>
+
+FHEM  | do |Rolle                |Art | Read | Write | min | max |
+:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
+OK    | use | level.volume.group         | Zahl | true | true | Zahl | Zahl 
+OK    | opt | value.volume.group         | Zahl | true | x | Zahl | Zahl 
+OK    | opt | media.mute.group           | Logikwert | true | true | x | x 
 
 
 <a name="beispiele_vis"/>
@@ -657,3 +778,4 @@ FHEM
 <a name=historie/> 
 
 ## 13 Historie
+
