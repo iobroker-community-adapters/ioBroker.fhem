@@ -569,16 +569,43 @@ Aktuellle Version von FHEM Adapters installiert?
 #### Motion / Bewegungsmelder
 
 ![alt-Objektename](media/mat_motion.PNG "update_github")<span style="color:grey">  
-*Material UI*</span>
+*Ansicht Material UI*</span>
 
 ![alt-Objektename](media/mat_motion_ob.PNG "update_github")<span style="color:grey">  
 *Objekte*</span>
 
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-OK    | use | sensor.motion  | Logikwert | x | x | x | x 
-no   | or |state.motion | Logikwert | x | x | x | x 
-no    | opt | brightness | Zahl | x | x | x | x 
+OK    | use | sensor.motion       | Logikwert | x | x | x | x 
+no    | or |state.motion          | Logikwert | x | x | x | x 
+no     | opt | brightness         | Zahl | x | x | x | x 
+
+#### Door / Tür
+
+![alt-Objektename](media/mat_door.PNG "update_github")<span style="color:grey">  
+*Ansicht Material UI*</span>
+
+![alt-Objektename](media/mat_door_ob.PNG "update_github")<span style="color:grey">  
+*Objekte*</span>
+
+FHEM  | do |Rolle                |Art | Read | Write | min | max |
+:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
+OK    | use | sensor.door       | Logikwert | x | x | x | x 
+no    | or |state.door          | Logikwert | x | x | x | x 
+
+#### Window / Fenster
+
+![alt-Objektename](media/mat_window.PNG "update_github")<span style="color:grey">  
+*Ansicht Material UI*</span>
+
+![alt-Objektename](media/mat_window_ob.PNG "update_github")<span style="color:grey">  
+*Objekte*</span>
+
+FHEM  | do |Rolle                |Art | Read | Write | min | max |
+:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
+OK    | use | sensor.window       | Logikwert | x | x | x | x 
+no    | or |state.window          | Logikwert | x | x | x | x 
+
 
 <a name="beispiele_vis"/>
  
@@ -630,4 +657,3 @@ FHEM
 <a name=historie/> 
 
 ## 13 Historie
-
