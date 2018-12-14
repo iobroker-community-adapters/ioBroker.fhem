@@ -1,6 +1,6 @@
 ---
 title:       "FHEM-Adapter"
-lastChanged: "13.12.2018"
+lastChanged: "14.12.2018"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
 ---)
 
@@ -576,9 +576,9 @@ Aktuellle Version von FHEM Adapters installiert?
 
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-OK    | use | sensor.motion       | Logikwert | true | x | x | x 
-no    | or |state.motion          | Logikwert | true | x | x | x 
-no     | opt | brightness         | Zahl | x | true | x | x 
+OK    | use | sensor.motion       | Logikwert | true | false | x | x 
+no    | or |state.motion          | Logikwert | true | false | x | x 
+no     | opt | brightness         | Zahl | true |  false | x | x 
 
 #### Door / Tür
 
@@ -590,8 +590,8 @@ no     | opt | brightness         | Zahl | x | true | x | x
 
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-OK    | use | sensor.door       | Logikwert | true | x | x | x 
-no    | or |state.door          | Logikwert | true | x | x | x 
+OK    | use | sensor.door       | Logikwert | true | false | x | x 
+no    | or |state.door          | Logikwert | true | false | x | x 
 
 #### Window / Fenster
 
@@ -603,15 +603,28 @@ no    | or |state.door          | Logikwert | true | x | x | x
 
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-OK    | use | sensor.window       | Logikwert | true | x | x | x 
-no    | or |state.window          | Logikwert | true | x | x | x 
+OK    | use | sensor.window       | Logikwert | true | false | x | x 
+no    | or |state.window          | Logikwert | true | false | x | x 
 
 oder nummerisch offen=0;gekippt=1;zu=2
 
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-no   | use | value.window       | Zahl | true | x | x | x 
-no    | or |state.window  ?       | Zahl | true | x | x | x 
+no   | use | value.window       | Zahl | true | false | x | x 
+no    | or |state.window  ?       | Zahl | true | false | x | x 
+
+#### FireAlarm / Alarm Feuer
+
+![alt-Objektename](media/mat_firealarm.PNG "update_github")<span style="color:grey">  
+*Ansicht Material UI*</span>
+
+![alt-Objektename](media/mat_firealarm_ob.PNG "update_github")<span style="color:grey">  
+*Objekte*</span>
+
+FHEM  | do |Rolle                |Art | Read | Write | min | max |
+:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
+no    | use | sensor.alarm.fire   | Logikwert | true | false | x | x 
+no    | or | state                | Logikwert | true | false | x | x 
 
 #### Thermostat / Heizung
 
@@ -624,11 +637,11 @@ no    | or |state.window  ?       | Zahl | true | x | x | x
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
 OK    | use | level.temperature    | Zahl | true | true | x | x 
-OK    | opt |value.temperature     | Zahl | true | x | x | x 
-no    | opt | value.humidity       | Zahl | true | x | x | x 
-no    | opt | switch.boost         | Zahl | true | x | x | x 
+OK    | opt |value.temperature     | Zahl | true | false | x | x 
+no    | opt | value.humidity       | Zahl | true | false | x | x 
+no    | opt | switch.boost         | Zahl | true | false | x | x 
 
-#### Temperatur 
+#### Temperature / Temperatur 
 
 ![alt-Objektename](media/mat_temperatur.PNG "update_github")<span style="color:grey">  
 *Ansicht Material UI*</span>
@@ -638,8 +651,8 @@ no    | opt | switch.boost         | Zahl | true | x | x | x
 
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-OK    | use | value.temperature       | Zahl | true | x | x | x 
-no    | opt | value.humidity          | Zahl | true | x | x | x 
+OK    | use | value.temperature       | Zahl | true | false | x | x 
+no    | opt | value.humidity          | Zahl | true | false | x | x 
 
 #### Blind / Rollladen
 
@@ -652,7 +665,7 @@ no    | opt | value.humidity          | Zahl | true | x | x | x
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
 no    | use | level.blind          | Zahl | true | true | x | x 
-no    | opt | value.blind          | Zahl | true | x | x | x 
+no    | opt | value.blind          | Zahl | true | false | x | x 
 no    | opt | button.stop          | Logikwert | true | true | x | x 
 no    | or  | action.stop          | Logikwert | true | true | x | x 
 
@@ -666,7 +679,7 @@ no    | or  | action.stop          | Logikwert | true | true | x | x
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
 OK    | use | switch.light        | Logikwert | true | true | x | x 
-no    | opt | switch.light           | Logikwert | true | false | x | x 
+no    | opt | switch.light        | Logikwert | true | false | x | x 
 
 #### Socket / Steckdose
 ![alt-Objektename](media/mat_socket.PNG "update_github")<span style="color:grey">  
@@ -683,6 +696,18 @@ no    | or  | state                  | Logikwert | true | true | x | x
 no    | opt | state                  | Logikwert | true | false | x | x 
 no    | opt | state.active           | Logikwert | true | false | x | x 
 
+#### Lock / Sperrelement
+![alt-Objektename](media/mat_lock.PNG "update_github")<span style="color:grey">  
+*Ansicht Material UI*</span>
+
+![alt-Objektename](media/mat_lock_ob.PNG "update_github")<span style="color:grey">  
+*Objekte*</span>
+
+FHEM  | do |Rolle                |Art | Read | Write | min | max |
+:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
+no    | use | switch.lock            | Logikwert | true | true | x | x 
+no    | or  | state                  | Logikwert | true | false | x | x 
+
 #### Dimmer 
 
 ![alt-Objektename](media/mat_dimmer.PNG "update_github")<span style="color:grey">  
@@ -695,7 +720,7 @@ FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
 OK    | use | level.dimmer         | Zahl | true | true | x | x 
 no    | or  | level.brightness     | Zahl | true | true | x | x 
-no    | opt | value.dimmer         | Zahl | true | x | x | x 
+no    | opt | value.dimmer         | Zahl | true | false | x | x 
 OK    | opt | switch.light         | Logikwert | true | true | x | x 
 no    | opt | switch.light         | Logikwert | true | false | x | x 
 
@@ -710,7 +735,7 @@ no    | opt | switch.light         | Logikwert | true | false | x | x
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
 OK    | use | level.volume          | Zahl | true | true | Zahl | Zahl 
-OK    | opt | value.volume          | Zahl | true | x | Zahl | Zahl 
+OK    | opt | value.volume          | Zahl | true | false | Zahl | Zahl 
 OK    | opt | media.mute            | Logikwert | true | true | x | x 
 
 #### GroupVolume / Lautstärke Gruppe
@@ -724,9 +749,49 @@ OK    | opt | media.mute            | Logikwert | true | true | x | x
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
 OK    | use | level.volume.group         | Zahl | true | true | Zahl | Zahl 
-OK    | opt | value.volume.group         | Zahl | true | x | Zahl | Zahl 
+OK    | opt | value.volume.group         | Zahl | true | false | Zahl | Zahl 
 OK    | opt | media.mute.group           | Logikwert | true | true | x | x 
 
+#### Mediaplayer 
+
+![alt-Objektename](media/mat_mediaplayer.PNG "update_github")<span style="color:grey">  
+*Ansicht Material UI*</span>
+
+![alt-Objektename](media/mat_mediaplayer_ob.PNG "update_github")<span style="color:grey">  
+*Objekte*</span>
+
+FHEM  | do |Rolle                |Art | Read | Write | min | max |
+:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
+OK    | use | media.state         | Logikwert | true | false | x | x 
+no    | or  | media.state         | Zahl | true | false | x | x 
+OK    | opt | button.play         | Logikwert | true | true | x | x 
+no    | or  | action.play         | Logikwert | true | true | x | x 
+OK    | opt | button.pause        | Logikwert | true | true | x | x 
+no    | or  | action.pause        | Logikwert | true | true | x | x 
+OK    | opt | button.stop         | Logikwert | true | true | x | x 
+no    | or  | action.stop         | Logikwert | true | true | x | x 
+OK    | opt | button.next         | Logikwert | true | true | x | x 
+no    | or  | action.next         | Logikwert | true | true | x | x 
+OK    | opt | button.prev         | Logikwert | true | true | x | x 
+no    | or  | action.prev         | Logikwert | true | true | x | x 
+OK    | opt | media.mode.shuffle  | Logikwert | true | true | x | x 
+OK    | opt | media.mode.repeat   | Zahl | true | true | x | x 
+no    | opt | media.artist        | Zeichenkette | true | false | x | x 
+no    | opt | media.album         | Zeichenkette | true | false | x | x 
+no    | opt | media.title         | Zeichenkette | true | false | x | x 
+OK    | opt | media.cover         | Zeichenkette | true | false | x | x 
+no    | or  | media.cover.big     | Zeichenkette | true | false | x | x 
+no    | or  | media.cover ?       | Zeichenkette | true | false | x | x 
+no    | opt | media.duration      | Zahl | true | false | x | x 
+no    | opt | media.elapsed       | Zahl | true | false | x | x 
+no    | opt | media.season        | Zahl | true | true | x | x 
+no    | opt | media.seek          | Zahl | true | true | x | x 
+no    | opt | media.track         | Zeichenkette | true | false | x | x 
+no    | opt | media.episode       | Zeichenkette | true | false | x | x 
+no    | opt | media.season        | Zeichenkette | true | false | x | x 
+OK    | opt | level.volume        | Zahl | true | true | Zahl | Zahl 
+no    | opt | level.volume        | Zahl | true | false | Zahl | Zahl 
+OK    | opt | media.mute          | Logikwert | true | true | x | x
 
 <a name="beispiele_vis"/>
  
@@ -778,4 +843,3 @@ FHEM
 <a name=historie/> 
 
 ## 13 Historie
-
