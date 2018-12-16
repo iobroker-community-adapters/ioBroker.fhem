@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '09.12.18';
+const buildDate = '16.12.18';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -173,6 +173,8 @@ function getUnit(name) {
         return 'hPa';
     } else if (name.indexOf('speed') !== -1) {
         return 'kmh';
+    } else if (name.indexOf('voltage') !== -1) {
+        return 'V';
     }
     return undefined;
 }
@@ -208,8 +210,6 @@ function parseEvent(event, anz) {
     let parts = event.split(' ');
     // ignore ioB.IN
     if (fhemIN[parts[1].replace(/-/g, '_')]) {
-        //adapter.log.warn('found: ' + parts[1].replace(/_/g, '-') + ' event: ' + event);
-        //adapter.setForeignState(parts[1].replace(/_/g, '-'), parts[2], true);
         return;
     }
     // ignore Reading?
@@ -315,6 +315,25 @@ function parseEvent(event, anz) {
         } else {
             val = event.substring(parts[0].length + parts[1].length + 2);
         }
+        //send ioB "dummy sendioB aaaa bbbb"  ========================================================================================================
+        if (parts[1] === 'send2ioB') {
+            //adapter.log.warn(event);
+            adapter.getForeignObject(parts[2], function (err, obj) {
+                if (err) {
+                    adapter.log.error('error:' + err);
+                } else if (!obj) {
+                    adapter.log.warn('event FHEM "' + event + '" > object "' + parts[2] + '" not found!');
+                } else if (obj && !obj.common.write) {
+                    adapter.log.warn('event FHEM "' + event + '" > object "' + parts[2] + '" common.write not true');
+                } else if (obj && obj.common.write) {
+                    let setState = event.substr(parts[0].length + parts[1].length + parts[2].length + 2);
+                    adapter.log.info('event FHEM "' + event + '" > ' + parts[2] + ' = ' + setState);
+                    adapter.setForeignState(parts[2], setState, false);
+                }
+            });
+        }
+        //=====================================================================================================================================================
+
         id = checkID(event, val, parts[1], 'state', id);
         if (fhemObjects[id]) {
             adapter.setForeignState(id, {
@@ -796,6 +815,19 @@ function startSync(cb) {
                 checkSubscribe((cb) => {
                     parseObjects(objects.Results, () => {
                         unusedObjects('*', (cb) => {
+                            //    ======================================================================================================================= send2ioB
+                            if (fhemObjects[adapter.namespace + '.send2ioB']) {
+                                adapter.log.info('check ' + adapter.namespace + '.send2ioB > OK');
+                            } else {
+                                adapter.log.warn('check ' + adapter.namespace + '.send2ioB > not found!');
+                                queue.push({
+                                    command: 'write',
+                                    id: adapter.namespace + '.info.Commands.sendFHEM',
+                                    val: 'define send2ioB dummy;attr send2ioB alias send2ioB;attr send2ioB room ioB_System;attr send2ioB comment Auto created by ioBroker'
+                                });
+                                processQueue();
+                            }
+                            //    ======================================================================================================================= send2ioB
                             sendFHEM('save');
                             adapter.log.info('check ' + adapter.namespace + '.info.Info end');
                             adapter.setState('info.Info.numberObjectsIOBin', Object.keys(fhemObjects).length, true);
@@ -1408,6 +1440,11 @@ function parseObjects(objs, cb) {
                             obj.native.Wh = true;
                             obj.common.role = 'value.power.consumption';
                         }
+                        // detect V (voltage)
+                        if (obj.common.unit === 'V') {
+                            obj.native.V = true;
+                            obj.common.role = 'value.voltage';
+                        }
                         // special role
                         if (attr === 'infoSummarize1') {
                             obj.common.role = 'media.title';
@@ -1661,6 +1698,9 @@ function convertAttr(attr, val) {
         return parseFloat(val);
     }
     if (attr.indexOf('power') !== -1) {                             //=================================================================
+        return parseFloat(val);
+    }
+    if (attr.indexOf('voltage') !== -1) {                             //=================================================================
         return parseFloat(val);
     }
     if (attr.indexOf('energy') !== -1) {
