@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '16.12.18';
+const buildDate = '16.12.18a';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -388,7 +388,7 @@ function parseEvent(event, anz) {
         // reading
         if (stelle.indexOf(':') === 0) {
             // special?
-            if (parts[0] === 'at' && parts[2] === 'Next:' || parts[2] === 'T:' || parts[0] === 'FRITZBOX' && parts[2] === 'WLAN:' || parts[0] === 'CALVIEW' && parts[2] === 't:') {
+            if (parts[0] === 'ESPEasy' && parts[2] === 'Tem:' || parts[0] === 'at' && parts[2] === 'Next:' || parts[2] === 'T:' || parts[0] === 'FRITZBOX' && parts[2] === 'WLAN:' || parts[0] === 'CALVIEW' && parts[2] === 't:') {
                 val = convertFhemValue(event.substring(parts[0].length + parts[1].length + 2));
                 // val = event.substring(parts[0].length + parts[1].length + 2);
                 id = checkID(event, val, parts[1], 'state', id);
