@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '16.12.18a';
+const buildDate = '17.12.18';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -308,8 +308,9 @@ function parseEvent(event, anz) {
         return;
     }
 
-    // state?
-    if (pos === -1) {
+    // state ? (ohne : oder : hinten)
+    const stelle = event.substring(parts[0].length + parts[1].length + parts[2].length + 1);
+    if (pos === -1 || stelle.indexOf(':') !== 0) {
         if (oldState) {
             val = convertFhemValue(event.substring(parts[0].length + parts[1].length + 2));
         } else {
@@ -317,7 +318,6 @@ function parseEvent(event, anz) {
         }
         //send ioB "dummy sendioB aaaa bbbb"  ========================================================================================================
         if (parts[1] === 'send2ioB') {
-            //adapter.log.warn(event);
             adapter.getForeignObject(parts[2], function (err, obj) {
                 if (err) {
                     adapter.log.error('error:' + err);
@@ -333,7 +333,6 @@ function parseEvent(event, anz) {
             });
         }
         //=====================================================================================================================================================
-
         id = checkID(event, val, parts[1], 'state', id);
         if (fhemObjects[id]) {
             adapter.setForeignState(id, {
@@ -380,19 +379,18 @@ function parseEvent(event, anz) {
         }
         return;
     }
-
-    // reading or state?
+    // reading or state? (mit : vorne)
     if (pos !== -1) {
-        const stelle = event.substring(parts[0].length + parts[1].length + parts[2].length + 1);
         let typ;
-        // reading
-        if (stelle.indexOf(':') === 0) {
-            // special?
-            if (parts[0] === 'ESPEasy' && parts[2] === 'Tem:' || parts[0] === 'at' && parts[2] === 'Next:' || parts[2] === 'T:' || parts[0] === 'FRITZBOX' && parts[2] === 'WLAN:' || parts[0] === 'CALVIEW' && parts[2] === 't:') {
+        let idTest = checkID(event, val, parts[1], 'state', id);
+        adapter.getState(idTest, function (err, state) {
+            err && adapter.log.error('[parseEvent] rs? ' + err);
+            if (state !== null && state.val.substring(0, parts[2].length) === parts[2]) {
                 val = convertFhemValue(event.substring(parts[0].length + parts[1].length + 2));
                 // val = event.substring(parts[0].length + parts[1].length + 2);
                 id = checkID(event, val, parts[1], 'state', id);
                 typ = 'state';
+                adapter.log.debug('(1) ' + event + ' typ=' + typ + ' id=' + id + ' val=' + val);
             } else {
                 name = event.substring(0, pos);
                 parts = name.split(' ');
@@ -402,45 +400,39 @@ function parseEvent(event, anz) {
                 // rgb? insert # usw
                 val = convertAttr(parts[2], val);
                 typ = 'reading';
+                adapter.log.debug('(2) ' + event + ' typ=' + typ + ' id=' + id + ' val=' + val);
             }
-        }
-        // state
-        if (stelle.indexOf(':') !== 0) {
-            val = convertFhemValue(event.substring(parts[0].length + parts[1].length + 2));
-            id = checkID(event, val, parts[1], 'state', id);
-            typ = 'state';
-        }
-        if (!fhemObjects[id]) {
-            logUnhandledEventFHEM && adapter.log.info('unhandled event FHEM "' + event + '" > jsonlist2');
-            if (parts[1] !== lastNameQueue || parts[1] === lastNameQueue && lastNameTS + 2000 < Date.now()) {
-                queue.push({
-                    command: 'meta',
-                    name: parts[1],
-                    attr: parts[2],
+            if (!fhemObjects[id]) {
+                logUnhandledEventFHEM && adapter.log.info('unhandled event FHEM "' + event + '" > jsonlist2');
+                if (parts[1] !== lastNameQueue || parts[1] === lastNameQueue && lastNameTS + 2000 < Date.now()) {
+                    queue.push({
+                        command: 'meta',
+                        name: parts[1],
+                        attr: parts[2],
+                        val: val,
+                        event: event
+                    });
+                    processQueue();
+                    lastNameQueue = parts[1];
+                    lastNameTS = Date.now();
+                }
+            } else {
+                if (logEventFHEMreading && typ === 'reading') {
+                    adapter.log.info('event FHEM(r) "' + event + '" > ' + id + ' ' + val);
+                }
+                if (logEventFHEMstate && typ === 'state') {
+                    adapter.log.info('event FHEM(s) "' + event + '" > ' + id + ' ' + val);
+                }
+                adapter.setForeignState(id, {
                     val: val,
-                    event: event
+                    ack: true,
+                    ts: ts
                 });
-                processQueue();
-                lastNameQueue = parts[1];
-                lastNameTS = Date.now();
             }
-        }
-        if (fhemObjects[id]) {
-            if (logEventFHEMreading && typ === 'reading') {
-                adapter.log.info('event FHEM(r) "' + event + '" > ' + id + ' ' + val);
-            }
-            if (logEventFHEMstate && typ === 'state') {
-                adapter.log.info('event FHEM(s) "' + event + '" > ' + id + ' ' + val);
-            }
-            adapter.setForeignState(id, {
-                val: val,
-                ack: true,
-                ts: ts
-            });
-        }
-        return;
+            return;
+        });
     }
-    adapter.log.warn('[parseEvent] no action ' + event);
+    //adapter.log.warn('[parseEvent] no action ' + event);
 }
 function syncStates(states, cb) {
     if (!states || !states.length) {
