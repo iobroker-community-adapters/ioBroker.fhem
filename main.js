@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '30.12.18a';
+const buildDate = '30.12.18b';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -191,7 +191,9 @@ function parseEvent(event, anz) {
     if (!event) {
         return;
     }
-    logEventFHEM && adapter.log.info('event (FHEM) "' + event + '"');
+    //logEventFHEM && adapter.log.info('event (FHEM) "' + event + '"');
+    //logEventFHEM && adapter.log.info ('event (FHEM) "' + event.replace(/\n|\r/g, '\u005cn') + '"');
+    logEventFHEM && adapter.log.info ('event (FHEM) "' + event.replace(/\n|\r/g, '\u005cn') + '"');
     // Sonos special
     if (event.indexOf('display_covertitle') !== -1) {
         return;
@@ -210,7 +212,6 @@ function parseEvent(event, anz) {
     let parts = event.split(' ');
     // event nur 1 Wort?
     if (!parts[1]) {
-        adapter.log.warn ('ignore event '+ event);
         return;
     }
     // ignore ioB.IN
@@ -1616,8 +1617,8 @@ function parseObjects(objs, cb) {
                             ts: objs[i].Readings[attr].Time ? new Date(objs[i].Readings[attr].Time).getTime() : Date.now(),
                             ack: true
                         });
-                        combined && debug && adapter.log.info('[debug] >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '<br>') + ' -> ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, ' ') + ' | read: ' + obj.common.read + ' (Value Possible Set)');
-                        !combined && debug && adapter.log.info('[debug] >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '<br>') + ' -> ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, ' ') + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | role: ' + obj.common.role + ' | Funktion: ' + Funktion);
+                        combined && debug && adapter.log.info('[debug] >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' -> ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | read: ' + obj.common.read + ' (Value Possible Set)');
+                        !combined && debug && adapter.log.info('[debug] >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' -> ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | role: ' + obj.common.role + ' | Funktion: ' + Funktion);
                         objects.push(obj);
                         if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
                             if (Funktion === 'switch')
@@ -1897,7 +1898,7 @@ function writeValue(id, val, cb) {
         logEventIOB && adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + val);
         telnetOut.send(val, (err, result) => {
             err && adapter.log.error('[writeValue] ' + err);
-            adapter.setState('info.Commands.resultFHEM', result.replace(/(\r\n)|(\r)|(\n)/g, '<br />'), err =>
+            adapter.setState('info.Commands.resultFHEM', result.replace(/(\r\n)|(\r)|(\n)/g, '<br>'), err =>
                 err && adapter.log.error('[writeValue] ' + err));
             adapter.setState('info.Commands.lastCommand', cmd, err => err && adapter.log.error('[writeValue] ' + err));
             cb && cb();
@@ -2146,8 +2147,7 @@ function main() {
         readOnly: true,
         prompt: adapter.config.prompt
     });
-    //edit 31.12.18 wegen /n
-    telnetIn.on('data', data => parseEvent(data.replace(/(\r\n)|(\r)|(\n)/g, ' ')));
+    telnetIn.on('data', data => parseEvent(data));
     telnetOut = new Telnet({
         host: adapter.config.host,
         port: adapter.config.port,
