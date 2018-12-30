@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '30.12.18';
+const buildDate = '30.12.18a';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -208,6 +208,11 @@ function parseEvent(event, anz) {
     let val;
     const pos = event.indexOf(':');
     let parts = event.split(' ');
+    // event nur 1 Wort?
+    if (!parts[1]) {
+        adapter.log.warn ('ignore event '+ event);
+        return;
+    }
     // ignore ioB.IN
     if (fhemIN[parts[1].replace(/-/g, '_')]) {
         return;
@@ -2142,7 +2147,7 @@ function main() {
         prompt: adapter.config.prompt
     });
     //edit 31.12.18 wegen /n
-    telnetIn.on('data', data => parseEvent(data.replace(/(\r\n)|(\r)|(\n)/g, '<br>')));
+    telnetIn.on('data', data => parseEvent(data.replace(/(\r\n)|(\r)|(\n)/g, ' ')));
     telnetOut = new Telnet({
         host: adapter.config.host,
         port: adapter.config.port,
