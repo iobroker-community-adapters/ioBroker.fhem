@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '17.12.18';
+const buildDate = '30.12.18';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -931,22 +931,22 @@ function parseObjects(objs, cb) {
             //onlySyncNAME,ignore Internals TYPE,NAME & Attributtes room 
             if (onlySyncNAME && onlySyncNAME.indexOf(objs[i].Internals.NAME) === -1) {
                 logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | NAME <> ' + onlySyncNAME + ' | ' + ' ' + (i + 1) + '/' + objs.length);
-                debug && adapter.log.warn('[debug] > ' + objs[i].Name + ' | not included in fhem.x.info.Config.onlySyncNAME');
+                debug && adapter.log.warn('[debug] > ' + objs[i].Name + ' | not included in ' + adapter.namespace + '.info.Config.onlySyncNAME');
                 continue;
             }
             if (ignoreObjectsInternalsTYPE.indexOf(objs[i].Internals.TYPE) !== -1) {
                 logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | TYPE: ' + ignoreObjectsInternalsTYPE + ' | ' + ' ' + (i + 1) + '/' + objs.length);
-                debug && adapter.log.warn('[debug] > ' + objs[i].Name + ' | included in fhem.x.info.Config.ignoreObjectsInternalsTYPE');
+                debug && adapter.log.warn('[debug] > ' + objs[i].Name + ' | included in ' + adapter.namespace + '.info.Config.ignoreObjectsInternalsTYPE');
                 continue;
             }
             if (ignoreObjectsInternalsNAME.indexOf(objs[i].Internals.NAME) !== -1) {
                 logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | NAME: ' + ignoreObjectsInternalsNAME + ' | ' + ' ' + (i + 1) + '/' + objs.length);
-                debug && adapter.log.warn('[debug] > ' + objs[i].Name + ' | included in fhem.x.info.Config.ignoreObjectsInternalsNAME');
+                debug && adapter.log.warn('[debug] > ' + objs[i].Name + ' | included in ' + adapter.namespace + '.info.Config.ignoreObjectsInternalsNAME');
                 continue;
             }
             if (ignoreObjectsAttributesroom.indexOf(objs[i].Attributes.room) !== -1) {
                 logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | room: ' + ignoreObjectsAttributesroom + ' | ' + ' ' + (i + 1) + '/' + objs.length);
-                debug && adapter.log.warn('[debug] > ' + objs[i].Name + ' | included in fhem.x.info.Config.ignoreObjectsAttributesroom');
+                debug && adapter.log.warn('[debug] > ' + objs[i].Name + ' | included in ' + adapter.namespace + '.info.Config.ignoreObjectsAttributesroom');
                 continue;
             }
             if (objs[i].Attributes.comment && objs[i].Attributes.comment.indexOf('Auto-created by ioBroker') !== -1) {
@@ -1008,10 +1008,7 @@ function parseObjects(objs, cb) {
                 },
                 native: objs[i]
             };
-            //Function & autoConfigFHEM?
-            // if (objs[i].Internals.TYPE === 'XiaomiMQTTDevice') {
-            //     Funktion = 'sensor';
-            // }
+
             if (objs[i].Internals.TYPE === 'HUEBridge') {
                 if (!objs[i].Attributes.createGroupReadings) {
                     sendFHEM('attr ' + objs[i].Name + ' createGroupReadings 1', 'HUEBridge');
@@ -1074,7 +1071,7 @@ function parseObjects(objs, cb) {
                 for (const attr in objs[i].Attributes) {
                     // allowed Attributes?
                     if (allowedAttributes.indexOf(attr) === -1) {
-                        debug && adapter.log.warn('[debug] >> ' + attr + ' = ' + objs[i].Attributes[attr] + ' | not included in fhem.x.info.Config.allowedAttributes');
+                        debug && adapter.log.warn('[debug] >> ' + attr + ' = ' + objs[i].Attributes[attr] + ' | not included in ' + adapter.namespace + '.info.Config.allowedAttributes');
                         continue;
                     }
                     id = adapter.namespace + '.' + name + '.' + 'Attributes.' + attr.replace(/\./g, '_');
@@ -1115,7 +1112,7 @@ function parseObjects(objs, cb) {
                 for (const attr in objs[i].Internals) {
                     // allowed Internals?
                     if (!objs[i].Internals.hasOwnProperty(attr) || allowedInternals.indexOf(attr) === -1) {
-                        debug && adapter.log.warn('[debug] >> ' + attr + ' = ' + objs[i].Internals[attr] + ' | not included in fhem.x.info.Config.allowedInternals');
+                        debug && adapter.log.warn('[debug] >> ' + attr + ' = ' + objs[i].Internals[attr] + ' | not included in ' + adapter.namespace + '.info.Config.allowedInternals');
                         continue;
                     }
                     id = adapter.namespace + '.' + name + '.' + 'Internals.' + attr.replace(/\./g, '_');
@@ -1161,7 +1158,7 @@ function parseObjects(objs, cb) {
                     let states = true;
                     // ignore PossibleSets
                     if (ignorePossibleSets.indexOf(parts[0]) !== -1) {
-                        debug && adapter.log.warn('[debug] >> ' + parts[0] + ' | included in fhem.x.info.Config.ignorePossibleSets');
+                        debug && adapter.log.warn('[debug] >> ' + parts[0] + ' | included in ' + adapter.namespace + '.info.Config.ignorePossibleSets');
                         continue;
                     }
                     const stateName = parts[0].replace(/\./g, '_');
@@ -1358,7 +1355,7 @@ function parseObjects(objs, cb) {
                     }
                     // ignore Readings ?
                     if (ignoreReadings.indexOf(attr) !== -1) {
-                        debug && adapter.log.warn('[debug] >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' | included in fhem.x.info.Config.ignorePossibleSets');
+                        debug && adapter.log.warn('[debug] >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' | included in ' + adapter.namespace + '.info.Config.ignoreReadings');
                         continue;
                     }
                     const stateName = attr.replace(/\./g, '_');
@@ -1484,6 +1481,7 @@ function parseObjects(objs, cb) {
                                     valSwitch = convertFhemValue(val);
                                 }
                                 debug && adapter.log.info('[debug] >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' -> ' + obj_switch._id + ' = ' + valSwitch + ' | type: ' + obj_switch.common.type + ' | read: ' + obj_switch.common.read + ' | write: ' + obj_switch.common.write + ' | role: ' + obj_switch.common.role + ' | Funktion: ' + Funktion);
+
                                 objects.push(obj_switch);
                                 states.push({
                                     id: obj_switch._id,
@@ -1613,8 +1611,8 @@ function parseObjects(objs, cb) {
                             ts: objs[i].Readings[attr].Time ? new Date(objs[i].Readings[attr].Time).getTime() : Date.now(),
                             ack: true
                         });
-                        combined && debug && adapter.log.info('[debug] >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' -> ' + obj._id + ' = ' + val + ' | read: ' + obj.common.read + ' (Value Possible Set)');
-                        !combined && debug && adapter.log.info('[debug] >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' -> ' + obj._id + ' = ' + val + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | role: ' + obj.common.role + ' | Funktion: ' + Funktion);
+                        combined && debug && adapter.log.info('[debug] >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '<br>') + ' -> ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, ' ') + ' | read: ' + obj.common.read + ' (Value Possible Set)');
+                        !combined && debug && adapter.log.info('[debug] >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '<br>') + ' -> ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, ' ') + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | role: ' + obj.common.role + ' | Funktion: ' + Funktion);
                         objects.push(obj);
                         if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
                             if (Funktion === 'switch')
@@ -2143,7 +2141,8 @@ function main() {
         readOnly: true,
         prompt: adapter.config.prompt
     });
-    telnetIn.on('data', data => parseEvent(data));
+    //edit 31.12.18 wegen /n
+    telnetIn.on('data', data => parseEvent(data.replace(/(\r\n)|(\r)|(\n)/g, '<br>')));
     telnetOut = new Telnet({
         host: adapter.config.host,
         port: adapter.config.port,
