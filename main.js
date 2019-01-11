@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '30.12.18b';
+const buildDate = '11.01.19';
 //Configuratios
 let autoRole = false;
 let autoFunction = false;
@@ -188,12 +188,11 @@ function checkID(event, val, name, attr, id) {
     return id;
 }
 function parseEvent(event, anz) {
+
     if (!event) {
         return;
     }
-    //logEventFHEM && adapter.log.info('event (FHEM) "' + event + '"');
-    //logEventFHEM && adapter.log.info ('event (FHEM) "' + event.replace(/\n|\r/g, '\u005cn') + '"');
-    logEventFHEM && adapter.log.info ('event (FHEM) "' + event.replace(/\n|\r/g, '\u005cn') + '"');
+    logEventFHEM && adapter.log.info('event (FHEM) "' + event + '"');
     // Sonos special
     if (event.indexOf('display_covertitle') !== -1) {
         return;
@@ -210,62 +209,100 @@ function parseEvent(event, anz) {
     let val;
     const pos = event.indexOf(':');
     let parts = event.split(' ');
-    // event nur 1 Wort?
-    if (!parts[1]) {
-        return;
-    }
-    // ignore ioB.IN
-    if (fhemIN[parts[1].replace(/-/g, '_')]) {
-        return;
-    }
-    // ignore Reading?
-    if (parts[2] && parts[2].substr(parts[2].length - 1) === ':' && ignoreReadings.indexOf(parts[2].substr(0, parts[2].length - 1)) !== -1) {
-        return;
-    }
-
-    // No cannel for event and not global?
-    if (!fhemObjects[adapter.namespace + '.' + parts[1].replace(/\./g, '_')] && parts[1] !== 'global') {
-        return;
-    }
-    // Global global ?
-    if (parts[0] === 'Global' && parts[1] === 'global') {
-        if (parts[2] === 'SAVE' || parts[2] === 'UPDATE') {
-            logUnhandledEventFHEM && adapter.log.info('unhandled event FHEM(g) "' + event);
-            return;
-        }
-        if (parts[2] === 'ATTR' && parts[4] === 'model') {
-            logUnhandledEventFHEM && adapter.log.info('unhandled event FHEM(g) "' + event);
-            return;
-        }
-        if (!parts[3]) {
-            logUnhandledEventFHEM && adapter.log.warn('unhandled event FHEM(g) "' + event);
+    try {
+        // event nur 1 Wort?
+        if (!parts[1]) {
             return;
         }
         // ignore ioB.IN
-        if (parts[3] && fhemIN[parts[3].replace(/-/g, '_')]) {
-            logUnhandledEventFHEM && adapter.log.info('unhandled event FHEM(g) "' + event);
+        if (fhemIN[parts[1].replace(/-/g, '_')]) {
             return;
         }
-        // Global global DEFINED ?
-        if (parts[2] === 'DEFINED') {
-            logEventFHEMglobal && adapter.log.info('event FHEM(g) "' + event + '"');
-            queue.push({
-                command: 'meta',
-                name: parts[3],
-                attr: 'state',
-                val: 'no',
-                event: event
-            });
-            processQueue();
+        // ignore Reading?
+        if (parts[2] && parts[2].substr(parts[2].length - 1) === ':' && ignoreReadings.indexOf(parts[2].substr(0, parts[2].length - 1)) !== -1) {
             return;
         }
-        // No channel for event and not room?
-        if (!fhemObjects[adapter.namespace + '.' + parts[3].replace(/\./g, '_')] && parts[4] !== 'room') {
+
+        // No cannel for event and not global?
+        if (!fhemObjects[adapter.namespace + '.' + parts[1].replace(/\./g, '_')] && parts[1] !== 'global') {
             return;
         }
-        // Global global ATTR ?
-        if (parts[2] === 'ATTR' && allowedAttributes.indexOf(parts[4]) !== -1) {
-            logEventFHEMglobal && adapter.log.info('event FHEM(g) "' + event + '"');
+        // Global global ?
+        if (parts[0] === 'Global' && parts[1] === 'global') {
+            if (parts[2] === 'SAVE' || parts[2] === 'UPDATE') {
+                logUnhandledEventFHEM && adapter.log.info('unhandled event FHEM(g) "' + event);
+                return;
+            }
+            if (parts[2] === 'ATTR' && parts[4] === 'model') {
+                logUnhandledEventFHEM && adapter.log.info('unhandled event FHEM(g) "' + event);
+                return;
+            }
+            if (!parts[3]) {
+                logUnhandledEventFHEM && adapter.log.warn('unhandled event FHEM(g) "' + event);
+                return;
+            }
+            // ignore ioB.IN
+            if (parts[3] && fhemIN[parts[3].replace(/-/g, '_')]) {
+                logUnhandledEventFHEM && adapter.log.info('unhandled event FHEM(g) "' + event);
+                return;
+            }
+            // Global global DEFINED ?
+            if (parts[2] === 'DEFINED') {
+                logEventFHEMglobal && adapter.log.info('event FHEM(g) "' + event + '"');
+                queue.push({
+                    command: 'meta',
+                    name: parts[3],
+                    attr: 'state',
+                    val: 'no',
+                    event: event
+                });
+                processQueue();
+                return;
+            }
+            // No channel for event and not room?
+            if (!fhemObjects[adapter.namespace + '.' + parts[3].replace(/\./g, '_')] && parts[4] !== 'room') {
+                return;
+            }
+            // Global global ATTR ?
+            if (parts[2] === 'ATTR' && allowedAttributes.indexOf(parts[4]) !== -1) {
+                logEventFHEMglobal && adapter.log.info('event FHEM(g) "' + event + '"');
+                queue.push({
+                    command: 'meta',
+                    name: parts[3],
+                    attr: 'no',
+                    val: parts[4],
+                    event: event
+                });
+                processQueue();
+                return;
+            }
+            // Global global DELETEATTR ?
+            if (parts[2] === 'DELETEATTR' && allowedAttributes.indexOf(parts[4]) !== -1) {
+                logEventFHEMglobal && adapter.log.info('event FHEM(g) "' + event + '"');
+                if (parts[4] === 'room' && iobroker) {
+                    unusedObjects(parts[3].replace(/\./g, '_') + '.*');
+                } else {
+                    unusedObjects(parts[3].replace(/\./g, '_') + '.Attributes.' + parts[4]);
+                }
+                if (parts[4] === 'alias') {
+                    queue.push({
+                        command: 'meta',
+                        name: parts[3],
+                        attr: 'no',
+                        val: parts[4],
+                        event: event
+                    });
+                    processQueue();
+                }
+                return;
+            }
+            // Global global DELETED ?
+            if (parts[2] === 'DELETED') {
+                logEventFHEMglobal && adapter.log.info('event FHEM(g) "' + event + '"');
+                unusedObjects(parts[3].replace(/\./g, '_') + '.*');
+                return;
+            }
+            logUnhandledEventFHEM && adapter.log.warn('unhandled event FHEM(g) "' + event + '" > jsonlist2');
             queue.push({
                 command: 'meta',
                 name: parts[3],
@@ -276,169 +313,134 @@ function parseEvent(event, anz) {
             processQueue();
             return;
         }
-        // Global global DELETEATTR ?
-        if (parts[2] === 'DELETEATTR' && allowedAttributes.indexOf(parts[4]) !== -1) {
-            logEventFHEMglobal && adapter.log.info('event FHEM(g) "' + event + '"');
-            if (parts[4] === 'room' && iobroker) {
-                unusedObjects(parts[3].replace(/\./g, '_') + '.*');
+
+        // state ? (ohne : oder : hinten)
+        const stelle = event.substring(parts[0].length + parts[1].length + parts[2].length + 1);
+        if (pos === -1 || stelle.indexOf(':') !== 0) {
+            if (oldState) {
+                val = convertFhemValue(event.substring(parts[0].length + parts[1].length + 2));
             } else {
-                unusedObjects(parts[3].replace(/\./g, '_') + '.Attributes.' + parts[4]);
+                val = event.substring(parts[0].length + parts[1].length + 2);
             }
-            if (parts[4] === 'alias') {
+            //send ioB ?
+            if (parts[1] === 'send2ioB') {
+                adapter.getForeignObject(parts[2], function (err, obj) {
+                    if (err) {
+                        adapter.log.error('error:' + err);
+                    } else if (!obj) {
+                        adapter.log.warn('event FHEM "' + event + '" > object "' + parts[2] + '" not found!');
+                    } else if (obj && !obj.common.write) {
+                        adapter.log.warn('event FHEM "' + event + '" > object "' + parts[2] + '" common.write not true');
+                    } else if (obj && obj.common.write) {
+                        let setState = event.substr(parts[0].length + parts[1].length + parts[2].length + 2);
+                        adapter.log.info('event FHEM "' + event + '" > ' + parts[2] + ' = ' + setState);
+                        adapter.setForeignState(parts[2], setState, false);
+                    }
+                });
+                return;
+            }
+            id = checkID(event, val, parts[1], 'state', id);
+            if (fhemObjects[id]) {
+                adapter.setForeignState(id, {
+                    val: val,
+                    ack: true,
+                    ts: ts
+                });
+                logEventFHEMstate && adapter.log.info('event FHEM(s) "' + event + '" > ' + id + '  ' + val);
+                // check state
+                let id_state = adapter.namespace + '.' + parts[1].replace(/\./g, '_');
+                // state_switch?
+                if (fhemObjects[id_state + '.state_switch']) {
+                    adapter.setState(id_state + '.state_switch', convertFhemValue(parts[2]), true);
+                }
+                // state_media?
+                if (fhemObjects[id_state + '.state_media']) {
+                    val = (parts[2] === 'PLAYING');
+                    adapter.setState(id_state + '.state_media', val, true);
+                }
+                // state_bollean?
+                if (fhemObjects[id_state + '.state_boolean'] && typeof (convertFhemStateBoolean(parts[2])) === "boolean") {
+                    adapter.setState(id_state + '.state_boolean', convertFhemStateBoolean(parts[2]), true);
+                }
+                // state_value?
+                if (fhemObjects[id_state + '.state_value'] && typeof (convertFhemStateValue(parts[2])) === "number") {
+                    adapter.setState(id_state + '.state_value', convertFhemStateValue(parts[2]), true);
+                }
+                // special for ZWave dim
+                if (parts[0] === 'ZWave' && parts[2] === 'dim') {
+                    let zwave = parts[0] + ' ' + parts[1] + ' ' + parts[2] + ': ' + parts[3];
+                    adapter.log.info('event (Create4ZWave) "' + zwave + '"');
+                    parseEvent(zwave);
+                }
+            } else {
+                adapter.log.warn('[parseEvent] no object(S): "' + event + '" > ' + id + ' = ' + val);
                 queue.push({
                     command: 'meta',
-                    name: parts[3],
-                    attr: 'no',
-                    val: parts[4],
+                    name: parts[1],
+                    attr: 'state',
+                    val: val,
                     event: event
                 });
                 processQueue();
             }
             return;
         }
-        // Global global DELETED ?
-        if (parts[2] === 'DELETED') {
-            logEventFHEMglobal && adapter.log.info('event FHEM(g) "' + event + '"');
-            unusedObjects(parts[3].replace(/\./g, '_') + '.*');
-            return;
-        }
-        logUnhandledEventFHEM && adapter.log.warn('unhandled event FHEM(g) "' + event + '" > jsonlist2');
-        queue.push({
-            command: 'meta',
-            name: parts[3],
-            attr: 'no',
-            val: parts[4],
-            event: event
-        });
-        processQueue();
-        return;
-    }
-
-    // state ? (ohne : oder : hinten)
-    const stelle = event.substring(parts[0].length + parts[1].length + parts[2].length + 1);
-    if (pos === -1 || stelle.indexOf(':') !== 0) {
-        if (oldState) {
-            val = convertFhemValue(event.substring(parts[0].length + parts[1].length + 2));
-        } else {
-            val = event.substring(parts[0].length + parts[1].length + 2);
-        }
-        //send ioB "dummy sendioB aaaa bbbb"  ========================================================================================================
-        if (parts[1] === 'send2ioB') {
-            adapter.getForeignObject(parts[2], function (err, obj) {
-                if (err) {
-                    adapter.log.error('error:' + err);
-                } else if (!obj) {
-                    adapter.log.warn('event FHEM "' + event + '" > object "' + parts[2] + '" not found!');
-                } else if (obj && !obj.common.write) {
-                    adapter.log.warn('event FHEM "' + event + '" > object "' + parts[2] + '" common.write not true');
-                } else if (obj && obj.common.write) {
-                    let setState = event.substr(parts[0].length + parts[1].length + parts[2].length + 2);
-                    adapter.log.info('event FHEM "' + event + '" > ' + parts[2] + ' = ' + setState);
-                    adapter.setForeignState(parts[2], setState, false);
+        // reading or state? (mit : vorne)
+        if (pos !== -1) {
+            let typ;
+            let idTest = checkID(event, val, parts[1], 'state', id);
+            adapter.getState(idTest, function (err, state) {
+                err && adapter.log.error('[parseEvent] rs? ' + err);
+                //if (state !== null && !state.val) adapter.log.warn (idTest + ' no state.val: '+ event);
+                //if (state === null) adapter.log.warn (idTest + ' no state: '+ event);
+                if (state !== null && state.val.substring(0, parts[2].length) === parts[2]) {
+                    val = convertFhemValue(event.substring(parts[0].length + parts[1].length + 2));
+                    id = checkID(event, val, parts[1], 'state', id);
+                    typ = 'state';
+                    adapter.log.debug('(1) ' + event + ' typ=' + typ + ' id=' + id + ' val=' + val);
+                } else {
+                    name = event.substring(0, pos);
+                    parts = name.split(' ');
+                    val = convertFhemValue(event.substring(parts[0].length + parts[1].length + parts[2].length + 4));
+                    id = checkID(event, val, parts[1], parts[2], id);
+                    // rgb? insert # usw
+                    val = convertAttr(parts[2], val);
+                    typ = 'reading';
+                    adapter.log.debug('(2) ' + event + ' typ=' + typ + ' id=' + id + ' val=' + val);
                 }
-            });
-        }
-        //=====================================================================================================================================================
-        id = checkID(event, val, parts[1], 'state', id);
-        if (fhemObjects[id]) {
-            adapter.setForeignState(id, {
-                val: val,
-                ack: true,
-                ts: ts
-            });
-            logEventFHEMstate && adapter.log.info('event FHEM(s) "' + event + '" > ' + id + '  ' + val);
-            // check state
-            let id_state = adapter.namespace + '.' + parts[1].replace(/\./g, '_');
-            // state_switch?
-            if (fhemObjects[id_state + '.state_switch']) {
-                adapter.setState(id_state + '.state_switch', convertFhemValue(parts[2]), true);
-            }
-            // state_media?
-            if (fhemObjects[id_state + '.state_media']) {
-                val = (parts[2] === 'PLAYING');
-                adapter.setState(id_state + '.state_media', val, true);
-            }
-            // state_bollean?        ================================================================================================================== sensor
-            if (fhemObjects[id_state + '.state_boolean'] && typeof (convertFhemStateBoolean(parts[2])) === "boolean") {
-                adapter.setState(id_state + '.state_boolean', convertFhemStateBoolean(parts[2]), true);
-            }
-            // state_value?
-            if (fhemObjects[id_state + '.state_value'] && typeof (convertFhemStateValue(parts[2])) === "number") {
-                adapter.setState(id_state + '.state_value', convertFhemStateValue(parts[2]), true);
-            }
-            // special for ZWave dim
-            if (parts[0] === 'ZWave' && parts[2] === 'dim') {
-                let zwave = parts[0] + ' ' + parts[1] + ' ' + parts[2] + ': ' + parts[3];
-                adapter.log.info('event (Create4ZWave) "' + zwave + '"');
-                parseEvent(zwave);
-            }
-        } else {
-            adapter.log.warn('[parseEvent] no object(S): "' + event + '" > ' + id + ' = ' + val);
-            queue.push({
-                command: 'meta',
-                name: parts[1],
-                attr: 'state',
-                val: val,
-                event: event
-            });
-            processQueue();
-        }
-        return;
-    }
-    // reading or state? (mit : vorne)
-    if (pos !== -1) {
-        let typ;
-        let idTest = checkID(event, val, parts[1], 'state', id);
-        adapter.getState(idTest, function (err, state) {
-            err && adapter.log.error('[parseEvent] rs? ' + err);
-            if (state !== null && state.val.substring(0, parts[2].length) === parts[2]) {
-                val = convertFhemValue(event.substring(parts[0].length + parts[1].length + 2));
-                // val = event.substring(parts[0].length + parts[1].length + 2);
-                id = checkID(event, val, parts[1], 'state', id);
-                typ = 'state';
-                adapter.log.debug('(1) ' + event + ' typ=' + typ + ' id=' + id + ' val=' + val);
-            } else {
-                name = event.substring(0, pos);
-                parts = name.split(' ');
-                val = convertFhemValue(event.substring(parts[0].length + parts[1].length + parts[2].length + 4));
-                //val = event.substring(parts[0].length + parts[1].length + parts[2].length + 4);
-                id = checkID(event, val, parts[1], parts[2], id);
-                // rgb? insert # usw
-                val = convertAttr(parts[2], val);
-                typ = 'reading';
-                adapter.log.debug('(2) ' + event + ' typ=' + typ + ' id=' + id + ' val=' + val);
-            }
-            if (!fhemObjects[id]) {
-                logUnhandledEventFHEM && adapter.log.info('unhandled event FHEM "' + event + '" > jsonlist2');
-                if (parts[1] !== lastNameQueue || parts[1] === lastNameQueue && lastNameTS + 2000 < Date.now()) {
-                    queue.push({
-                        command: 'meta',
-                        name: parts[1],
-                        attr: parts[2],
+                if (!fhemObjects[id]) {
+                    logUnhandledEventFHEM && adapter.log.info('unhandled event FHEM "' + event + '" > jsonlist2');
+                    if (parts[1] !== lastNameQueue || parts[1] === lastNameQueue && lastNameTS + 2000 < Date.now()) {
+                        queue.push({
+                            command: 'meta',
+                            name: parts[1],
+                            attr: parts[2],
+                            val: val,
+                            event: event
+                        });
+                        processQueue();
+                        lastNameQueue = parts[1];
+                        lastNameTS = Date.now();
+                    }
+                } else {
+                    if (logEventFHEMreading && typ === 'reading') {
+                        adapter.log.info('event FHEM(r) "' + event + '" > ' + id + ' ' + val);
+                    }
+                    if (logEventFHEMstate && typ === 'state') {
+                        adapter.log.info('event FHEM(s) "' + event + '" > ' + id + ' ' + val);
+                    }
+                    adapter.setForeignState(id, {
                         val: val,
-                        event: event
+                        ack: true,
+                        ts: ts
                     });
-                    processQueue();
-                    lastNameQueue = parts[1];
-                    lastNameTS = Date.now();
                 }
-            } else {
-                if (logEventFHEMreading && typ === 'reading') {
-                    adapter.log.info('event FHEM(r) "' + event + '" > ' + id + ' ' + val);
-                }
-                if (logEventFHEMstate && typ === 'state') {
-                    adapter.log.info('event FHEM(s) "' + event + '" > ' + id + ' ' + val);
-                }
-                adapter.setForeignState(id, {
-                    val: val,
-                    ack: true,
-                    ts: ts
-                });
-            }
-            return;
-        });
+                return;
+            });
+        }
+    } catch (err) {
+        adapter.log.error('[parseEvent] event: "' + event + '" ' + err);
     }
-    //adapter.log.warn('[parseEvent] no action ' + event);
 }
 function syncStates(states, cb) {
     if (!states || !states.length) {
@@ -1528,7 +1530,7 @@ function parseObjects(objs, cb) {
                                     },
                                     native: {
                                         Name: objs[i].Name,
-                                        Attribute: 'state',
+                                        Attribute: 'state_boolean',
                                         ts: Date.now()
                                     }
                                 };
@@ -1556,7 +1558,7 @@ function parseObjects(objs, cb) {
                                     },
                                     native: {
                                         Name: objs[i].Name,
-                                        Attribute: 'state',
+                                        Attribute: 'state_value',
                                         ts: Date.now()
                                     }
                                 };
@@ -1588,7 +1590,7 @@ function parseObjects(objs, cb) {
                                     },
                                     native: {
                                         Name: objs[i].Name,
-                                        Attribute: 'state',
+                                        Attribute: 'state_media',
                                         ts: Date.now()
                                     }
                                 };
@@ -2158,6 +2160,7 @@ function main() {
     telnetOut.on('ready', () => {
         adapter.log.debug('[main] telnetOut.on ready');
         if (!connected) {
+            //connected = true;
             myObjects(() =>
                 getSettings(() =>
                     getConfigurations(() =>
@@ -2170,6 +2173,10 @@ function main() {
             adapter.log.debug('Disconnected');
             connected = false;
             adapter.setState('info.connection', false, true);
+            adapter.log.warn('Disconnected FHEM telnet ' + adapter.config.host + ':' + adapter.config.port + ' > Auto Restart Adapter!');
+            setTimeout(function () {
+                adapter.restart();
+            }, 1000);
         }
     });
     telnetOut.on('close', () => {
