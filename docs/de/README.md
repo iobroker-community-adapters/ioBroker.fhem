@@ -1,6 +1,6 @@
 ---
 title:       "FHEM-Adapter"
-lastChanged: "14.12.2018"
+lastChanged: "15.01.2019"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
 ---)
 
@@ -368,6 +368,7 @@ Objekt                                           | Zugriff | Bescheibung | Wert
 &emsp;&emsp;&emsp;**autoFunction**                |  RW | Funktionen werden bei Neustart abhängig von Version FHEM Adaper vergeben (default=`false`) Für Adapter `Material UI`wird `true`empfohlen. Bei `false` können Funktionen selber vergeben werden und es erfolgt keine Änderung durch den Adapter | true/false
 &emsp;&emsp;&emsp;**autoRole**                    |  RW | Rollen werden bei Neustart abhängig von Version FHEM Adaper vergeben  (default=`false`) Für Adapter `Material UI` wird `true`empfohlen. Bei `false` können Rollen selber vergeben werden und es erfolgt keine Änderung durch den Adapter. | true/false
 &emsp;&emsp;&emsp;**autoSamrtName**               |  RW | Automatische Anlage Smart Geräte für Adapter Cloud (default=`true`) Nur Instanz fhem.0! | true/false
+&emsp;&emsp;&emsp;**deleteUnusedObjects**               |  RW | Automatisches Löschen nicht synchronisierte Objekte (default=`true`)| true/false
 &emsp;&emsp;&emsp;**ignoreObjectsAttributesroom** |  RW | Kein Sync von Modulen mit Attributes:room | room oder room1,room2 usw
 &emsp;&emsp;&emsp;**ignoreObjectsInternalsNAME**  |  RW | Kein Sync von Modulen mit Internals:NAME (default=`info`) | NAME oder NAME1,NAME2 usw
 &emsp;&emsp;&emsp;**ignoreObjectsInternalsTYPE**  |  RW | Kein Sync von Modulen mit Internals:TYPE | TYPE oder TYPE1,TYPE2 usw
@@ -395,8 +396,9 @@ Objekt                    | Zugriff | Bescheibung | Wert
 &emsp;&emsp;**[Commands](#info_commands)**              |     | Befehlszeile FHEM
 &emsp;&emsp;**[Configurations](#info_configurations)**  |     | 
 &emsp;&emsp;**Debug**                                   |     | Debug Modus
-&emsp;&emsp;&emsp;**jsonlist2**                         |  RW | jsonlist2 Device aus FHEM | json
-&emsp;&emsp;&emsp;**meta**                              |  RW | Name Device aus FHEM | Text
+&emsp;&emsp;&emsp;**activate**                          |  RW | Name Device(s) aus FHEM durch Komma getrennt ->  Log [Devicename] im Admin Log | Text
+&emsp;&emsp;&emsp;**jsonlist2**                         |  RW | jsonlist2 Device aus FHEM -> Test Synchro Device mit jsonlist2 aus FHEM| json
+&emsp;&emsp;&emsp;**meta**                              |  RW | Name Device aus FHEM -> Test Synchro Device mit Name| Text
 
 <a name="info_info"/>
 
@@ -576,9 +578,9 @@ Aktuellle Version von FHEM Adapters installiert?
 
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-OK    | use | sensor.motion       | Logikwert | true | false | x | x 
-no    | or |state.motion          | Logikwert | true | false | x | x 
-no     | opt | brightness         | Zahl | true |  false | x | x 
+OK    | use | sensor.motion       | Logikwert | true | x | x | x 
+no    | or |state.motion          | Logikwert | true | x | x | x 
+no     | opt | brightness         | Zahl | true |  x | x | x 
 
 #### Door / Tür
 
@@ -590,8 +592,8 @@ no     | opt | brightness         | Zahl | true |  false | x | x
 
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-OK    | use | sensor.door       | Logikwert | true | false | x | x 
-no    | or |state.door          | Logikwert | true | false | x | x 
+OK    | use | sensor.door       | Logikwert | true | x | x | x 
+no    | or |state.door          | Logikwert | true | x | x | x 
 
 #### Window / Fenster
 
@@ -603,28 +605,15 @@ no    | or |state.door          | Logikwert | true | false | x | x
 
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-OK    | use | sensor.window       | Logikwert | true | false | x | x 
-no    | or |state.window          | Logikwert | true | false | x | x 
+OK    | use | sensor.window       | Logikwert | true | x | x | x 
+no    | or |state.window          | Logikwert | true | x | x | x 
 
 oder nummerisch offen=0;gekippt=1;zu=2
 
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-no   | use | value.window       | Zahl | true | false | x | x 
-no    | or |state.window  ?       | Zahl | true | false | x | x 
-
-#### FireAlarm / Alarm Feuer
-
-![alt-Objektename](media/mat_firealarm.PNG "update_github")<span style="color:grey">  
-*Ansicht Material UI*</span>
-
-![alt-Objektename](media/mat_firealarm_ob.PNG "update_github")<span style="color:grey">  
-*Objekte*</span>
-
-FHEM  | do |Rolle                |Art | Read | Write | min | max |
-:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-no    | use | sensor.alarm.fire   | Logikwert | true | false | x | x 
-no    | or | state                | Logikwert | true | false | x | x 
+no   | use | value.window       | Zahl | true | x | x | x 
+no    | or |state.window  ?       | Zahl | true | x | x | x 
 
 #### Thermostat / Heizung
 
@@ -637,9 +626,9 @@ no    | or | state                | Logikwert | true | false | x | x
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
 OK    | use | level.temperature    | Zahl | true | true | x | x 
-OK    | opt |value.temperature     | Zahl | true | false | x | x 
-no    | opt | value.humidity       | Zahl | true | false | x | x 
-no    | opt | switch.boost         | Zahl | true | false | x | x 
+OK    | opt |value.temperature     | Zahl | true | x | x | x 
+no    | opt | value.humidity       | Zahl | true | x | x | x 
+no    | opt | switch.boost         | Zahl | true | x | x | x 
 
 #### Temperature / Temperatur 
 
@@ -651,8 +640,8 @@ no    | opt | switch.boost         | Zahl | true | false | x | x
 
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-OK    | use | value.temperature       | Zahl | true | false | x | x 
-no    | opt | value.humidity          | Zahl | true | false | x | x 
+OK    | use | value.temperature       | Zahl | true | x | x | x 
+no    | opt | value.humidity          | Zahl | true | x | x | x 
 
 #### Blind / Rollladen
 
@@ -665,7 +654,7 @@ no    | opt | value.humidity          | Zahl | true | false | x | x
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
 no    | use | level.blind          | Zahl | true | true | x | x 
-no    | opt | value.blind          | Zahl | true | false | x | x 
+no    | opt | value.blind          | Zahl | true | x | x | x 
 no    | opt | button.stop          | Logikwert | true | true | x | x 
 no    | or  | action.stop          | Logikwert | true | true | x | x 
 
@@ -679,7 +668,7 @@ no    | or  | action.stop          | Logikwert | true | true | x | x
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
 OK    | use | switch.light        | Logikwert | true | true | x | x 
-no    | opt | switch.light        | Logikwert | true | false | x | x 
+no    | opt | switch.light           | Logikwert | true | false | x | x 
 
 #### Socket / Steckdose
 ![alt-Objektename](media/mat_socket.PNG "update_github")<span style="color:grey">  
@@ -696,18 +685,6 @@ no    | or  | state                  | Logikwert | true | true | x | x
 no    | opt | state                  | Logikwert | true | false | x | x 
 no    | opt | state.active           | Logikwert | true | false | x | x 
 
-#### Lock / Sperrelement
-![alt-Objektename](media/mat_lock.PNG "update_github")<span style="color:grey">  
-*Ansicht Material UI*</span>
-
-![alt-Objektename](media/mat_lock_ob.PNG "update_github")<span style="color:grey">  
-*Objekte*</span>
-
-FHEM  | do |Rolle                |Art | Read | Write | min | max |
-:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-no    | use | switch.lock            | Logikwert | true | true | x | x 
-no    | or  | state                  | Logikwert | true | false | x | x 
-
 #### Dimmer 
 
 ![alt-Objektename](media/mat_dimmer.PNG "update_github")<span style="color:grey">  
@@ -720,7 +697,7 @@ FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
 OK    | use | level.dimmer         | Zahl | true | true | x | x 
 no    | or  | level.brightness     | Zahl | true | true | x | x 
-no    | opt | value.dimmer         | Zahl | true | false | x | x 
+no    | opt | value.dimmer         | Zahl | true | x | x | x 
 OK    | opt | switch.light         | Logikwert | true | true | x | x 
 no    | opt | switch.light         | Logikwert | true | false | x | x 
 
@@ -735,7 +712,7 @@ no    | opt | switch.light         | Logikwert | true | false | x | x
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
 OK    | use | level.volume          | Zahl | true | true | Zahl | Zahl 
-OK    | opt | value.volume          | Zahl | true | false | Zahl | Zahl 
+OK    | opt | value.volume          | Zahl | true | x | Zahl | Zahl 
 OK    | opt | media.mute            | Logikwert | true | true | x | x 
 
 #### GroupVolume / Lautstärke Gruppe
@@ -749,7 +726,7 @@ OK    | opt | media.mute            | Logikwert | true | true | x | x
 FHEM  | do |Rolle                |Art | Read | Write | min | max |
 :----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
 OK    | use | level.volume.group         | Zahl | true | true | Zahl | Zahl 
-OK    | opt | value.volume.group         | Zahl | true | false | Zahl | Zahl 
+OK    | opt | value.volume.group         | Zahl | true | x | Zahl | Zahl 
 OK    | opt | media.mute.group           | Logikwert | true | true | x | x 
 
 #### Mediaplayer 
@@ -843,3 +820,4 @@ FHEM
 <a name=historie/> 
 
 ## 13 Historie
+
