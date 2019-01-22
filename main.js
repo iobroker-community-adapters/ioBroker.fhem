@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '15.01.19';
+const buildDate = '22.01.19';
 //Debug
 let debugNAME = [];
 //Configuratios
@@ -191,7 +191,6 @@ function checkID(event, val, name, attr, id) {
     return id;
 }
 function parseEvent(event, anz) {
-
     if (!event) {
         return;
     }
@@ -200,13 +199,11 @@ function parseEvent(event, anz) {
     if (event.indexOf('display_covertitle') !== -1) {
         return;
     }
-
     let ts = undefined;
     if (event[4] === '-' && event[7] === '-') {
         ts = new Date(event.substring(0, 19)).getTime();
         event = event.substring(20);
     }
-
     let name;
     let id;
     let val;
@@ -225,7 +222,6 @@ function parseEvent(event, anz) {
         if (parts[2] && parts[2].substr(parts[2].length - 1) === ':' && ignoreReadings.indexOf(parts[2].substr(0, parts[2].length - 1)) !== -1) {
             return;
         }
-
         // No cannel for event and not global?
         if (!fhemObjects[adapter.namespace + '.' + parts[1].replace(/\./g, '_')] && parts[1] !== 'global') {
             return;
@@ -317,7 +313,6 @@ function parseEvent(event, anz) {
             processQueue();
             return;
         }
-
         // state ? (ohne : oder : hinten)
         const stelle = event.substring(parts[0].length + parts[1].length + parts[2].length + 1);
         debugNAME.indexOf(parts[1]) !== -1 && adapter.log.info('[' + parts[1] + '] event FHEM "' + event + '"');
@@ -472,44 +467,59 @@ function syncObjects(objects, cb) {
     }
     const obj = objects.shift();
     fhemObjects[obj._id] = obj;
+    const parts = obj._id.split('.');
     adapter.getForeignObject(obj._id, (err, oldObj) => {
         if (err)
             adapter.log.error('[syncObjects] ' + err);
         if (!oldObj) {
             if (obj.type === 'channel') {
-                adapter.log.info('Create channel ' + obj._id + ' | ' + obj.common.name);
+                adapter.log.info('Create channel ' + obj._id + ' (' + obj.common.name + ')');
             }
+            debugNAME.indexOf(parts[2]) !== -1 && adapter.log.info('[' + parts[2] + '] create ' + obj.type + ' ' + obj._id);
             adapter.setForeignObject(obj._id, obj, err => {
                 err && adapter.log.error('[syncObjects] ' + err);
                 setImmediate(syncObjects, objects, cb);
             });
         } else {
-            if (JSON.stringify(obj) !== JSON.stringify(oldObj)) {
-                oldObj.native = obj.native;
-                oldObj.common.name = obj.common.name;
-                if (autoSmartName) {
-                    oldObj.common.smartName = obj.common.smartName;
-                }
-                if (autoRole) {
-                    oldObj.common.type = obj.common.type;
-                    oldObj.common.role = obj.common.role;
-                    oldObj.common.min = obj.common.min;
-                    oldObj.common.max = obj.common.max;
-                    oldObj.common.unit = obj.common.unit;
-                    oldObj.common.read = obj.common.read;
-                    oldObj.common.write = obj.common.write;
-                    oldObj.common.states = obj.common.states;
-                    oldObj.common.desc = obj.common.desc;
-                }
-                if (obj.type === 'channel' && logUpdateChannel) {
-                    adapter.log.info('Update channel ' + obj._id + '  (' + oldObj.common.name + ')');
-                }
-                adapter.setForeignObject(obj._id, oldObj, err => {
-                    err && adapter.log.error('[syncObjects] ' + err);
-                    setImmediate(syncObjects, objects, cb);
-                });
-            } else {
+            if (JSON.stringify(obj.native) === JSON.stringify(oldObj.native) && JSON.stringify(obj.common) === JSON.stringify(oldObj.common)) {
                 setImmediate(syncObjects, objects, cb);
+            } else {
+                let newObj = JSON.parse(JSON.stringify(oldObj));
+                let updateText = '';
+                if (JSON.stringify(obj.native) !== JSON.stringify(oldObj.native)) {
+                    newObj.native = obj.native;
+                    updateText = updateText + ' native';
+                }
+                if (JSON.stringify(obj.common) !== JSON.stringify(oldObj.common)) {
+                    newObj.common.name = obj.common.name;
+                    updateText = updateText + ' common';
+                    if (autoSmartName) {
+                        newObj.common.smartName = obj.common.smartName;
+                    }
+                    if (autoRole) {
+                        newObj.common.type = obj.common.type;
+                        newObj.common.role = obj.common.role;
+                        newObj.common.min = obj.common.min;
+                        newObj.common.max = obj.common.max;
+                        newObj.common.unit = obj.common.unit;
+                        newObj.common.read = obj.common.read;
+                        newObj.common.write = obj.common.write;
+                        newObj.common.states = obj.common.states;
+                        //newObj.common.desc = obj.common.desc;
+                    }
+                }
+                if (JSON.stringify(newObj) !== JSON.stringify(oldObj)) {
+                    if (obj.type === 'channel' && logUpdateChannel) {
+                        adapter.log.info('Update channel ' + obj._id + '  (' + oldObj.common.name + ')');
+                    }
+                    debugNAME.indexOf(parts[2]) !== -1 && adapter.log.info('[' + parts[2] + '] update ' + obj.type + ' ' + obj._id + ' (' + updateText + ' )');
+                    adapter.setForeignObject(obj._id, newObj, err => {
+                        err && adapter.log.error('[syncObjects] ' + err);
+                        setImmediate(syncObjects, objects, cb);
+                    });
+                } else {
+                    setImmediate(syncObjects, objects, cb);
+                }
             }
         }
     });
@@ -748,7 +758,6 @@ function getConfig(id, config, cb) {
         } else {
             cb && cb();
         }
-        //config.length && adapter.log.info('> ' + id + ' = ' + config);
     });
 }
 function getConfigurations(cb) {
@@ -798,7 +807,6 @@ function getDebug(cb) {
     adapter.getState('info.Debug.activate', (err, obj) => {
         err && adapter.log.error('[getDebug] ' + err);
         if (obj) {
-            //debugNAME = 'testswitch';
             const part = obj.val.split(",");
             if (part[0]) {
                 for (const i in part) {
@@ -822,7 +830,7 @@ function startSync(cb) {
         adapter.log.debug('[startSync] onlySyncNAME = ' + onlySyncNAME);
         send = send + ' ' + onlySyncNAME;
     }
-// send command JsonList2
+    // send command JsonList2
     telnetOut.send(send, (err, result) => {
         err && adapter.log.error(err);
         adapter.log.debug('[startSync] nach jsonlist2 connected = ' + connected);
@@ -844,7 +852,6 @@ function startSync(cb) {
                 checkSubscribe((cb) => {
                     parseObjects(objects.Results, () => {
                         unusedObjects('*', (cb) => {
-                            //    ======================================================================================================================= send2ioB
                             if (fhemObjects[adapter.namespace + '.send2ioB']) {
                                 adapter.log.info('check ' + adapter.namespace + '.send2ioB > OK');
                             } else {
@@ -856,7 +863,6 @@ function startSync(cb) {
                                 });
                                 processQueue();
                             }
-                            //    ======================================================================================================================= send2ioB
                             sendFHEM('save');
                             adapter.log.info('check ' + adapter.namespace + '.info.Info end');
                             adapter.setState('info.Info.numberObjectsIOBin', Object.keys(fhemObjects).length, true);
@@ -957,7 +963,6 @@ function parseObjects(objs, cb) {
         adapter.setState('info.Info.roomioBroker', iobroker, true);
         adapter.log.info('> info.Info.roomioBroker = ' + iobroker);
     }
-
     for (let i = 0; i < objs.length; i++) {
         const debugN = '[' + objs[i].Name + ']';
         try {
@@ -966,7 +971,6 @@ function parseObjects(objs, cb) {
                 return;
             }
             (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' check FHEM Device');
-            //onlySyncNAME,ignore Internals TYPE,NAME & Attributtes room 
             if (onlySyncNAME && onlySyncNAME.indexOf(objs[i].Internals.NAME) === -1) {
                 logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | NAME <> ' + onlySyncNAME + ' | ' + ' ' + (i + 1) + '/' + objs.length);
                 (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - not included in ' + adapter.namespace + '.info.Config.onlySyncNAME');
@@ -1001,7 +1005,6 @@ function parseObjects(objs, cb) {
                 }
                 continue;
             }
-
             if (objs[i].Attributes && objs[i].Attributes.room === 'hidden') {
                 continue;
             }
@@ -1012,7 +1015,6 @@ function parseObjects(objs, cb) {
                 let weiter = true;
                 let searchRoom = objs[i].Attributes.room.split(',');
                 for (const r in searchRoom) {
-                    //12.01.19 allow room ioB_System
                     if (onlySyncRoom.indexOf(searchRoom[r]) !== -1 || searchRoom[r] === 'ioB_System') {
                         (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' iobroker=true > found room ' + searchRoom[r] + ' / ' + r);
                         weiter = false;
@@ -1026,7 +1028,6 @@ function parseObjects(objs, cb) {
                     continue;
                 }
             }
-
             let isOn = false;
             let isOff = false;
             let setStates = {};
@@ -1038,7 +1039,6 @@ function parseObjects(objs, cb) {
             if (objs[i].Attributes && objs[i].Attributes.alias) {
                 alias = objs[i].Attributes.alias;
             }
-
             obj = {
                 _id: id,
                 type: 'channel',
@@ -1047,7 +1047,6 @@ function parseObjects(objs, cb) {
                 },
                 native: objs[i]
             };
-
             if (objs[i].Internals.TYPE === 'HUEBridge') {
                 if (!objs[i].Attributes.createGroupReadings) {
                     sendFHEM('attr ' + objs[i].Name + ' createGroupReadings 1', 'HUEBridge');
@@ -1074,16 +1073,13 @@ function parseObjects(objs, cb) {
             }
             if (objs[i].Attributes.subType === 'thermostat') {
                 Funktion = 'heating';
-                //obj.common.role = 'thermostate';
             }
             if (objs[i].Attributes.subType === 'smokeDetector') {
                 Funktion = 'security';
-                //obj.common.role = 'sensor.alarm.fire';
             }
             if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
                 setFunction(id, Funktion, name);
             }
-
             objects.push(obj);
             logCheckObject && adapter.log.info('check channel ' + id + ' | name: ' + alias + ' | room: ' + objs[i].Attributes.room + ' | role: ' + obj.common.role + ' | function: ' + Funktion + ' | ' + ' ' + (i + 1) + '/' + objs.length);
             //Rooms
@@ -1099,7 +1095,7 @@ function parseObjects(objs, cb) {
             if (objs[i].Attributes) {
                 (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' > check Attributes');
                 if (!objs[i].Attributes.alias) {
-                    adapter.log.warn(objs[i].Name + ': no alias found! set alias "' + alias + '" automatically in FHEM');
+                    adapter.log.info('check alias of ' + objs[i].Name + ' > not found! set alias automatically in FHEM');
                     queue.push({
                         command: 'write',
                         id: adapter.namespace + '.info.Commands.sendFHEM',
@@ -1114,7 +1110,6 @@ function parseObjects(objs, cb) {
                     }
                     id = adapter.namespace + '.' + name + '.' + 'Attributes.' + attr.replace(/\./g, '_');
                     const val = objs[i].Attributes[attr];
-
                     obj = {
                         _id: id,
                         type: 'state',
@@ -1131,7 +1126,6 @@ function parseObjects(objs, cb) {
                             Attributes: true
                         }
                     };
-                    obj.native.ts = Date.now();
                     (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Attributes[attr] + ' > ' + obj._id + ' = ' + val + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role);
                     objects.push(obj);
                     states.push({
@@ -1142,7 +1136,6 @@ function parseObjects(objs, cb) {
                     });
                 }
             }
-
             //-----------------------------------------
             if (objs[i].Internals) {
                 (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' > check Internals');
@@ -1161,7 +1154,8 @@ function parseObjects(objs, cb) {
                             name: objs[i].Name + ' ' + attr,
                             type: 'string',
                             role: 'text',
-                            read: true
+                            read: true,
+                            write: false
                         },
                         native: {
                             Name: objs[i].Name,
@@ -1169,9 +1163,7 @@ function parseObjects(objs, cb) {
                             Internals: true
                         }
                     };
-                    obj.native.ts = Date.now();
                     (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Internals[attr] + ' > ' + obj._id + ' = ' + val + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | role: ' + obj.common.role);
-                    //adapter.log.debug('[parseObjects] check Internals "' + id + '" = ' + val);
                     objects.push(obj);
                     states.push({
                         id: obj._id,
@@ -1181,7 +1173,6 @@ function parseObjects(objs, cb) {
                     });
                 }
             }
-
             //-----------------------------------------
             if (objs[i].PossibleSets && objs[i].PossibleSets.length > 1) {
                 (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' > check PossibleSets');
@@ -1209,10 +1200,10 @@ function parseObjects(objs, cb) {
                         type: 'state',
                         common: {
                             name: objs[i].Name + ' ' + parts[0],
-                            role: 'state',
                             type: 'string',
+                            role: 'state',
                             read: false,
-                            write: true
+                            write: true,
                         },
                         native: {
                             Name: objs[i].Name,
@@ -1221,7 +1212,7 @@ function parseObjects(objs, cb) {
                         }
                     };
                     //special FS20
-                    if (objs[i].Internals.TYPE === 'FS20' && !parts[1]) {                               //============================================
+                    if (objs[i].Internals.TYPE === 'FS20' && !parts[1]) {
                         if (['on', 'off', 'toggle', 'dimup', 'dimdown', 'dimupdown', 'dim06%', 'dim12%', 'dim18%', 'dim25%', 'dim31%', 'dim37%', 'dim43%', 'dim50%', 'dim56%', 'dim62%', 'dim68%', 'dim75%', 'dim81%', 'dim87%', 'dim93%', 'dim100%'].indexOf(parts[0]) !== -1) {
                             obj.common.type = 'boolean';
                             obj.common.role = 'button';
@@ -1272,7 +1263,6 @@ function parseObjects(objs, cb) {
                             }
                         }
                     }
-
                     if (temperaturePossibleSets.indexOf(parts[0]) !== -1) {
                         states = false;
                         obj.common.type = 'number';
@@ -1287,7 +1277,6 @@ function parseObjects(objs, cb) {
                             };
                         }
                     }
-
                     if (dimPossibleSets.indexOf(parts[0]) !== -1) {
                         states = false;
                         obj.common.role = 'level.dimmer';
@@ -1299,7 +1288,6 @@ function parseObjects(objs, cb) {
                             };
                         }
                     }
-
                     if (volumePossibleSets.indexOf(parts[0]) !== -1) {
                         states = false;
                         obj.common.role = 'level.volume';
@@ -1314,7 +1302,6 @@ function parseObjects(objs, cb) {
                             };
                         }
                     }
-
                     if (rgbPossibleSets.indexOf(parts[0]) !== -1) {
                         states = false;
                         obj.common.role = 'level.color.rgb';
@@ -1325,7 +1312,6 @@ function parseObjects(objs, cb) {
                             };
                         }
                     }
-
                     if (parts[0] === 'color') {
                         states = false;
                         obj.common.role = 'level.color.temperature';
@@ -1337,7 +1323,6 @@ function parseObjects(objs, cb) {
                             };
                         }
                     }
-
                     if (parts[1] && states) {
                         obj.native.states = true;
                         const ssss = parts[1].split(',');
@@ -1346,7 +1331,6 @@ function parseObjects(objs, cb) {
                             obj.common.states[ssss[m]] = ssss[m];
                         }
                     }
-
                     if (parts[0] === 'Mute') {
                         obj.common.type = 'boolean';
                         obj.common.role = 'media.mute';
@@ -1356,7 +1340,6 @@ function parseObjects(objs, cb) {
                         obj.common.type = 'number';
                         obj.common.role = 'media.mode.repeat';
                     }
-
                     if (parts[0] === 'Shuffle') {
                         obj.common.type = 'boolean';
                         obj.common.role = 'media.mode.shuffle';
@@ -1371,8 +1354,6 @@ function parseObjects(objs, cb) {
                         obj.common.role = 'light.color.hsv';
                         obj.native.hsv = true;
                     }
-
-                    obj.native.ts = Date.now();
                     (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + parts[0] + ' = ' + parts[1] + ' > ' + id + ' | type: ' + obj.common.type + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | min: ' + obj.common.min + ' | max: ' + obj.common.max + ' | unit: ' + obj.common.unit + ' | states: ' + JSON.stringify(obj.common.states));
                     objects.push(obj);
                     setStates[stateName] = obj;
@@ -1380,7 +1361,6 @@ function parseObjects(objs, cb) {
                     if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
                         setFunction(id, Funktion, name);
                     }
-
                 }
             }
             //-----------------------------------------
@@ -1410,6 +1390,8 @@ function parseObjects(objs, cb) {
                             type: 'state',
                             common: {
                                 name: objs[i].Name + ' ' + attr,
+                                type: 'string',
+                                role: undefined,
                                 read: true,
                                 write: false,
                                 unit: getUnit(attr, objs[i].Internals.TYPE)
@@ -1421,7 +1403,6 @@ function parseObjects(objs, cb) {
                             }
                         };
                     }
-
                     if (objs[i].Readings[attr]) {
                         Funktion = 'no';
                         let val = objs[i].Readings[attr].Value;
@@ -1484,7 +1465,6 @@ function parseObjects(objs, cb) {
                             obj.common.role = 'state';
                             // detect on/off (create state_switch)
                             if (isOff && isOn || objs[i].Internals.TYPE === 'dummy' && (val === 'on' || val === 'off')) {
-                                //adapter.log.warn(name + ' ' + attr + ' ' + val + ' detect switch for dummy');
                                 obj.common.type = 'string';
                                 obj.native.onoff = true;
                                 Funktion = 'switch';
@@ -1500,8 +1480,7 @@ function parseObjects(objs, cb) {
                                     },
                                     native: {
                                         Name: objs[i].Name,
-                                        Attribute: 'state',
-                                        ts: Date.now()
+                                        Attribute: 'state'
                                     }
                                 };
                                 //Schaltaktor aus FHEM in Cloud-Adapter hinzufügen                            
@@ -1518,7 +1497,6 @@ function parseObjects(objs, cb) {
                                     valSwitch = convertFhemValue(val);
                                 }
                                 (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' > ' + obj_switch._id + ' = ' + valSwitch + ' | type: ' + obj_switch.common.type + ' | read: ' + obj_switch.common.read + ' | write: ' + obj_switch.common.write + ' | role: ' + obj_switch.common.role + ' | Funktion: ' + Funktion);
-
                                 objects.push(obj_switch);
                                 states.push({
                                     id: obj_switch._id,
@@ -1559,8 +1537,7 @@ function parseObjects(objs, cb) {
                                     },
                                     native: {
                                         Name: objs[i].Name,
-                                        Attribute: 'state_boolean',
-                                        ts: Date.now()
+                                        Attribute: 'state_boolean'
                                     }
                                 };
                                 (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' > ' + obj_sensor._id + ' = ' + convertFhemStateBoolean(valOrg) + ' | type: ' + obj_sensor.common.type + ' | read: ' + obj_sensor.common.read + ' | write: ' + obj_sensor.common.write + ' | role: ' + obj_sensor.common.role + ' | Funktion: ' + Funktion);
@@ -1587,8 +1564,7 @@ function parseObjects(objs, cb) {
                                     },
                                     native: {
                                         Name: objs[i].Name,
-                                        Attribute: 'state_value',
-                                        ts: Date.now()
+                                        Attribute: 'state_value'
                                     }
                                 };
                                 (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' > ' + obj_sensor._id + ' = ' + convertFhemStateValue(val) + ' | type: ' + obj_sensor.common.type + ' | read: ' + obj_sensor.common.read + ' | write: ' + obj_sensor.common.write + ' | role: ' + obj_sensor.common.role + ' | Funktion: ' + Funktion);
@@ -1619,8 +1595,7 @@ function parseObjects(objs, cb) {
                                     },
                                     native: {
                                         Name: objs[i].Name,
-                                        Attribute: 'state_media',
-                                        ts: Date.now()
+                                        Attribute: 'state_media'
                                     }
                                 };
                                 (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' > ' + obj_media._id + ' = ' + valMedia + ' | type: ' + obj_media.common.type + ' | read: ' + obj_media.common.read + ' | write: ' + obj_media.common.write + ' | role: ' + obj_media.common.role + ' | Funktion: ' + Funktion);
@@ -1633,8 +1608,6 @@ function parseObjects(objs, cb) {
                                 });
                             }
                         }
-
-                        obj.native.ts = Date.now();
                         // special, because error on auto detect
                         if (objs[i].Internals.TYPE === 'LGTV_IP12' && attr === 'power') {
                             obj.common.type = 'string';
@@ -1672,7 +1645,7 @@ function parseObjects(objs, cb) {
     }
     firstRun = false;
     debug = false;
-    processQueue();    //===============================================================
+    processQueue();
     adapter.log.debug('start [syncObjects]');
     adapter.log.debug('start [syncRooms]');
     adapter.log.debug('start [syncFunctions]');
@@ -1689,7 +1662,6 @@ function setFunction(id, Funktion, name) {
     let fff = Funktion.split(',');
     for (let f = 0; f < fff.length; f++) {
         fff[f] = fff[f].trim();
-        //logCheckObject && adapter.log.info('> function = ' + fff[f] + ' | ' + id);
         functions[fff[f]] = functions[fff[f]] || [];
         functions[fff[f]].push(id);
     }
@@ -1760,7 +1732,6 @@ function convertBol0(val) {
         return f;
     return val;
 }
-
 function convertValueBol(val) {
     if (val === '0')
         return true;
@@ -1797,9 +1768,7 @@ function convertValueBol(val) {
         return f;
     return val;
 }
-
 function convertFhemValue(val) {
-//val = val.trim();
     if (val === 'true')
         return true;
     if (val === 'false')
@@ -1812,10 +1781,6 @@ function convertFhemValue(val) {
         return false;
     if (val.indexOf('dim') !== -1)
         return true;
-    //const f = parseFloat(val, 10);
-    // //adapter.log.warn('[convertFhemValue] ' + val + ' ' + f + ' ' + typeof f);
-    //if (f === Number(val))
-    //    return f;
     return val;
 }
 function convertFhemStateBoolean(val) {
@@ -1985,7 +1950,6 @@ function writeValue(id, val, cb) {
         cb && cb();
     });
 }
-
 function requestMeta(name, attr, value, event, cb) {
     adapter.log.info('check channel ' + name + ' > jsonlist2 ' + name);
     // send command JsonList2
@@ -2027,9 +1991,8 @@ function deleteChannel(name, cb) {
 }
 function deleteObject(name, cb) {
     adapter.log.debug('[deleteObject] ' + name);
-    //adapter.log.warn(name);
     let parts = name.split('.');
-    debugNAME.indexOf(parts[2]) !== -1 && adapter.log.info('[' + parts[2] + '] delete objekt "' + name + '"');
+    debugNAME.indexOf(parts[2]) !== -1 && adapter.log.info('[' + parts[2] + '] delete state "' + name + '"');
     adapter.delObject(name, err => {
         if (err && err !== 'Not exists') {
             adapter.log.error('[deleteObject] ' + name + ' ' + err);
@@ -2049,20 +2012,11 @@ function deleteState(name, cb) {
 }
 function unusedObjects(check, cb) {
     adapter.log.debug('[unusedObjects] start ' + check);
-    if (check === '*')
-        adapter.log.info('check delete unused objects');
-
     if (!deleteUnusedObjects) {
-        if (check === '*') {
-            adapter.log.info('> info.Configurations.deleteUnusedObjecs not true!');
-        } else {
-            adapter.log.info('info.Configurations.deleteUnusedObjecs ' + check + ' not true!');
-        }
+        adapter.log.info('check delete unused objects (' + check + ') > no automatically delete - info.Configurations.deleteUnusedObjecs not true!');
         cb && cb();
         return;
     }
-
-    //let channel = 'no';
     adapter.getStates(check, (err, states) => {
         if (err) {
             adapter.log.error('[unusedObjects] ' + err);
@@ -2071,57 +2025,33 @@ function unusedObjects(check, cb) {
                 if (!states.hasOwnProperty(id)) {
                     continue;
                 }
-                adapter.getObject(id, (err, obj) => {
-                    if (err) {
-                        adapter.log.error('[unusedObjects] ' + err);
-                    } else {
-                        if (!obj) {
-                            return;
-                        }
-                        const channelS = obj._id.split('.');
-                        if (channelS[2] === 'info') {
-                            return;
-                        }
-                        if (check === '*') {
-                            if (obj.native.ts < ts_update || !obj.native.ts) {
-                                if (channelS[3] === 'Internals' && channelS[4] === 'TYPE') {
-                                    queueL.push({
-                                        command: 'delChannel',
-                                        name: channelS[2]
-                                    });
-                                }
-                                queueL.push({
-                                    command: 'delObject',
-                                    name: obj._id
-                                });
-                                queueL.push({
-                                    command: 'delState',
-                                    name: obj._id
-                                });
-                                processQueueL();
-                            }
-                        } else {
-                            if (channelS[3] === 'Internals' && channelS[4] === 'TYPE') {
-                                queueL.push({
-                                    command: 'delChannel',
-                                    name: channelS[2]
-                                });
-                            }
-                            delete fhemObjects[obj._id];
-                            queueL.push({
-                                command: 'delObject',
-                                name: obj._id
-                            });
-                            queueL.push({
-                                command: 'delState',
-                                name: obj._id
-                            });
-                            processQueueL();
-                        }
+                const channelS = id.split('.');
+                if (channelS[2] === 'info') {
+                    continue;
+                }
+                if (check !== '*')
+                    delete fhemObjects[id];
+                if (!fhemObjects[id]) {
+                    if (channelS[3] === 'Internals' && channelS[4] === 'TYPE') {
+                        queueL.push({
+                            command: 'delChannel',
+                            name: channelS[2]
+                        });
                     }
-                });
+                    queueL.push({
+                        command: 'delObject',
+                        name: id
+                    });
+                    queueL.push({
+                        command: 'delState',
+                        name: id
+                    });
+                    //processQueueL();
+                }
             }
         }
+        adapter.log.info('check delete unused objects (' + check + ') > delete ' + Object.keys(queueL).length + ' channels, objects or states');
+        processQueueL();
         adapter.log.debug('[unusedObjects] end');
         cb && cb();
     });
@@ -2137,7 +2067,6 @@ function resyncFHEM() {
     startSync();
 }
 function processQueue() {
-    //adapter.log.debug ('[processQueue]');
     if (telnetOut.isCommandRunning() || !queue.length) {
         return;
     }
@@ -2161,6 +2090,7 @@ function processQueue() {
 function processQueueL() {
     if (!queueL.length) {
         adapter.log.debug('[processQueueL] ende');
+        //cb();
         return;
     }
     const command = queueL.shift();
@@ -2206,7 +2136,6 @@ function main() {
     telnetOut.on('ready', () => {
         adapter.log.debug('[main] telnetOut.on ready');
         if (!connected) {
-            //connected = true;
             myObjects(() =>
                 getSettings(() =>
                     getConfigurations(() =>
