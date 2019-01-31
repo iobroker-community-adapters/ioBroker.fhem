@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '30.01.19';
+const buildDate = '31.01.19';
 //Debug
 let debugNAME = [];
 //Configuratios
@@ -34,7 +34,7 @@ let autoConfigFHEM = false;
 let autoSmartName = true;
 let oldState = false;
 let deleteUnusedObjects = true;
-let onlySyncNAME;
+let onlySyncNAME = [];
 const onlySyncRoomS = ['ioBroker', 'ioB_OUT'];
 let onlySyncRoom = [];
 const ignoreObjectsInternalsTYPES = [];
@@ -790,7 +790,8 @@ function getConfigurations(cb) {
     ignorePossibleSets = ignorePossibleSetsS.slice();
     getConfig('info.Configurations.ignorePossibleSets', ignorePossibleSets, value => {
     });
-    getSetting('info.Configurations.onlySyncNAME', onlySyncNAME, value => onlySyncNAME = value);
+    getConfig('info.Configurations.onlySyncNAME', onlySyncNAME, value => {
+    });
     onlySyncRoom = onlySyncRoomS.slice();
     getConfig('info.Configurations.onlySyncRoom', onlySyncRoom, value => {
         adapter.log.debug('[getConfigurations] end');
@@ -828,7 +829,7 @@ function startSync(cb) {
     ts_update = Date.now();
     adapter.log.debug('[startSync] start ts_update = ' + ts_update + ' connected = ' + connected);
     let send = 'jsonlist2';
-    if (onlySyncNAME) {
+    if (onlySyncNAME.length) {
         send = send + ' ' + onlySyncNAME + ',send2ioB';
         adapter.log.info('> only jsonlist2 ' + onlySyncNAME + ' - ' + adapter.namespace + '.info.Configurations.onlySyncNAME (' + onlySyncNAME + ')');
     }
@@ -1014,7 +1015,7 @@ function parseObjects(objs, cb) {
                 return;
             }
             (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' check FHEM Device');
-            if (onlySyncNAME && onlySyncNAME.indexOf(objs[i].Internals.NAME) === -1 && objs[i].Internals.NAME !== 'send2ioB') {
+            if (onlySyncNAME.length && onlySyncNAME.indexOf(objs[i].Internals.NAME) === -1 && objs[i].Internals.NAME !== 'send2ioB') {         //==========================================
                 logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | NAME <> ' + onlySyncNAME + ' | ' + ' ' + (i + 1) + '/' + objs.length);
                 (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - not included in ' + adapter.namespace + '.info.Config.onlySyncNAME');
                 continue;
@@ -2246,3 +2247,4 @@ function main() {
         }
     });
 }
+
