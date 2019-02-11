@@ -1,4 +1,4 @@
----
+----
 title:       "FHEM-Adapter"
 lastChanged: "12.02.2019"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
@@ -32,10 +32,10 @@ Ebenso ist eine Sychronisation ausgewählter Objekte aus iobroker nach FHEM mög
 | 5  [Instanz](#instanz)              |
 | 6  [Objekte des Adapters](#objekte)           |
 | 6.1 [Objekt HUEDevice1 (Bsp)](#objekte_c)  |
-| 6.1.1 [Reading state aus FHEM](#objekte_c_r)  |
+| 6.1.1 [Readings:state aus FHEM](#objekte_c_r)  |
 | 6.1.2 [Attributes](#objekte_c_a)  |
 | 6.1.3 [Internals](#objekte_c_i)  | 
-| 6.1.4 [readingdGroup](#objekte_c_r)  | 
+| 6.1.4 [readingdGroup](#objekte_c_rg)  | 
 | 6.2 [Objekte info](#objekte_i)      |
 | 6.2.1 [Commands](#info_commands)      |
 | 6.2.2 [Configurations](#info_configurations)      |
@@ -248,7 +248,7 @@ Objekt                    | Zugriff | Bescheibung
 
 <a name="objekte_c_r"/>
 
-#### 6.1.1 Reading state aus FHEM
+#### 6.1.1 Readings:state aus FHEM
 
 > Das Reading state hat in FHEM unterschiedliche Zustände/Funktionen. Bei Bedarf werden deshalb weitere Objekte:state in Abhängigkeit von state FHEM automatisch hinzugefügt. Diese zusätzliche Objekte:state werden jedoch nicht in FHEM angelegt. Eine Zustandsänderung von fhem.x.Device.state oder fhem.x.Device.state_switch wird an FHEM übertragen.
 
@@ -304,11 +304,22 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;&emsp;**NAME**              |  R  | Info zB zur Anzeige in VIS
 &emsp;&emsp;&emsp;**TYPE**              |  R  | Info zB zur Anzeige in VIS
 
-<a name="objekte_c_r"/>
+<a name="objekte_c_rg"/>
 
 #### 6.1.4 readingsGroup
-> readingsGroup's werden aus FHEM übertragen und stehen als Objekt (html) zur Verfügung.
+> readingsGroup's werden bei jeder Änderung aus FHEM übertragen und stehen als Objekt/State (html) zur Verfügung.
+> Bei Start Adapter können Inhalte der ReadingsGroups nicht angelegt werden und wereden auch nicht automatisch gelöscht
 
+Objekt                    | Zugriff | Bescheibung | Wert
+:-------------------------|:-------:|:------------|:---------:
+**[fhem.o](#objekte)**                      |     | Name der ersten *Instanz* des FHEM Adapters |
+&emsp;**Räume**          |     | Übersicht Räume (Beispiel) |
+&emsp;&emsp;**[Attributes](#objekte_c_a)**  |     | Mögliche Attribute: alias, room, comment + info.Configurations.allowedAttributes |
+&emsp;&emsp;**[Internals](objekte_c_i)**   |     | Mögliche Internals: NAME, TYPE + info.Configurations.allowedInternals |
+&emsp;&emsp;**readingsGroup**               |     | Definition unter Internals:DEF|
+&emsp;&emsp;&emsp;**Wohnzimmer**            |  R  | Info zB zur Anzeige in VIS |`<html>off</html>`
+&emsp;&emsp;&emsp;**Schlafzimmer**          |  R  | Info zB zur Anzeige in VIS |`<html>on</html>`
+&emsp;&emsp;&emsp;**Küche**                 |  R  | Info zB zur Anzeige in VIS |`<html>off</html>`
 
 <a name="objekte_i"/>
 
