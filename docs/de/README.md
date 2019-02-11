@@ -34,7 +34,8 @@ Ebenso ist eine Sychronisation ausgewählter Objekte aus iobroker nach FHEM mög
 | 6.1 [Objekt HUEDevice1 (Bsp)](#objekte_c)  |
 | 6.1.1 [Reading state aus FHEM](#objekte_c_r)  |
 | 6.1.2 [Attributes](#objekte_c_a)  |
-| 6.1.3 [Internals](#objekte_c_i)  |
+| 6.1.3 [Internals](#objekte_c_i)  | 
+| 6.1.4 [readingdGroup](#objekte_c_r)  | 
 | 6.2 [Objekte info](#objekte_i)      |
 | 6.2.1 [Commands](#info_commands)      |
 | 6.2.2 [Configurations](#info_configurations)      |
@@ -42,8 +43,10 @@ Ebenso ist eine Sychronisation ausgewählter Objekte aus iobroker nach FHEM mög
 | 6.2.4 [Info](#info_info)      |
 | 6.2.5 [Settings](#info_settings)      |
 | 7  [Besonderheiten](#besonderheiten)|
-| 7.1 [Übersicht Rollen](#besonderheiten_rollen)|
-| 7.2 [Übersicht Funktionen](#besonderheiten_funktionen)|
+| 7.1 [FHEM Raum ioB_System](#besonderheiten_fhem_ioB_System)|
+| 7.2 [FHEM Raum ioB_IN](#besonderheiten_fhem_ioB_IN))|
+| 7.3 [Übersicht Rollen](#besonderheiten_rollen)|
+| 7.4 [Übersicht Funktionen](#besonderheiten_funktionen)|
 | 8  [FAQ](#faq)                      |
 | 9  [Beispiele](#beispiele)          |
 | 9.1  [Adapter Material UI](#beispiele_material)          |
@@ -301,6 +304,11 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;&emsp;**NAME**              |  R  | Info zB zur Anzeige in VIS
 &emsp;&emsp;&emsp;**TYPE**              |  R  | Info zB zur Anzeige in VIS
 
+<a name="objekte_c_r"/>
+
+#### 6.1.4 readingsGroup
+> readingsGroup's werden aus FHEM übertragen und stehen als Objekt (html) zur Verfügung.
+
 
 <a name="objekte_i"/>
 
@@ -368,7 +376,6 @@ Objekt                                           | Zugriff | Bescheibung | Wert
 &emsp;&emsp;&emsp;**autoFunction**                |  RW | Funktionen werden bei Neustart abhängig von Version FHEM Adaper vergeben (default=`false`) Für Adapter `Material UI`wird `true`empfohlen. Bei `false` können Funktionen selber vergeben werden und es erfolgt keine Änderung durch den Adapter | true/false
 &emsp;&emsp;&emsp;**autoRole**                    |  RW | Rollen werden bei Neustart abhängig von Version FHEM Adaper vergeben  (default=`false`) Für Adapter `Material UI` wird `true`empfohlen. Bei `false` können Rollen selber vergeben werden und es erfolgt keine Änderung durch den Adapter. | true/false
 &emsp;&emsp;&emsp;**autoSamrtName**               |  RW | Automatische Anlage Smart Geräte für Adapter Cloud (default=`true`) Nur Instanz fhem.0! | true/false
-&emsp;&emsp;&emsp;**deleteUnusedObjects**               |  RW | Automatisches Löschen nicht synchronisierte Objekte (default=`true`)| true/false
 &emsp;&emsp;&emsp;**ignoreObjectsAttributesroom** |  RW | Kein Sync von Modulen mit Attributes:room | room oder room1,room2 usw
 &emsp;&emsp;&emsp;**ignoreObjectsInternalsNAME**  |  RW | Kein Sync von Modulen mit Internals:NAME (default=`info`) | NAME oder NAME1,NAME2 usw
 &emsp;&emsp;&emsp;**ignoreObjectsInternalsTYPE**  |  RW | Kein Sync von Modulen mit Internals:TYPE | TYPE oder TYPE1,TYPE2 usw
@@ -420,7 +427,8 @@ Objekt                    | Zugriff | Bescheibung | Wert
 &emsp;&emsp;**[Debug](#info_debug)**                    |     | Debug Modus
 &emsp;&emsp;**Info**                                    |     | Info
 &emsp;&emsp;&emsp;**buildDate**                         |  R  | Datum Version | 18.10.18
-&emsp;&emsp;&emsp;**numberDevicesFHEM**                 |  R  | Anzahl Module in FHEM | Zahl
+&emsp;&emsp;&emsp;**numberDevicesFHEM**                 |  R  | Anzahl Device(s) FHEM (jsonlist2) | Zahl
+&emsp;&emsp;&emsp;**numberDevicesFHEMsync**             |  R  | Anzahl Device(s) FHEM synchronisiert | Zahl
 &emsp;&emsp;&emsp;**numberObjectsIOBin**                |  R  | Anzahl Objekte aus FHEM | Zahl
 &emsp;&emsp;&emsp;**numberObjectsIOBout**               |  R  | Anzahl Objekte zu FHEM übertragen | Zahl
 &emsp;&emsp;&emsp;**numberObjectsIOBoutSub**            |  R  | Mögliche Anzahl Objekte zu FHEM aus fhem.x.info.Configurations.allowedIOBin | Zahl
@@ -439,7 +447,7 @@ Objekt                    | Zugriff | Bescheibung | Wert
 
 Objekt                    | Zugriff | Bescheibung | Wert
 :-------------------------|:-------:|:------------|:-----:
-**[fhem.o](#objekte)**                                 |     | Name der ersten *Instanz* des FHEM Adapters
+**[fhem.0](#objekte)**                                 |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[info](#objekte_i)**                           |     | Information und mehr
 &emsp;&emsp;**[Commands](#info_commands)**             |     | Befehlszeile FHEM
 &emsp;&emsp;**[Configurations](#info_configurations)** |     | 
@@ -464,9 +472,40 @@ Objekt                    | Zugriff | Bescheibung | Wert
 
 > Zusätzliche Funktionen dieses Adapter
 
+<a name="besonderheiten_fhem_ioB_System"/>
+ 
+### 7.1 FHEM Raum ioB_System
+> Automatische Anlage von folgenden DUMMY Modulen je Instanz (x)
+
+NAME                        | TYP    | Readings:state | Beispiel
+:---------------------------|:------:|:--------------:|:--------------
+fhem.x.alive                | dummy  | on=Verbindung OK off=Verbindung nOK |             
+fhem.x.send2ioB             | dummy  | Objekt Name und Wert              | alexa2.x.Echo-Devices.xxxxxxxxx.Commands.speak DeinText = Aus FHEM Ausgabe DeinText auf echo Device
+
+<a name="besonderheiten_fhem_ioB_IN"/>
+ 
+### 7.2 FHEM Raum ioB_IN
+> Automatische Anlage von DUMMY Modulen nach Definition unter fhem.x.info.Configurations.allowedIOBin.
+> Ermöglicht den Übertrag von Objekten/States aus IoBroker zu FHEM
+
+Beispiel: fhem.x.info.Configurations.allowedIOBin = `system.adapter.fhem.x` erzeugt folgende Dummy Module
+
+NAME                        | TYP    | Readings:state 
+:---------------------------|:------:|:--------------:
+system.adapter.fhem.x.alive | dummy  | true               
+system.adapter.fhem.x.connected | dummy  | true               
+system.adapter.fhem.x.cpu| dummy  | 0,80                
+system.adapter.fhem.x.cputime | dummy  | 0.0111               
+system.adapter.fhem.x.inputCount | dummy  | 30               
+system.adapter.fhem.x.memHeapTotal| dummy  | 10.53               
+system.adapter.fhem.1.memHeapUsed| dummy  | 7.89               
+system.adapter.fhem.1.memRss| dummy  | 7.89               
+system.adapter.fhem.1.outputCount| dummy  | 7.89               
+system.adapter.fhem.1.uptime| dummy  | 900               
+
 <a name="besonderheiten_rollen"/>
 
-### 7.1 Übersicht Rollen
+### 7.3 Übersicht Rollen
 > Rollen
 
 > Der FHEM Adapter ordnet folgende Rollen automatisch einem state-Objekt zu.
@@ -479,11 +518,13 @@ button.pause             | W  | Logikwert    |		|		|
 button.play              | W  | Logikwert    |		|		|
 button.prev              | W  | Logikwert    |		|		|
 button.stop              | W  | Logikwert    |		|		|
+html                     | R  | Zeichenkette |		|		|
 indicator                | R  | Logikwert    |		|		|
-indicator.indicator.lowbat| R  | Logikwert    |		|		|
+indicator.indicator.lowbat| R | Logikwert   |		|		|
 indicator.reachable      | R  | Logikwert    |		|		|
 indicator.unreach        | R  | Logikwert    |		|		|
 level                    | RW | Zahl         |		|		|
+level.blind              | RW | Zahl         |	  0	|	100	| %
 level.color.rgb          | RW | Zeichenkette |		|		|
 level.color.saturation   | RW | Zahl         |    0 |   254 |
 level.color.temperature  | RW | Zahl         | 2000 |  6500 |
@@ -524,13 +565,14 @@ gemischt     |
 
 <a name="besonderheiten_funktionen"/>
  
-### 7.2 Übersicht Funktionen
+### 7.4 Übersicht Funktionen
 > Funktionen
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
 Funktion                    | TYPE  | Rolle
 :------------------------|:----------:|:-----------
+blind                    |    |  
 switch                   |    | switch
 temperature              |    | value.temperature
 audio                    |  SONOSPLAYER  |
@@ -670,6 +712,22 @@ FHEM  | do |Rolle                |Art | Read | Write | min | max |
 OK    | use | switch.light        | Logikwert | true | true | x | x 
 no    | opt | switch.light           | Logikwert | true | false | x | x 
 
+#### Dimmer 
+
+![alt-Objektename](media/mat_dimmer.PNG "update_github")<span style="color:grey">  
+*Ansicht Material UI*</span>
+
+![alt-Objektename](media/mat_dimmer_ob.PNG "update_github")<span style="color:grey">  
+*Objekte*</span>
+
+FHEM  | do |Rolle                |Art | Read | Write | min | max |
+:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
+OK    | use | level.dimmer         | Zahl | true | true | Zahl | Zahl 
+no    | or  | level.brightness     | Zahl | true | true | Zahl | Zahl 
+no    | opt | value.dimmer         | Zahl | true | x | x | x 
+OK    | opt | switch.light         | Logikwert | true | true | x | x 
+no    | opt | switch.light         | Logikwert | true | false | x | x 
+
 #### Socket / Steckdose
 ![alt-Objektename](media/mat_socket.PNG "update_github")<span style="color:grey">  
 *Ansicht Material UI*</span>
@@ -685,21 +743,6 @@ no    | or  | state                  | Logikwert | true | true | x | x
 no    | opt | state                  | Logikwert | true | false | x | x 
 no    | opt | state.active           | Logikwert | true | false | x | x 
 
-#### Dimmer 
-
-![alt-Objektename](media/mat_dimmer.PNG "update_github")<span style="color:grey">  
-*Ansicht Material UI*</span>
-
-![alt-Objektename](media/mat_dimmer_ob.PNG "update_github")<span style="color:grey">  
-*Objekte*</span>
-
-FHEM  | do |Rolle                |Art | Read | Write | min | max |
-:----:|:----:|:-------------------|:--:|:---:|:------:|:---:|:---:|
-OK    | use | level.dimmer         | Zahl | true | true | x | x 
-no    | or  | level.brightness     | Zahl | true | true | x | x 
-no    | opt | value.dimmer         | Zahl | true | x | x | x 
-OK    | opt | switch.light         | Logikwert | true | true | x | x 
-no    | opt | switch.light         | Logikwert | true | false | x | x 
 
 #### Volume / Lautstärke
 
