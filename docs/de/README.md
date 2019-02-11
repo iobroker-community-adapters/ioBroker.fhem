@@ -1,6 +1,6 @@
 ---
 title:       "FHEM-Adapter"
-lastChanged: "15.01.2019"
+lastChanged: "12.02.2019"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
 ---)
 
