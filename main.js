@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '11.02.19';
+const buildDate = '15.02.19';
 //Debug
 let debugNAME = [];
 //Configuratios
@@ -775,13 +775,14 @@ function getSettings(cb) {
     });
 }
 function getConfig(id, config, cb) {
-    adapter.log.debug('[getConfig] ' + id + config);
+    adapter.log.debug('[getConfig] ' + id + ' (' + config+')');
     adapter.getObject(id, (err, objO) => {
         err && adapter.log.error('[getConfig] ' + err);
         if (objO) {
             adapter.getState(id, (err, obj) => {
                 err && adapter.log.error('[getConfig] ' + err);
-                if (obj) {
+                adapter.log.debug('[getConfig] getState ' + id + ': ' + JSON.stringify(obj));
+                if (obj && obj.val) {
                     const part = obj.val.split(",");
                     if (part[0]) {
                         for (const i in part) {
