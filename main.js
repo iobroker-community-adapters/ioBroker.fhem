@@ -24,7 +24,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '15.02.19';
+const buildDate = '16.02.19';
 //Debug
 let debugNAME = [];
 //Configuratios
@@ -310,8 +310,7 @@ function parseEvent(event) {
                 val = event.substring(parts[0].length + parts[1].length + 2);
             }
             //send2ioB ?
-            if (parts[1] === 'send2ioB' || parts[1] === adapter.namespace + '.send2ioB') {
-                //adapter.log.warn('parts[2] ' + parts[2]);
+            if (parts[1] === adapter.namespace + '.send2ioB') {
                 adapter.getForeignObject(parts[2], function (err, obj) {
                     if (err) {
                         adapter.log.error('error:' + err);
@@ -321,10 +320,8 @@ function parseEvent(event) {
                         adapter.log.warn('event FHEM "' + event + '" > object "' + parts[2] + '" common.write not true');
                     } else if (obj && obj.common.write) {
                         let setState = event.substr(parts[0].length + parts[1].length + parts[2].length + 2);
-                        // welches LOG noch ergänzen!!
-                        adapter.log.info('event FHEM "' + event + '" > ' + parts[2] + ' = ' + setState);
-                        //adapter.setForeignState(parts[2], setState, false);
-                        adapter.setState(parts[2], setState, false);
+                        logEventFHEMstate && adapter.log.info('event FHEM(s) "' + event + '" > ' + parts[2] + ' (' + setState + ')');
+                        adapter.setForeignState(parts[2], setState, false);
                     }
                 });
                 return;
@@ -396,8 +393,9 @@ function parseEvent(event) {
                     typ = 'reading';
                     adapter.log.debug('(2) ' + event + ' typ = ' + typ + ' id = ' + id + ' val = ' + val);
                 }
+                //readingsGroup?
                 if (!fhemObjects[id]) {
-                    if (parts[0] === 'readingsGroup') {  //======================================================readingsGroup
+                    if (parts[0] === 'readingsGroup') {
                         parts[2] = parts[2].substr(0, parts[2].length - 1);
                         let name = adapter.namespace + '.' + parts[1].replace(/\./g, '_') + '.readingsGroup.' + parts[2].replace(/\./g, '_');
                         debugNAME.indexOf(parts[1]) !== -1 && adapter.log.info('[' + parts[1] + '] detect readingsGroup "' + parts[2] + '" > check object "' + name + '"');
@@ -903,33 +901,23 @@ function startSync(cb) {
                         unusedObjects('*', (cb) => {
                             adapter.log.info('STEP 10 ==== check/create FHEM dummy Devices in room ioB_System');
                             if (fhemObjects[adapter.namespace + '.send2ioB']) {
-                                adapter.log.info('> dummy send2ioB OK');
-                            } else {
-                                adapter.log.warn('> dummy send2ioB > not found - create automatically');
+                                adapter.log.warn('> please use ' + adapter.namespace + '.send2ioB instead of send2ioB > delete send2ioB');
                                 queue.push({
                                     command: 'write',
                                     id: adapter.namespace + '.info.Commands.sendFHEM',
-                                    val: 'define send2ioB dummy;attr send2ioB alias send2ioB;attr send2ioB room ioB_System;attr send2ioB comment Auto-created by ioBroker'
+                                    val: 'delete send2ioB'
                                 });
                             }
                             let newID;
                             newID = adapter.namespace + '.send2ioB';
-                            //if (fhemObjects[adapter.namespace+newID.replace(/\./g, '_')]) {
-                            //    adapter.log.info('> ' + newID + ' OK');
-                            // } else {
-                            //     adapter.log.warn('> ' + newID + ' > not found!');
-                            adapter.log.info('> dummy ' + newID);
+                            adapter.log.info('> dummy ' + newID + ' - use to set objects/states of ioBroker from FHEM');
                             queue.push({
                                 command: 'write',
                                 id: adapter.namespace + '.info.Commands.sendFHEM',
                                 val: 'define ' + newID + ' dummy;attr ' + newID + ' alias ' + newID + ';attr ' + newID + ' room ioB_System;attr ' + newID + ' comment Auto-created by ioBroker ' + adapter.namespace
                             });
                             newID = adapter.namespace + '.alive';
-                            //if (fhemObjects[adapter.namespace+newID.replace(/\./g, '_')]) {
-                            //    adapter.log.info('> ' + newID + ' OK');
-                            // } else {
-                            //     adapter.log.warn('> ' + newID + ' > not found!');
-                            adapter.log.info('> dummy ' + newID);
+                            adapter.log.info('> dummy ' + newID + ' - use to check alive FHEM Adapter in FHEM');
                             queue.push({
                                 command: 'write',
                                 id: adapter.namespace + '.info.Commands.sendFHEM',
@@ -954,7 +942,8 @@ function startSync(cb) {
                                             end++;
                                             if (end === Object.keys(obj).length) {
                                                 setAlive();
-                                                adapter.log.info('> activate setAlive');
+                                                adapter.log.info('> activate setAlive all 5 minutes');
+                                                adapter.log.warn('> more info FHEM Adapter visit https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md')
                                                 adapter.log.info('END ===== Synchronised FHEM :-)');
                                                 synchro = false;
                                                 firstRun = false;
@@ -1079,7 +1068,6 @@ function parseObjects(objs, cb) {
     }
     for (let i = 0; i < objs.length; i++) {
         const debugN = '[' + objs[i].Name + ']';
-        //let moreID = '';
         try {
             if (resync) {
                 adapter.log.debug('[parseObjects] stop resync');
@@ -1368,7 +1356,6 @@ function parseObjects(objs, cb) {
                             states = false;
                             const _slider = parts[1].split(',');
                             obj.common.type = 'number';
-                            //obj.common.role = 'level';
                             obj.common.role = 'level';
                             obj.common.min = parseInt(_slider[1]);
                             obj.common.max = parseInt(_slider[3]);
