@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "fhem",
-        "version":                  "1.2",
+        "version":                  "1.2.0",
         "title":                    "FHEM connection",
         "desc":                     {
            "en": "FHEM",
@@ -9,7 +9,7 @@
            "ru": "FHEM"
 	    },
         "news": {
-	    "1.2" :{
+	    "1.2.0" :{
                 "en": "Several fixes and changes",
                 "de": "Mehrere Korrekturen und Änderungen",
                 "ru": "Несколько исправлений и изменений",
