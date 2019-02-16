@@ -775,7 +775,7 @@ function getSettings(cb) {
     });
 }
 function getConfig(id, config, cb) {
-    adapter.log.debug('[getConfig] ' + id + ' (' + config+')');
+    adapter.log.debug('[getConfig] ' + id + ' (' + config + ')');
     adapter.getObject(id, (err, objO) => {
         err && adapter.log.error('[getConfig] ' + err);
         if (objO) {
