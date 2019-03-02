@@ -12,7 +12,7 @@
       "email": "dogafox@gmail.com"
     }
   ],
-  "homepage": "https://github.com/ioBroker/ioBroker.fhem",
+  "homepage": "https://github.com/iobroker-community-adapters/ioBroker.fhem",
   "license": "MIT",
   "keywords": [
     "ioBroker",
@@ -21,7 +21,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ioBroker/ioBroker.fhem"
+    "url": "https://github.com/iobroker-community-adapters/ioBroker.fhem"
   },
   "dependencies": {},
   "devDependencies": {
@@ -34,7 +34,7 @@
     "test": "node node_modules/mocha/bin/mocha --exit"
   },
   "bugs": {
-    "url": "https://github.com/ioBroker/ioBroker.fhem/issues"
+    "url": "https://github.com/iobroker-community-adapters/ioBroker.fhem/issues"
   },
   "readmeFilename": "README.md"
 }
