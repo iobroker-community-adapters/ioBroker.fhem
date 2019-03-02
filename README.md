@@ -1,3 +1,5 @@
+# Moved to https://github.com/iobroker-community-adapters/ioBroker.fhem
+
 ![Logo](admin/fhem.png)
 # ioBroker.fhem
 =================
