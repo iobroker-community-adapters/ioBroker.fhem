@@ -144,15 +144,16 @@
             "ru": "initial checkin"
           }
         },
-		"localLink":                "http://%host%:8083",
+        "license": "MIT",
+	"localLink":                "http://%host%:8083",
         "platform":                 "Javascript/Node.js",
         "mode":                     "daemon",
         "icon":                     "fhem.png",
         "enabled":                  true,
         "materialize":              true,
-	    "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.fhem/master/admin/fhem.png",
+	    "extIcon":                  "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.fhem/master/admin/fhem.png",
 	    "keywords":                 ["FHEM"],
-        "readme":                   "https://github.com/ioBroker/ioBroker.fhem/blob/master/README.md",
+        "readme":                   "https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/README.md",
 	    "loglevel":                 "info",
         "type":                     "iot-systems",
 	"authors": [

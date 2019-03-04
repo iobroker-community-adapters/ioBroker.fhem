@@ -3,7 +3,7 @@
 /* jslint node: true */
 
 'use strict';
-const utils = require(__dirname + '/lib/utils');
+const utils = require('@iobroker/adapter-core');
 const Telnet = require(__dirname + '/lib/telnet');
 const adapter = utils.Adapter('fhem');
 // Telnet sessions
