@@ -144,7 +144,8 @@
             "ru": "initial checkin"
           }
         },
-		"localLink":                "http://%host%:8083",
+        "license": "MIT",
+	"localLink":                "http://%host%:8083",
         "platform":                 "Javascript/Node.js",
         "mode":                     "daemon",
         "icon":                     "fhem.png",
