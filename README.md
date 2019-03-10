@@ -2,7 +2,7 @@
 # ioBroker.fhem
 =================
 
-[![NPM version](http://img.shields.io/npm/v/iobroker.fhem.svg)](https://www.npmjs.com/package/iobroker.fhem)
+![Number of Installations](http://iobroker.live/badges/fhem-installed.svg) ![Number of Installations](http://iobroker.live/badges/fhem-stable.svg) [![NPM version](http://img.shields.io/npm/v/iobroker.fhem.svg)](https://www.npmjs.com/package/iobroker.fhem)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.fhem.svg)](https://www.npmjs.com/package/iobroker.fhem)
 
 [![NPM](https://nodei.co/npm/iobroker.fhem.png?downloads=true)](https://nodei.co/npm/iobroker.fhem/)
