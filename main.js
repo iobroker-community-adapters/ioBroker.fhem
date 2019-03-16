@@ -15,6 +15,8 @@ const queue = [];
 const queueL = [];
 let fhemIN = {};
 let fhemINs = {};
+let fhemIgnore = {};
+
 const fhemObjects = {};
 const functions = {};
 let lastNameQueue;
@@ -24,7 +26,8 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '16.02.19';
+const buildDate = '16.03.19';
+const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 //Debug
 let debugNAME = [];
 //Configuratios
@@ -99,7 +102,7 @@ adapter.on('stateChange', (id, state) => {
     if (fhemINs[idFHEM]) {
         adapter.log.debug('[stateChange] ' + id + ' ' + JSON.stringify(state));
         if (!fhemIN[idFHEM]) {
-            queue.push({
+            /* 19.03 queue.push({
                 command: 'write',
                 id: adapter.namespace + '.info.Commands.sendFHEM',
                 val: 'define ' + idFHEM + ' dummy;attr ' + idFHEM + ' alias ' + idFHEM
@@ -110,16 +113,22 @@ adapter.on('stateChange', (id, state) => {
                 id: adapter.namespace + '.info.Commands.sendFHEM',
                 val: 'attr ' + idFHEM + ' room ioB_IN;attr ' + idFHEM + ' comment Auto-created by ioBroker ' + adapter.namespace + ';set ' + idFHEM + ' ' + state.val
             });
-            processQueue();
+            processQueue(); */
+            sendFHEM('define ' + idFHEM + ' dummy');
+            sendFHEM('attr ' + idFHEM + ' alias ' + idFHEM);
+            sendFHEM('attr ' + idFHEM + ' room ioB_IN');
+            sendFHEM('attr ' + idFHEM + ' comment Auto-created by ioBroker ' + adapter.namespace);
+            sendFHEM('set ' + idFHEM + ' ' + state.val);
             fhemIN[idFHEM] = {id: idFHEM};
             adapter.setState('info.Info.numberObjectsIOBout', Object.keys(fhemIN).length, true);
         } else {
-            queue.push({
+            /* 19.03.19queue.push({
                 command: 'write',
                 id: adapter.namespace + '.info.Commands.sendFHEM',
                 val: 'set ' + idFHEM + ' ' + state.val
             });
-            processQueue();
+            processQueue(); */
+            sendFHEM('set ' + idFHEM + ' ' + state.val);
         }
     }
     // you can use the ack flag to detect if it is status (true) or command (false)
@@ -902,29 +911,44 @@ function startSync(cb) {
                             adapter.log.info('STEP 10 ==== check/create FHEM dummy Devices in room ioB_System');
                             if (fhemObjects[adapter.namespace + '.send2ioB']) {
                                 adapter.log.warn('> please use ' + adapter.namespace + '.send2ioB instead of send2ioB > delete send2ioB');
-                                queue.push({
-                                    command: 'write',
-                                    id: adapter.namespace + '.info.Commands.sendFHEM',
-                                    val: 'delete send2ioB'
-                                });
+                                /*16.03.19 queue.push({
+                                 command: 'write',
+                                 id: adapter.namespace + '.info.Commands.sendFHEM',
+                                 val: 'delete send2ioB'
+                                 });  */
+                                sendFHEM('delete send2ioB');
                             }
                             let newID;
                             newID = adapter.namespace + '.send2ioB';
                             adapter.log.info('> dummy ' + newID + ' - use to set objects/states of ioBroker from FHEM');
-                            queue.push({
-                                command: 'write',
-                                id: adapter.namespace + '.info.Commands.sendFHEM',
-                                val: 'define ' + newID + ' dummy;attr ' + newID + ' alias ' + newID + ';attr ' + newID + ' room ioB_System;attr ' + newID + ' comment Auto-created by ioBroker ' + adapter.namespace
-                            });
+                            /*16.03.19 queue.push({
+                             command: 'write',
+                             id: adapter.namespace + '.info.Commands.sendFHEM',
+                             val: 'define ' + newID + ' dummy;attr ' + newID + ' alias ' + newID + ';attr ' + newID + ' room ioB_System;attr ' + newID + ' comment Auto-created by ioBroker ' + adapter.namespace
+                             });   */
+                            if (!fhemObjects[adapter.namespace + '.' + adapter.namespace.replace(/\./g, '_') + '_send2ioB']) {
+                                sendFHEM('define ' + newID + ' dummy');
+                                sendFHEM('attr ' + newID + ' alias ' + newID);
+                                sendFHEM('attr ' + newID + ' room ioB_System');
+                                sendFHEM('attr ' + newID + ' comment Auto-created by ioBroker ' + adapter.namespace);
+                            }
                             newID = adapter.namespace + '.alive';
                             adapter.log.info('> dummy ' + newID + ' - use to check alive FHEM Adapter in FHEM');
-                            queue.push({
-                                command: 'write',
-                                id: adapter.namespace + '.info.Commands.sendFHEM',
-                                val: 'define ' + newID + ' dummy;attr ' + newID + ' alias ' + newID + ';attr ' + newID + ' room ioB_System;attr ' + newID + ' useSetExtensions 1;attr ' + newID + ' setList on:noArg off:noArg;attr ' + newID + ' event-on-change-reading .*;attr ' + newID + ' comment Auto-created by ioBroker ' + adapter.namespace
-                            });
-
-                            processQueue();
+                            /*16.03.19 queue.push({
+                             command: 'write',
+                             id: adapter.namespace + '.info.Commands.sendFHEM',
+                             val: 'define ' + newID + ' dummy;attr ' + newID + ' alias ' + newID + ';attr ' + newID + ' room ioB_System;attr ' + newID + ' useSetExtensions 1;attr ' + newID + ' setList on:noArg off:noArg;attr ' + newID + ' event-on-change-reading .*;attr ' + newID + ' comment Auto-created by ioBroker ' + adapter.namespace
+                             });   */
+                            if (!fhemIgnore[newID]) {
+                                sendFHEM('define ' + newID + ' dummy');
+                                sendFHEM('attr ' + newID + ' alias ' + newID);
+                                sendFHEM('attr ' + newID + ' room ioB_System');
+                                sendFHEM('attr ' + newID + ' useSetExtensions 1');
+                                sendFHEM('attr ' + newID + ' setList on:noArg off:noArg');
+                                sendFHEM('attr ' + newID + ' event-on-change-reading .*');
+                                sendFHEM('attr ' + newID + ' comment Auto-created by ioBroker ' + adapter.namespace);
+                            }
+                            //processQueue();
                             adapter.log.info('STEP 11 ==== info Synchro');
                             adapter.getStates('info.Info.*', (err, obj) => {
                                 err && adapter.log.error('[getSetting] ' + err);
@@ -941,9 +965,12 @@ function startSync(cb) {
                                             }
                                             end++;
                                             if (end === Object.keys(obj).length) {
+                                                adapter.log.debug('fhemIgnore = '+ JSON.stringify(fhemIgnore));
+                                                adapter.log.debug('fhemIN = '+ JSON.stringify(fhemIN));
+                                                adapter.log.debug('fhemINs = '+ JSON.stringify(fhemINs));
+                                                adapter.log.info('> activate '+adapter.namespace+'.alive room ioB_System every 5 minutes');
                                                 setAlive();
-                                                adapter.log.info('> activate setAlive all 5 minutes');
-                                                adapter.log.warn('> more info FHEM Adapter visit https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md')
+                                                adapter.log.warn('> more info FHEM Adapter visit ' + linkREADME);
                                                 adapter.log.info('END ===== Synchronised FHEM :-)');
                                                 synchro = false;
                                                 firstRun = false;
@@ -1102,11 +1129,12 @@ function parseObjects(objs, cb) {
                 }
                 if (!fhemINs[objs[i].Name] && objs[i].Attributes.room.indexOf('ioB_IN') !== -1) {
                     logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | comment: ' + objs[i].Attributes.comment + ' | ' + ' ' + (i + 1) + '/' + objs.length);
-                    queue.push({
+                    /* 16.03.19 queue.push({
                         command: 'write',
                         id: adapter.namespace + '.info.Commands.sendFHEM',
                         val: 'delete ' + objs[i].Name
-                    });
+                    }); */
+                    sendFHEM('delete ' + objs[i].Name);
                     continue;
                 }
                 if (fhemINs[objs[i].Name] && objs[i].Attributes.room.indexOf('ioB_IN') !== -1) {
@@ -1115,6 +1143,7 @@ function parseObjects(objs, cb) {
                 }
                 if (objs[i].Name.indexOf('alive') !== -1) {
                     logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | comment: ' + objs[i].Attributes.comment + ' | ' + ' ' + (i + 1) + '/' + objs.length);
+                    fhemIgnore[objs[i].Name] = {id: objs[i].Name};
                     continue;
                 }
             }
@@ -1162,7 +1191,7 @@ function parseObjects(objs, cb) {
             };
             if (objs[i].Internals.TYPE === 'HUEBridge') {
                 if (!objs[i].Attributes.createGroupReadings) {
-                    sendFHEM('attr ' + objs[i].Name + ' createGroupReadings 1', 'HUEBridge');
+                    sendFHEM('attr ' + objs[i].Name + ' createGroupReadings 1', 'TYPE:HUEBridge');
                 }
             }
             if (objs[i].Internals.TYPE === 'HUEDevice') {
@@ -1177,7 +1206,7 @@ function parseObjects(objs, cb) {
                 Funktion = 'audio';
                 obj.common.role = 'media.music';
                 if (!objs[i].Attributes.generateVolumeEvent) {
-                    sendFHEM('attr ' + objs[i].Name + ' generateVolumeEvent 1', 'SONOSPLAYER');
+                    sendFHEM('attr ' + objs[i].Name + ' generateVolumeEvent 1', 'TYPE:SONOSPLAYER');
                 }
             }
             if (objs[i].Attributes.model === 'HM-CC-RT-DN') {
@@ -1212,11 +1241,12 @@ function parseObjects(objs, cb) {
                 (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' > check Attributes');
                 if (!objs[i].Attributes.alias) {
                     adapter.log.debug('check alias of ' + objs[i].Name + ' > not found! set alias automatically in FHEM');
-                    queue.push({
+                    /* 16.03.19 queue.push({
                         command: 'write',
                         id: adapter.namespace + '.info.Commands.sendFHEM',
                         val: 'attr ' + objs[i].Name + ' alias ' + objs[i].Name
-                    });
+                    }); */
+                    sendfhem('attr ' + objs[i].Name + ' alias ' + objs[i].Name);
                 }
                 for (const attr in objs[i].Attributes) {
                     // allowed Attributes?
@@ -1804,16 +1834,18 @@ function setFunction(id, Funktion, name) {
     }
 }
 function sendFHEM(cmd, detect) {
-    if (autoConfigFHEM) {
+    adapter.log.debug('[sendFHEM] cmd=' + cmd + ' / detecct=' + detect);
+    if (autoConfigFHEM || !detect) {                                                  //16.02.19
         queue.push({
             command: 'write',
             id: adapter.namespace + '.info.Commands.sendFHEM',
             val: cmd
         });
         processQueue();
-        adapter.log.debug('"' + adapter.namespace + '.info.Configurations.autoConfigFHEM" = true  > ' + cmd + ' | more info README.md');
+        if (detect)
+            adapter.log.info('detect ' + detect + ' and "' + adapter.namespace + '.info.Configurations.autoConfigFHEM" = true  > ' + cmd + ' | more info README.md');
     } else if (detect) {
-        adapter.log.warn('detect ' + detect + ': missing "' + cmd + '" > set manuelly in FHEM or automatically with "' + adapter.namespace + '.info.Configuration.autoConfigFhem" = true | more info README.md');
+        adapter.log.warn('detect ' + detect + ': missing "' + cmd + '" > set manually in FHEM or automatically "' + adapter.namespace + '.info.Configurations.autoConfigFhem" = true | more info README.md');
     }
 }
 function convertAttr(attr, val) {
@@ -2261,9 +2293,10 @@ function processQueueL(cb) {
     }
 }
 function setAlive() {
-    adapter.log.debug('[setAlive] start setAlive 70 sec');
-    sendFHEM('set ' + adapter.namespace + '.alive on-for-timer 70', 'detect');
-    setTimeout(setAlive, 60000);
+    adapter.log.debug('[setAlive] start setAlive 360 sec');
+    //16.03.19sendFHEM('set ' + adapter.namespace + '.alive on-for-timer 70', 'detect');   
+    sendFHEM('set ' + adapter.namespace + '.alive on-for-timer 360');
+    setTimeout(setAlive, 300000);
 }
 //end ==================================================================================================================================
 function main() {
