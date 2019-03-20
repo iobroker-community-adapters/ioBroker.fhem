@@ -1246,7 +1246,7 @@ function parseObjects(objs, cb) {
                         id: adapter.namespace + '.info.Commands.sendFHEM',
                         val: 'attr ' + objs[i].Name + ' alias ' + objs[i].Name
                     }); */
-                    sendfhem('attr ' + objs[i].Name + ' alias ' + objs[i].Name);
+                    sendFHEM('attr ' + objs[i].Name + ' alias ' + objs[i].Name);
                 }
                 for (const attr in objs[i].Attributes) {
                     // allowed Attributes?
