@@ -26,7 +26,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '20.03.19';
+const buildDate = '25.03.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 //Debug
 let debugNAME = [];
@@ -103,17 +103,17 @@ adapter.on('stateChange', (id, state) => {
         adapter.log.debug('[stateChange] ' + id + ' ' + JSON.stringify(state));
         if (!fhemIN[idFHEM]) {
             /* 19.03 queue.push({
-                command: 'write',
-                id: adapter.namespace + '.info.Commands.sendFHEM',
-                val: 'define ' + idFHEM + ' dummy;attr ' + idFHEM + ' alias ' + idFHEM
-            });
-            processQueue();
-            queue.push({
-                command: 'write',
-                id: adapter.namespace + '.info.Commands.sendFHEM',
-                val: 'attr ' + idFHEM + ' room ioB_IN;attr ' + idFHEM + ' comment Auto-created by ioBroker ' + adapter.namespace + ';set ' + idFHEM + ' ' + state.val
-            });
-            processQueue(); */
+             command: 'write',
+             id: adapter.namespace + '.info.Commands.sendFHEM',
+             val: 'define ' + idFHEM + ' dummy;attr ' + idFHEM + ' alias ' + idFHEM
+             });
+             processQueue();
+             queue.push({
+             command: 'write',
+             id: adapter.namespace + '.info.Commands.sendFHEM',
+             val: 'attr ' + idFHEM + ' room ioB_IN;attr ' + idFHEM + ' comment Auto-created by ioBroker ' + adapter.namespace + ';set ' + idFHEM + ' ' + state.val
+             });
+             processQueue(); */
             sendFHEM('define ' + idFHEM + ' dummy');
             sendFHEM('attr ' + idFHEM + ' alias ' + idFHEM);
             sendFHEM('attr ' + idFHEM + ' room ioB_IN');
@@ -123,11 +123,11 @@ adapter.on('stateChange', (id, state) => {
             adapter.setState('info.Info.numberObjectsIOBout', Object.keys(fhemIN).length, true);
         } else {
             /* 19.03.19queue.push({
-                command: 'write',
-                id: adapter.namespace + '.info.Commands.sendFHEM',
-                val: 'set ' + idFHEM + ' ' + state.val
-            });
-            processQueue(); */
+             command: 'write',
+             id: adapter.namespace + '.info.Commands.sendFHEM',
+             val: 'set ' + idFHEM + ' ' + state.val
+             });
+             processQueue(); */
             sendFHEM('set ' + idFHEM + ' ' + state.val);
         }
     }
@@ -965,10 +965,10 @@ function startSync(cb) {
                                             }
                                             end++;
                                             if (end === Object.keys(obj).length) {
-                                                adapter.log.debug('fhemIgnore = '+ JSON.stringify(fhemIgnore));
-                                                adapter.log.debug('fhemIN = '+ JSON.stringify(fhemIN));
-                                                adapter.log.debug('fhemINs = '+ JSON.stringify(fhemINs));
-                                                adapter.log.info('> activate '+adapter.namespace+'.alive room ioB_System every 5 minutes');
+                                                adapter.log.debug('fhemIgnore = ' + JSON.stringify(fhemIgnore));
+                                                adapter.log.debug('fhemIN = ' + JSON.stringify(fhemIN));
+                                                adapter.log.debug('fhemINs = ' + JSON.stringify(fhemINs));
+                                                adapter.log.info('> activate ' + adapter.namespace + '.alive room ioB_System every 5 minutes');
                                                 setAlive();
                                                 adapter.log.warn('> more info FHEM Adapter visit ' + linkREADME);
                                                 adapter.log.info('END ===== Synchronised FHEM :-)');
@@ -1130,10 +1130,10 @@ function parseObjects(objs, cb) {
                 if (!fhemINs[objs[i].Name] && objs[i].Attributes.room.indexOf('ioB_IN') !== -1) {
                     logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | comment: ' + objs[i].Attributes.comment + ' | ' + ' ' + (i + 1) + '/' + objs.length);
                     /* 16.03.19 queue.push({
-                        command: 'write',
-                        id: adapter.namespace + '.info.Commands.sendFHEM',
-                        val: 'delete ' + objs[i].Name
-                    }); */
+                     command: 'write',
+                     id: adapter.namespace + '.info.Commands.sendFHEM',
+                     val: 'delete ' + objs[i].Name
+                     }); */
                     sendFHEM('delete ' + objs[i].Name);
                     continue;
                 }
@@ -1242,10 +1242,10 @@ function parseObjects(objs, cb) {
                 if (!objs[i].Attributes.alias) {
                     adapter.log.debug('check alias of ' + objs[i].Name + ' > not found! set alias automatically in FHEM');
                     /* 16.03.19 queue.push({
-                        command: 'write',
-                        id: adapter.namespace + '.info.Commands.sendFHEM',
-                        val: 'attr ' + objs[i].Name + ' alias ' + objs[i].Name
-                    }); */
+                     command: 'write',
+                     id: adapter.namespace + '.info.Commands.sendFHEM',
+                     val: 'attr ' + objs[i].Name + ' alias ' + objs[i].Name
+                     }); */
                     sendFHEM('attr ' + objs[i].Name + ' alias ' + objs[i].Name);
                 }
                 for (const attr in objs[i].Attributes) {
@@ -1329,7 +1329,7 @@ function parseObjects(objs, cb) {
                     }
                     const parts = attrs[a].split(':');
                     Funktion = 'no';
-                    let states = true;
+                    let Cstates = true;
                     // ignore PossibleSets
                     if (ignorePossibleSets.indexOf(parts[0]) !== -1) {
                         (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.warn(debugN + ' >> ' + parts[0] + ' > no sync - included in ' + adapter.namespace + '.info.Config.ignorePossibleSets');
@@ -1337,6 +1337,7 @@ function parseObjects(objs, cb) {
                     }
                     const stateName = parts[0].replace(/\./g, '_');
                     id = adapter.namespace + '.' + name + '.' + stateName;
+                    //let idPS = adapter.namespace + '.' + name + '.PossibleSets.' + stateName;
                     if (parts[0] === 'off')
                         isOff = true;
                     if (parts[0] === 'on')
@@ -1366,7 +1367,7 @@ function parseObjects(objs, cb) {
                     }
                     if (parts[1]) {
                         if (parts[1].indexOf('noArg') !== -1) {
-                            states = false;
+                            Cstates = false;
                             obj.common.type = 'boolean';
                             obj.common.role = 'button';
                             obj.native.noArg = true;
@@ -1383,7 +1384,7 @@ function parseObjects(objs, cb) {
                                 obj.common.role = 'button.next';
                         }
                         if (parts[1].indexOf('slider') !== -1) {
-                            states = false;
+                            Cstates = false;
                             const _slider = parts[1].split(',');
                             obj.common.type = 'number';
                             obj.common.role = 'level';
@@ -1398,7 +1399,7 @@ function parseObjects(objs, cb) {
                                 obj.common.role = 'level.color.saturation';
                         }
                         if (parts[1].indexOf('colorpicker') !== -1) {
-                            states = false;
+                            Cstates = false;
                             obj.native.colorpicker = true;
                             const _cp = parts[1].split(',');
                             if (_cp[4]) {
@@ -1410,7 +1411,7 @@ function parseObjects(objs, cb) {
                         }
                     }
                     if (temperaturePossibleSets.indexOf(parts[0]) !== -1) {
-                        states = false;
+                        Cstates = false;
                         obj.common.type = 'number';
                         obj.common.role = 'level.temperature';
                         obj.common.unit = '°C';
@@ -1424,7 +1425,7 @@ function parseObjects(objs, cb) {
                         }
                     }
                     if (dimPossibleSets.indexOf(parts[0]) !== -1) {
-                        states = false;
+                        Cstates = false;
                         obj.common.role = 'level.dimmer';
                         obj.common.unit = '%';
                         obj.native.level_dimmer = true;
@@ -1439,7 +1440,7 @@ function parseObjects(objs, cb) {
                         }
                     }
                     if (volumePossibleSets.indexOf(parts[0]) !== -1) {
-                        states = false;
+                        Cstates = false;
                         obj.common.role = 'level.volume';
                         obj.common.unit = '%';
                         obj.native.volume = true;
@@ -1453,7 +1454,7 @@ function parseObjects(objs, cb) {
                         }
                     }
                     if (rgbPossibleSets.indexOf(parts[0]) !== -1) {
-                        states = false;
+                        Cstates = false;
                         obj.common.role = 'level.color.rgb';
                         obj.native.rgb = true;
                         if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
@@ -1463,7 +1464,7 @@ function parseObjects(objs, cb) {
                         }
                     }
                     if (parts[0] === 'color') {
-                        states = false;
+                        Cstates = false;
                         obj.common.role = 'level.color.temperature';
                         obj.common.unit = 'K';
                         obj.native.ct = true;
@@ -1473,7 +1474,7 @@ function parseObjects(objs, cb) {
                             };
                         }
                     }
-                    if (parts[1] && states) {
+                    if (parts[1] && Cstates) {
                         obj.native.states = true;
                         const ssss = parts[1].split(',');
                         obj.common.states = new Object();
@@ -1506,6 +1507,14 @@ function parseObjects(objs, cb) {
                     }
                     (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + parts[0] + ' = ' + parts[1] + ' > ' + id + ' | type: ' + obj.common.type + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | min: ' + obj.common.min + ' | max: ' + obj.common.max + ' | unit: ' + obj.common.unit + ' | states: ' + JSON.stringify(obj.common.states));
                     objects.push(obj);
+                    //adapter.log.warn (obj._id);
+                     // 25.03.19 node-red
+                    states.push({             
+                        id: obj._id,
+                        val: '.',
+                        ts: Date.now(),
+                        ack: true
+                    }); 
                     setStates[stateName] = obj;
                     //Function?
                     if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
@@ -1809,7 +1818,10 @@ function parseObjects(objs, cb) {
         adapter.setState('info.Info.numberDevicesFHEMsync', channel, true);
         adapter.log.info('> check channel - ' + channel + ' Device(s) of FHEM synchronized');
         adapter.log.info('STEP 08 ===== Synchro objects,rooms,functions,states');
-        adapter.log.info('> check ' + objects.length + ' object(s) update/create - ' + channel + ' channel(s) with ' + state + ' state(s)');
+        adapter.log.info('> check ' + objects.length + ' object(s) update/create - ' + channel + ' channel(s) with ' + state + ' state(s) - state(s) to sync: '+ states.length);     //25.03.19 node-red
+        if (state !== states.length) {
+            adapter.log.warn ('object(s) state <> state(s) to sync');
+        }
     }
     syncObjects(objects, () => {
         firstRun && adapter.log.info('> check ' + Object.keys(rooms).length + ' room(s) update/create');
