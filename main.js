@@ -16,7 +16,6 @@ const queueL = [];
 let fhemIN = {};
 let fhemINs = {};
 let fhemIgnore = {};
-
 const fhemObjects = {};
 const functions = {};
 let lastNameQueue;
@@ -26,7 +25,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '25.03.19';
+const buildDate = '27.03.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 //Debug
 let debugNAME = [];
@@ -667,55 +666,62 @@ function myObjects(cb) {
     adapter.log.debug('[myObjects] start');
     const newPoints = [
         // info.Commands
-        {_id: adapter.namespace + '.info.Commands.lastCommand', type: 'state', common: {name: 'Last command to FHEM', type: 'string', read: true, write: false, role: 'text'}, native: {}},
-        {_id: adapter.namespace + '.info.Commands.resultFHEM', type: 'state', common: {name: 'Result of FHEM', type: 'string', read: true, write: false, role: 'text'}, native: {}},
-        {_id: adapter.namespace + '.info.Commands.sendFHEM', type: 'state', common: {name: 'Command to FHEM', type: 'string', read: true, write: true, role: 'state'}, native: {}},
+        //27.03.19 {_id: adapter.namespace + '.info.Commands.lastCommand', type: 'state', common: {name: 'Last command to FHEM', type: 'string', read: true, write: false, role: 'text'}, native: {}},
+        {_id: 'info.Commands.lastCommand', type: 'state', common: {name: 'Last command to FHEM', type: 'string', read: true, write: false, role: 'text'}, native: {}},
+        {_id: 'info.Commands.resultFHEM', type: 'state', common: {name: 'Result of FHEM', type: 'string', read: true, write: false, role: 'text'}, native: {}},
+        {_id: 'info.Commands.sendFHEM', type: 'state', common: {name: 'Command to FHEM', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         // info.Configurations
-        {_id: adapter.namespace + '.info.Configurations.autoConfigFHEM', type: 'state', common: {name: 'FUNCTION allow special configurations FHEM', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: adapter.namespace + '.info.Configurations.autoFunction', type: 'state', common: {name: 'FUNCTION set function automatically (use Adapter Material)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: adapter.namespace + '.info.Configurations.autoRole', type: 'state', common: {name: 'FUNCTION set role automatically (use Adapter Material)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: adapter.namespace + '.info.Configurations.autoSmartName', type: 'state', common: {name: 'FUNCTION if fhem.0 set smartName automatically (Adapter Cloud)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: adapter.namespace + '.info.Configurations.deleteUnusedObjects', type: 'state', common: {name: 'FUNCTION delete unused objects automatically', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: adapter.namespace + '.info.Configurations.allowedIOBin', type: 'state', common: {name: 'SYNC allowed objects send2FHEM', type: 'string', read: true, write: true, role: 'state'}, native: {}},
-        {_id: adapter.namespace + '.info.Configurations.ignoreObjectsInternalsTYPE', type: 'state', common: {name: 'SYNC ignore objects TYPE = ' + ignoreObjectsInternalsTYPES + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
-        {_id: adapter.namespace + '.info.Configurations.ignoreObjectsInternalsNAME', type: 'state', common: {name: 'SYNC ignore objects NAME = ' + ignoreObjectsInternalsNAMES + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
-        {_id: adapter.namespace + '.info.Configurations.ignoreObjectsAttributesroom', type: 'state', common: {name: 'SYNC ignore objects room = ' + ignoreObjectsAttributesroomS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
-        {_id: adapter.namespace + '.info.Configurations.allowedAttributes', type: 'state', common: {name: 'SYNC allowed Attributes = ' + allowedAttributesS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
-        {_id: adapter.namespace + '.info.Configurations.allowedInternals', type: 'state', common: {name: 'SYNC allowed Internals = ' + allowedInternalsS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
-        {_id: adapter.namespace + '.info.Configurations.ignoreReadings', type: 'state', common: {name: 'SYNC ignore Readings = ' + ignoreReadingsS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
-        {_id: adapter.namespace + '.info.Configurations.ignorePossibleSets', type: 'state', common: {name: 'SYNC ignore PossibleSets = ' + ignorePossibleSetsS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
-        {_id: adapter.namespace + '.info.Configurations.oldState', type: 'state', common: {name: 'FUNCTION old version of state with true/false', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: adapter.namespace + '.info.Configurations.onlySyncRoom', type: 'state', common: {name: 'SYNC only sync devices if room exist = ' + onlySyncRoomS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
-        {_id: adapter.namespace + '.info.Configurations.onlySyncNAME', type: 'state', common: {name: 'SYNC only sync devices NAME = ', type: 'string', read: true, write: true, role: 'state'}, native: {}},
+        {_id: 'info.Configurations.autoConfigFHEM', type: 'state', common: {name: 'FUNCTION allow special configurations FHEM', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Configurations.autoFunction', type: 'state', common: {name: 'FUNCTION set function automatically (use Adapter Material)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Configurations.autoRole', type: 'state', common: {name: 'FUNCTION set role automatically (use Adapter Material)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Configurations.autoSmartName', type: 'state', common: {name: 'FUNCTION if fhem.0 set smartName automatically (Adapter Cloud)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Configurations.deleteUnusedObjects', type: 'state', common: {name: 'FUNCTION delete unused objects automatically', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Configurations.allowedIOBin', type: 'state', common: {name: 'SYNC allowed objects send2FHEM', type: 'string', read: true, write: true, role: 'state'}, native: {}},
+        {_id: 'info.Configurations.ignoreObjectsInternalsTYPE', type: 'state', common: {name: 'SYNC ignore objects TYPE = ' + ignoreObjectsInternalsTYPES + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
+        {_id: 'info.Configurations.ignoreObjectsInternalsNAME', type: 'state', common: {name: 'SYNC ignore objects NAME = ' + ignoreObjectsInternalsNAMES + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
+        {_id: 'info.Configurations.ignoreObjectsAttributesroom', type: 'state', common: {name: 'SYNC ignore objects room = ' + ignoreObjectsAttributesroomS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
+        {_id: 'info.Configurations.allowedAttributes', type: 'state', common: {name: 'SYNC allowed Attributes = ' + allowedAttributesS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
+        {_id: 'info.Configurations.allowedInternals', type: 'state', common: {name: 'SYNC allowed Internals = ' + allowedInternalsS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
+        {_id: 'info.Configurations.ignoreReadings', type: 'state', common: {name: 'SYNC ignore Readings = ' + ignoreReadingsS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
+        {_id: 'info.Configurations.ignorePossibleSets', type: 'state', common: {name: 'SYNC ignore PossibleSets = ' + ignorePossibleSetsS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
+        {_id: 'info.Configurations.oldState', type: 'state', common: {name: 'FUNCTION old version of state with true/false', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Configurations.onlySyncRoom', type: 'state', common: {name: 'SYNC only sync devices if room exist = ' + onlySyncRoomS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
+        {_id: 'info.Configurations.onlySyncNAME', type: 'state', common: {name: 'SYNC only sync devices NAME = ', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         // info.Debug
-        {_id: adapter.namespace + '.info.Debug.jsonlist2', type: 'state', common: {name: 'jsonlist2 of FHEM', type: 'string', read: true, write: true, role: 'json'}, native: {}},
-        {_id: adapter.namespace + '.info.Debug.meta', type: 'state', common: {name: 'Device NAME of FHEM', type: 'string', read: true, write: true, role: 'text'}, native: {}},
-        {_id: adapter.namespace + '.info.Debug.activate', type: 'state', common: {name: 'Debug Mode for Device(s) NAME', type: 'string', read: true, write: true, role: 'text'}, native: {}},
+        {_id: 'info.Debug.jsonlist2', type: 'state', common: {name: 'jsonlist2 of FHEM', type: 'string', read: true, write: true, role: 'json'}, native: {}},
+        {_id: 'info.Debug.meta', type: 'state', common: {name: 'Device NAME of FHEM', type: 'string', read: true, write: true, role: 'text'}, native: {}},
+        {_id: 'info.Debug.activate', type: 'state', common: {name: 'Debug Mode for Device(s) NAME', type: 'string', read: true, write: true, role: 'text'}, native: {}},
         // info.Info
-        {_id: adapter.namespace + '.info.Info.buildDate', type: 'state', common: {name: 'Date Version of main.js', type: 'string', read: true, write: false, role: 'text'}, native: {}},
-        {_id: adapter.namespace + '.info.Info.roomioBroker', type: 'state', common: {name: 'room of fhem.x.info.Configurations.onlySyncRoom exist', type: 'boolean', read: true, write: false, role: 'indicator'}, native: {}},
-        {_id: adapter.namespace + '.info.Info.numberDevicesFHEM', type: 'state', common: {name: 'Number of devices FHEM (jsonlist2)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
-        {_id: adapter.namespace + '.info.Info.numberDevicesFHEMsync', type: 'state', common: {name: 'Number of devices FHEM (synchro)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
-        {_id: adapter.namespace + '.info.Info.numberObjectsIOBout', type: 'state', common: {name: 'Number of objects IOB out', type: 'number', read: true, write: false, role: 'value'}, native: {}},
-        {_id: adapter.namespace + '.info.Info.numberObjectsIOBoutSub', type: 'state', common: {name: 'Number of objects IOB out (possible)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
-        {_id: adapter.namespace + '.info.Info.numberObjectsIOBin', type: 'state', common: {name: 'Number of objects IOB in', type: 'number', read: true, write: false, role: 'value'}, native: {}},
+        {_id: 'info.Info.buildDate', type: 'state', common: {name: 'Date Version of main.js', type: 'string', read: true, write: false, role: 'text'}, native: {}},
+        {_id: 'info.Info.roomioBroker', type: 'state', common: {name: 'room of fhem.x.info.Configurations.onlySyncRoom exist', type: 'boolean', read: true, write: false, role: 'indicator'}, native: {}},
+        {_id: 'info.Info.numberDevicesFHEM', type: 'state', common: {name: 'Number of devices FHEM (jsonlist2)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
+        {_id: 'info.Info.numberDevicesFHEMsync', type: 'state', common: {name: 'Number of devices FHEM (synchro)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
+        {_id: 'info.Info.numberObjectsIOBout', type: 'state', common: {name: 'Number of objects IOB out', type: 'number', read: true, write: false, role: 'value'}, native: {}},
+        {_id: 'info.Info.numberObjectsIOBoutSub', type: 'state', common: {name: 'Number of objects IOB out (possible)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
+        {_id: 'info.Info.numberObjectsIOBin', type: 'state', common: {name: 'Number of objects IOB in', type: 'number', read: true, write: false, role: 'value'}, native: {}},
         // info.Settings
-        {_id: adapter.namespace + '.info.Settings.logCheckObject', type: 'state', common: {name: 'LOG "check channel ....." ', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: adapter.namespace + '.info.Settings.logCreateChannel', type: 'state', common: {name: 'LOG "Create channel ....." ', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: adapter.namespace + '.info.Settings.logDeleteChannel', type: 'state', common: {name: 'LOG "Delete channel ....." ', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: adapter.namespace + '.info.Settings.logEventFHEM', type: 'state', common: {name: 'LOG "event FHEM ....." all events from FHEM over telnet)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: adapter.namespace + '.info.Settings.logEventFHEMglobal', type: 'state', common: {name: 'LOG "event FHEM(g) ....." events global from FHEM', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: adapter.namespace + '.info.Settings.logEventFHEMreading', type: 'state', common: {name: 'LOG "event FHEM(r) ....." events readings from FHEM', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: adapter.namespace + '.info.Settings.logEventFHEMstate', type: 'state', common: {name: 'LOG "event FHEM(s) ....." events state from FHEM', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: adapter.namespace + '.info.Settings.logEventIOB', type: 'state', common: {name: 'LOG "event ioBroker ....." all events ioBroker to FHEM', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: adapter.namespace + '.info.Settings.logUnhandledEventFHEM', type: 'state', common: {name: 'LOG "unhandled event FHEM ....." all events unhandled from FHEM', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: adapter.namespace + '.info.Settings.logUpdateChannel', type: 'state', common: {name: 'LOG "Update channel ....." ', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: adapter.namespace + '.info.Settings.logIgnoreConfigurations', type: 'state', common: {name: 'LOG "ignore FHEM device ....." ignored Devices from FHEM (info.Configurations) ', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}}
+        {_id: 'info.Settings.logCheckObject', type: 'state', common: {name: 'LOG "check channel ....." ', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Settings.logCreateChannel', type: 'state', common: {name: 'LOG "Create channel ....." ', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Settings.logDeleteChannel', type: 'state', common: {name: 'LOG "Delete channel ....." ', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Settings.logEventFHEM', type: 'state', common: {name: 'LOG "event FHEM ....." all events from FHEM over telnet)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Settings.logEventFHEMglobal', type: 'state', common: {name: 'LOG "event FHEM(g) ....." events global from FHEM', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Settings.logEventFHEMreading', type: 'state', common: {name: 'LOG "event FHEM(r) ....." events readings from FHEM', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Settings.logEventFHEMstate', type: 'state', common: {name: 'LOG "event FHEM(s) ....." events state from FHEM', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Settings.logEventIOB', type: 'state', common: {name: 'LOG "event ioBroker ....." all events ioBroker to FHEM', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Settings.logUnhandledEventFHEM', type: 'state', common: {name: 'LOG "unhandled event FHEM ....." all events unhandled from FHEM', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Settings.logUpdateChannel', type: 'state', common: {name: 'LOG "Update channel ....." ', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Settings.logIgnoreConfigurations', type: 'state', common: {name: 'LOG "ignore FHEM device ....." ignored Devices from FHEM (info.Configurations) ', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}}
     ];
     for (let i = 0; i < newPoints.length; i++) {
-        adapter.setForeignObject(newPoints[i]._id, newPoints[i], err => {
+        //adapter.setForeignObject(newPoints[i]._id, newPoints[i], err => {
+        adapter.setObject(newPoints[i]._id, newPoints[i], err => {
             err &&
                     adapter.log.error('[myObjects] ' + err);
+
+            if (newPoints[i]._id.indexOf('Commands') !== -1) {                    //27.03.19
+                adapter.setState(newPoints[i]._id, '.', true);
+            }
+
             if (i === newPoints.length - 1) {
                 adapter.log.info('> objects ' + adapter.namespace + '.info OK');
                 adapter.log.debug('[myObjects] end');
@@ -911,11 +917,6 @@ function startSync(cb) {
                             adapter.log.info('STEP 10 ==== check/create FHEM dummy Devices in room ioB_System');
                             if (fhemObjects[adapter.namespace + '.send2ioB']) {
                                 adapter.log.warn('> please use ' + adapter.namespace + '.send2ioB instead of send2ioB > delete send2ioB');
-                                /*16.03.19 queue.push({
-                                 command: 'write',
-                                 id: adapter.namespace + '.info.Commands.sendFHEM',
-                                 val: 'delete send2ioB'
-                                 });  */
                                 sendFHEM('delete send2ioB');
                             }
                             let newID;
@@ -1508,13 +1509,13 @@ function parseObjects(objs, cb) {
                     (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + parts[0] + ' = ' + parts[1] + ' > ' + id + ' | type: ' + obj.common.type + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | min: ' + obj.common.min + ' | max: ' + obj.common.max + ' | unit: ' + obj.common.unit + ' | states: ' + JSON.stringify(obj.common.states));
                     objects.push(obj);
                     //adapter.log.warn (obj._id);
-                     // 25.03.19 node-red
-                    states.push({             
+                    // 25.03.19 node-red
+                    states.push({
                         id: obj._id,
                         val: '.',
                         ts: Date.now(),
                         ack: true
-                    }); 
+                    });
                     setStates[stateName] = obj;
                     //Function?
                     if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
@@ -1818,9 +1819,9 @@ function parseObjects(objs, cb) {
         adapter.setState('info.Info.numberDevicesFHEMsync', channel, true);
         adapter.log.info('> check channel - ' + channel + ' Device(s) of FHEM synchronized');
         adapter.log.info('STEP 08 ===== Synchro objects,rooms,functions,states');
-        adapter.log.info('> check ' + objects.length + ' object(s) update/create - ' + channel + ' channel(s) with ' + state + ' state(s) - state(s) to sync: '+ states.length);     //25.03.19 node-red
+        adapter.log.info('> check ' + objects.length + ' object(s) update/create - ' + channel + ' channel(s) with ' + state + ' state(s) - state(s) to sync: ' + states.length); //25.03.19 node-red
         if (state !== states.length) {
-            adapter.log.warn ('object(s) state <> state(s) to sync');
+            adapter.log.warn('object(s) state <> state(s) to sync');
         }
     }
     syncObjects(objects, () => {
