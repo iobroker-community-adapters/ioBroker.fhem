@@ -1,6 +1,6 @@
 ----
 title:       "FHEM-Adapter"
-lastChanged: "12.02.2019"
+lastChanged: "19.04.2019"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
 ---)
 
@@ -359,6 +359,7 @@ Objekt                    | Zugriff | Bescheibung | Wert
 **[fhem.o](#objekte)**            |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[info](#objekte_i)**      |     | Information und mehr
 &emsp;&emsp;**Commands**          |     | Befehlszeile FHEM
+&emsp;&emsp;&emsp;**createSwitch**|  RW | Erzeugt dummy als Schalter im Raum  | NAME room
 &emsp;&emsp;&emsp;**lastCommand** |  R  | Letzer Befehl von ioBroker an FHEM | Zeichenkette
 &emsp;&emsp;&emsp;**resultFHEM**  |  R  | Liefert Ergebnis von sendFHEM | Zeichenkette
 &emsp;&emsp;&emsp;**sendFHEM**    |  RW | Entspricht Befehlszeile in FHEM zB update check | Zeichenkette
@@ -395,6 +396,7 @@ Objekt                                           | Zugriff | Bescheibung | Wert
 &emsp;&emsp;&emsp;**oldState**                    |  RW | state mit true/false (default=`false`) state als switch = state_switch| true/false
 &emsp;&emsp;&emsp;**onlySyncNAME**                |  RW | Sync nur Module mit Internals:NAME | NAME oder NAME1,NAME2 usw
 &emsp;&emsp;&emsp;**onlySyncRoom**                |  RW | Sync wenn Raum/Räume vorhanden nur Module aus Raum/Räume (default=`ioBroker,ioB_OUT`) | room oder room1,room2 usw
+&emsp;&emsp;&emsp;**onlySyncTYPE**                |  RW | Sync nur Module mit Internals:TYPE | TYPE oder TYPE1,TYPE2 usw
 
 <a name="info_debug"/>
 
@@ -870,6 +872,7 @@ FHEM
 
 ## 12 Entwicklerbereich
 * github ioBroker.fhem https://github.com/ioBroker/ioBroker.fhem
+* Markdown: Syntax https://iobroker.github.io/ioBroker.docs/#/community/docmarkdown
 
 <a name=historie/> 
 
