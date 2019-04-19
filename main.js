@@ -25,7 +25,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '28.03.19';
+const buildDate = '19.04.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 //Debug
 let debugNAME = [];
@@ -37,6 +37,7 @@ let autoSmartName = true;
 let oldState = false;
 let deleteUnusedObjects = true;
 let onlySyncNAME = [];
+let onlySyncTYPE = [];                                          //19.04.19
 const onlySyncRoomS = ['ioBroker', 'ioB_OUT'];
 let onlySyncRoom = [];
 const ignoreObjectsInternalsTYPES = [];
@@ -124,7 +125,7 @@ adapter.on('stateChange', (id, state) => {
                 command: 'resync'
             });
             processQueue();
-        } else if (fhemObjects[id] || id === adapter.namespace + '.info.Commands.sendFHEM' || id.indexOf(adapter.namespace + '.info.Debug') !== -1 || id.indexOf(adapter.namespace + '.info.Settings') !== -1 || id.indexOf(adapter.namespace + '.info.Configurations') !== -1) {
+        } else if (fhemObjects[id] || id.indexOf(adapter.namespace + '.info.Commands') !== -1 || id.indexOf(adapter.namespace + '.info.Debug') !== -1 || id.indexOf(adapter.namespace + '.info.Settings') !== -1 || id.indexOf(adapter.namespace + '.info.Configurations') !== -1) {
             adapter.log.debug('in: ' + id + ' ' + state.val);
             queue.push({
                 command: 'write',
@@ -301,6 +302,12 @@ function parseEvent(event) {
             }
             //send2ioB ?
             if (parts[1] === adapter.namespace + '.send2ioB') {
+                id = checkID(event, val, parts[1], 'state', id);                //19.04.19
+                adapter.setState(id, {
+                    val: val,
+                    ack: true,
+                    ts: ts
+                });
                 adapter.getForeignObject(parts[2], function (err, obj) {
                     if (err) {
                         adapter.log.error('error:' + err);
@@ -651,6 +658,7 @@ function myObjects(cb) {
         {_id: 'info.Commands.lastCommand', type: 'state', common: {name: 'Last command to FHEM', type: 'string', read: true, write: false, role: 'text'}, native: {}},
         {_id: 'info.Commands.resultFHEM', type: 'state', common: {name: 'Result of FHEM', type: 'string', read: true, write: false, role: 'text'}, native: {}},
         {_id: 'info.Commands.sendFHEM', type: 'state', common: {name: 'Command to FHEM', type: 'string', read: true, write: true, role: 'state'}, native: {}},
+        {_id: 'info.Commands.createSwitch', type: 'state', common: {name: 'Create dummy as switch in room FHEM (NAME room)', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         // info.Configurations
         {_id: 'info.Configurations.autoConfigFHEM', type: 'state', common: {name: 'FUNCTION allow special configurations FHEM', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
         {_id: 'info.Configurations.autoFunction', type: 'state', common: {name: 'FUNCTION set function automatically (use Adapter Material)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
@@ -668,6 +676,7 @@ function myObjects(cb) {
         {_id: 'info.Configurations.oldState', type: 'state', common: {name: 'FUNCTION old version of state with true/false', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
         {_id: 'info.Configurations.onlySyncRoom', type: 'state', common: {name: 'SYNC only sync devices if room exist = ' + onlySyncRoomS + ' + Wert', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.onlySyncNAME', type: 'state', common: {name: 'SYNC only sync devices NAME = ', type: 'string', read: true, write: true, role: 'state'}, native: {}},
+        {_id: 'info.Configurations.onlySyncTYPE', type: 'state', common: {name: 'SYNC only sync devices TYPE = ', type: 'string', read: true, write: true, role: 'state'}, native: {}}, //19.04.19
         // info.Debug
         {_id: 'info.Debug.jsonlist2', type: 'state', common: {name: 'jsonlist2 of FHEM', type: 'string', read: true, write: true, role: 'json'}, native: {}},
         {_id: 'info.Debug.meta', type: 'state', common: {name: 'Device NAME of FHEM', type: 'string', read: true, write: true, role: 'text'}, native: {}},
@@ -828,6 +837,9 @@ function getConfigurations(cb) {
     onlySyncNAME = [];
     getConfig('info.Configurations.onlySyncNAME', onlySyncNAME, value => {
     });
+    onlySyncTYPE = [];                                                                                  //19.04.198
+    getConfig('info.Configurations.onlySyncTYPE', onlySyncTYPE, value => {
+    });
     onlySyncRoom = onlySyncRoomS.slice();
     getConfig('info.Configurations.onlySyncRoom', onlySyncRoom, value => {
         adapter.log.debug('[getConfigurations] end');
@@ -866,7 +878,7 @@ function startSync(cb) {
     adapter.log.debug('[startSync] start ts_update = ' + ts_update + ' connected = ' + connected);
     let send = 'jsonlist2';
     if (onlySyncNAME.length) {
-        send = send + ' ' + onlySyncNAME + ',send2ioB';
+        send = send + ' ' + onlySyncNAME + ',' + adapter.namespce + '.send2ioB';
         adapter.log.info('> only jsonlist2 ' + onlySyncNAME + ' - ' + adapter.namespace + '.info.Configurations.onlySyncNAME (' + onlySyncNAME + ')');
     }
     // send command JsonList2
@@ -1023,7 +1035,6 @@ function getUnit(name) {
     return undefined;
 }
 function parseObjects(objs, cb) {
-    adapter.log.debug('[parseObjects] start');
     firstRun && adapter.log.info('STEP 07 ===== parse Objects');
     const rooms = {};
     const objects = [];
@@ -1070,9 +1081,14 @@ function parseObjects(objs, cb) {
                 return;
             }
             (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' check FHEM Device');
-            if (onlySyncNAME.length && onlySyncNAME.indexOf(objs[i].Internals.NAME) === -1 && objs[i].Internals.NAME !== 'send2ioB') {         //==========================================
+            if (onlySyncNAME.length && onlySyncNAME.indexOf(objs[i].Internals.NAME) === -1 && objs[i].Internals.NAME !== adapter.namespace + '.send2ioB') {         //19.04.19  
                 logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | NAME <> ' + onlySyncNAME + ' | ' + ' ' + (i + 1) + '/' + objs.length);
                 (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - not included in ' + adapter.namespace + '.info.Config.onlySyncNAME');
+                continue;
+            }
+            if (onlySyncTYPE.length && onlySyncTYPE.indexOf(objs[i].Internals.TYPE) === -1 && objs[i].Internals.NAME !== adapter.namespace + '.send2ioB') {         //19.04.19                 
+                logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | TYPE <> ' + onlySyncTYPE + ' | ' + ' ' + (i + 1) + '/' + objs.length);
+                (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - not included in ' + adapter.namespace + '.info.Config.onlySyncTYPE');
                 continue;
             }
             if (ignoreObjectsInternalsTYPE.indexOf(objs[i].Internals.TYPE) !== -1) {
@@ -1506,7 +1522,8 @@ function parseObjects(objs, cb) {
                             type: 'state',
                             common: {
                                 name: objs[i].Name + ' ' + attr,
-                                type: 'string',
+                                //type: 'string',      19.04.09
+                                type: undefined,
                                 role: undefined,
                                 read: true,
                                 write: false,
@@ -1724,6 +1741,12 @@ function parseObjects(objs, cb) {
                                 });
                             }
                         }
+                        // detect readingList                             //19.04.19
+                        if (objs[i].Attributes.readingList && objs[i].Attributes.readingList.indexOf(attr) !== -1) {
+                            adapter.log.debug('[parseObjects] detect readingList - ' + objs[i].Internals.TYPE + ' ' + name + ' ' + attr + ' ' + val);
+                            obj.common.write = true;
+                            obj.common.role = 'state';
+                        }
                         // special, because error on auto detect
                         if (objs[i].Internals.TYPE === 'LGTV_IP12' && attr === 'power') {
                             obj.common.type = 'string';
@@ -1737,8 +1760,8 @@ function parseObjects(objs, cb) {
                             ts: objs[i].Readings[attr].Time ? new Date(objs[i].Readings[attr].Time).getTime() : Date.now(),
                             ack: true
                         });
-                        combined && (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' > ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | read: ' + obj.common.read + ' (Value Possible Set)');
-                        !combined && (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' > ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | role: ' + obj.common.role + ' | Funktion: ' + Funktion);
+                        combined && (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' > ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' (Value Possible Set)');
+                        !combined && (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' > ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | Funktion: ' + Funktion);
                         objects.push(obj);
                         if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
                             if (Funktion === 'switch')
@@ -1985,8 +2008,9 @@ function writeValue(id, val, cb) {
     }
     // change Debug?
     if (id.indexOf(adapter.namespace + '.info.Debug.') !== -1) {
+        adapter.log.debug('[writeValue] detect info.Debug = ' + id);
         if (id.indexOf('jsonlist2') !== -1) {
-            adapter.log.info('[' + val + '] debug jsonlist2 ' + val);
+            adapter.log.info('start debug jsonlist2 ' + val);
             let objects = null;
             try {
                 objects = JSON.parse(val);
@@ -1999,7 +2023,7 @@ function writeValue(id, val, cb) {
             }
         }
         if (id.indexOf('meta') !== -1) {
-            adapter.log.info('[' + val + '] debug meta "jsonlist2 ' + val + '"');
+            adapter.log.info('start debug meta "jsonlist2 ' + val + '"');
             debug = true;
             queue.push({
                 command: 'meta',
@@ -2030,16 +2054,37 @@ function writeValue(id, val, cb) {
         cb && cb();
         return;
     }
-    // sendFHEM?
-    if (id === adapter.namespace + '.info.Commands.sendFHEM') {
-        logEventIOB && adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + val);
-        telnetOut.send(val, (err, result) => {
-            err && adapter.log.error('[writeValue] ' + err);
-            adapter.setState('info.Commands.resultFHEM', result.replace(/(\r\n)|(\r)|(\n)/g, '<br>'), err =>
-                err && adapter.log.error('[writeValue] ' + err));
-            adapter.setState('info.Commands.lastCommand', cmd, err => err && adapter.log.error('[writeValue] ' + err));
-            cb && cb();
-        });
+    // info.Commands?
+    if (id.indexOf(adapter.namespace + '.info.Commands') !== -1) {
+        // sendFHEM?
+        if (id === adapter.namespace + '.info.Commands.sendFHEM') {
+            logEventIOB && adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + val);
+            telnetOut.send(val, (err, result) => {
+                err && adapter.log.error('[writeValue] ' + err);
+                adapter.setState('info.Commands.resultFHEM', result.replace(/(\r\n)|(\r)|(\n)/g, '<br>'), err =>
+                    err && adapter.log.error('[writeValue] ' + err));
+                adapter.setState('info.Commands.lastCommand', cmd, err => err && adapter.log.error('[writeValue] ' + err));
+                cb && cb();
+            });
+        }
+        // createSwitch?   19.04.19
+        if (id === adapter.namespace + '.info.Commands.createSwitch') {
+            let valP = val.split(' ');
+            if (valP[0] && valP[1]) {
+                logEventIOB && adapter.log.info('event ioBroker "' + id + ' ' + val + '" > sendFHEM');
+                sendFHEM('define ' + valP[0] + ' dummy');
+                //sendFHEM('attr ' + valP[0] + ' alias ' + valP[0]);
+                sendFHEM('attr ' + valP[0] + ' room ' + valP[1]);
+                sendFHEM('attr ' + valP[0] + ' comment Created by ioBroker ' + adapter.namespace);
+                sendFHEM('attr ' + valP[0] + ' setList on:noArg off:noArg');
+                sendFHEM('set ' + valP[0] + ' off');
+                cb && cb();
+            } else {
+                adapter.log.warn('event ioBroker "' + id + ' ' + val + '" > wrong definition - use NAME room');
+                cb && cb();
+            }
+        }
+        cb && cb();
         return;
     }
     // attr?
@@ -2098,19 +2143,23 @@ function requestMeta(name, attr, value, event, cb) {
             let objects = null;
             try {
                 objects = JSON.parse(result);
+                adapter.log.debug('[requestMeta] ' + name + ' - Number of Device(s) ' + objects.totalResultsReturned);
             } catch (e) {
                 adapter.log.error('[requestMeta] Cannot parse answer for jsonlist2: ' + e);
             }
-            if (objects) {
+            if (objects.totalResultsReturned > 0) {
                 parseObjects(objects.Results, () => {
                     if (cb) {
                         cb();
                         cb = null;
                     }
                 });
-            } else if (cb) {
-                cb();
-                cb = null;
+            } else {
+                adapter.log.warn('[' + name + '] no sync - no result of "jsonlist2 ' + name + '"');
+                if (cb) {
+                    cb();
+                    cb = null;
+                }
             }
         } else if (cb) {
             cb();
