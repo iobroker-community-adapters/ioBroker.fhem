@@ -27,6 +27,7 @@ let resync = false;
 let debug = false;
 const buildDate = '19.04.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
+const ts_start = Date.now();
 //Debug
 let debugNAME = [];
 //Configuratios
@@ -952,7 +953,7 @@ function startSync(cb) {
                                                 adapter.log.info('> activate ' + adapter.namespace + '.alive room ioB_System every 5 minutes');
                                                 setAlive();
                                                 adapter.log.warn('> more info FHEM Adapter visit ' + linkREADME);
-                                                adapter.log.info('END ===== Synchronised FHEM :-)');
+                                                adapter.log.info('END ===== Synchronised FHEM in ' + Math.round((Date.now() - ts_start)) + ' ms :-)');
                                                 synchro = false;
                                                 firstRun = false;
                                                 cb && cb();
