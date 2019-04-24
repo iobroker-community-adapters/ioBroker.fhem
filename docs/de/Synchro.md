@@ -7,5 +7,19 @@ editLink:    "https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/
 # <img src="media/fhem.png" width=150 hight=150/>&emsp;FHEM-Adapter<br> Auswahl Device(s) aus FHEM zur Synchronisation in ioBroker
 lala
 
+
+### Folgende Möglichkeiten:
+![{alt BildName}](media/Configurations_SYNC.PNG "Configuration SYNC") <span style="color:grey">  
+*Configuration SYNC*</span>
+
+
 ### Beispiel Ausgabe FHEM Befehl "jsonlist2 switch00"
-![{alt BildName}](media/jsonlist2.PNG "jsonlist2 switch00") <span style="color:grey">*jsonlist2 switch00*</span>
+![{alt BildName}](media/jsonlist2.png "jsonlist2 switch00") <span style="color:grey">  
+*jsonlist2 switch00*</span>
+
+
+
+<!-- Bild einfügen
+![{alt BildName}](media/jsonlist2.png "jsonlist2 switch00") <span style="color:grey">  
+*jsonlist2 switch00*</span>
+-->
