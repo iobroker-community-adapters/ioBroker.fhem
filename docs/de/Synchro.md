@@ -75,7 +75,7 @@ default: TYPE, NAME
 
 lala
 
-![{alt BildName}](media/switch00_allowedInternals.PNG "allowedInternals") <span style="color:grey">*allowedInternals*</span>
+![{alt BildName}](media/switch00_Internals.PNG "allowedInternals") <span style="color:grey">*allowedInternals*</span>
 
 #### fhem.0.info.Configurations.allowedAttributes
 ![{alt BildName}](media/Config_Sync_allowedAttributes.PNG "allowedAttributes") <span style="color:grey">*allowedAttributes*</span>
@@ -84,7 +84,7 @@ default: room, alias, comment
 
 lala
 
-![{alt BildName}](media/switch00_allowedAttributes.PNG "allowedInternals") <span style="color:grey">*allowedInternals*</span>
+![{alt BildName}](media/switch00_Attributes.PNG "allowedAttributes") <span style="color:grey">*allowedAttributes*</span>
 
 #### fhem.0.info.Configurations.allowedIOBin
 ![{alt BildName}](media/Config_Sync_allowedIOBin.PNG "allowedIOBin") <span style="color:grey">*allowedIOBin*</span>
@@ -99,8 +99,7 @@ lala
 
 
 <!-- Bild einfügen
-![{alt BildName}](media/jsonlist2.png "jsonlist2 switch00") <span style="color:grey">  
-*jsonlist2 switch00*</span>
+![{alt BildName}](media/jsonlist2.png "jsonlist2 switch00") <span style="color:grey">*jsonlist2 switch00*</span>
 -->
 -
 
