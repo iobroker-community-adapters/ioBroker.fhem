@@ -8,5 +8,4 @@ editLink:    "https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/
 lala
 
 ### Beispiel Ausgabe FHEM Befehl "jsonlist2 switch00"
-![{alt BildName}](media/jsonlist2.PNG "jsonlist2 switch00") <span style="color:grey">  
-*jsonlist2 switch00*</span>
+![{alt BildName}](media/jsonlist2.PNG "jsonlist2 switch00") <span style="color:grey">*jsonlist2 switch00*</span>
