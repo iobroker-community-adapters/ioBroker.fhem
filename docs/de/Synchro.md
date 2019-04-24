@@ -50,6 +50,7 @@ lala
 
 #### fhem.0.info.Configurations.ignorePossibleSets
 ![{alt BildName}](media/Config_Sync_ignorePossibleSets.PNG "ignorePossibleSets") <span style="color:grey">*ignorePossibleSets*</span>
+
 default: getConfig, etRegRaw, egBulk, regSet, deviceMsg, CommandAccepted
 lala
 
