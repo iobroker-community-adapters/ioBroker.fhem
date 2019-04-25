@@ -143,13 +143,13 @@ wird in FHEM im Raum ioB_IN als dummy alexa2.0.Echo-Devices.xyz.Commands.speak m
 Statt einem kompletten state Name kann zB auch nur alexa2.0 verwendet werden.
 Damit werden alle states die mit alexa2.0 beginnen nach FHEM übertragen.
 
-
+##Viel Spaß mit ioBroker und FHEM :-)
 
 
 <!-- Bild einfügen
 ![{alt BildName}](media/jsonlist2.png "jsonlist2 switch00") <span style="color:grey">*jsonlist2 switch00*</span>
 -->
--
+
 
 
 
