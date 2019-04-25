@@ -30,6 +30,7 @@ Mit diesen Objekten ist es möglich die Auswahl der Devices für den Übertrag f
 ![{alt BildName}](media/Config_Sync_onlySyncRoom.PNG "onlySyncRoom") <span style="color:grey">*onlySyncRoom*</span>
 
 default:   ioBroker, IOB_OUT
+
 jsonlist2: [Attributes] room
 
 Durch Eingabe Raum oder mehere Räume (durch Komma getrennt) aus FHEM werden nur noch Devices aud diesen Räumen  übertragen.
@@ -39,6 +40,7 @@ Durch Eingabe Raum oder mehere Räume (durch Komma getrennt) aus FHEM werden nur
 ![{alt BildName}](media/Config_Sync_onlySyncTYPE.PNG "onlySyncTYPE") <span style="color:grey">*onlySyncTYPE*</span>
 
 default:    -
+
 jsonlist2: [Internals] TYPE
 
 Durch Eingabe TYPE (zB dummy) oder mehere TYPE´s (durch Komma getrennt) werden nur noch Devices für diesen TYPE übertragen.
@@ -48,6 +50,7 @@ Praktisch wenn nur bestimmte Devices zb SONOSPLAYER zur Übertragung gewünscht 
 ![{alt BildName}](media/Config_Sync_onlySyncNAME.PNG "onlySyncNAME") <span style="color:grey">*onlySyncNAME*</span>
 
 default: -
+
 jsonlist2: [Internals] NAME
 
 Durch Eingabe NAME (wie hier im Bsp switch00) oder mehere Namen (durch Komma getrennt) werden nur noch diese Devices übertragen.
@@ -56,6 +59,7 @@ Durch Eingabe NAME (wie hier im Bsp switch00) oder mehere Namen (durch Komma get
 ![{alt BildName}](media/Config_Sync_ignoreObjectsAttributesroom.PNG "ignoreObjectsAttributesroom") <span style="color:grey">*ignoreObjectsAttributesroom*</span>
 
 default:   -
+
 jsonlist2: [Attributes] room
 
 Durch Eingabe Raum oder mehere Räume (durch Komma getrennt) aus FHEM werden die Devices aud diesen Räumen NICHT  übertragen.
@@ -64,6 +68,7 @@ Durch Eingabe Raum oder mehere Räume (durch Komma getrennt) aus FHEM werden die
 ![{alt BildName}](media/Config_Sync_ignoreObjectsInternalsTYPE.PNG "ignoreObjectsInternalsTYPE") <span style="color:grey">*ignoreObjectsInternalsTYPE*</span>
 
 default:    -
+
 jsonlist2: [Internals] TYPE
 
 Durch Eingabe TYPE (zB dummy) oder mehere TYPE´s (durch Komma getrennt) werden die Devices für diesen TYPE NICHT übertragen.
@@ -73,6 +78,7 @@ Praktisch zb für TYPE = notify, at usw die im ioBroker gar nicht benötigt werd
 ![{alt BildName}](media/Config_Sync_ignoreObjectsInternalsNAME.PNG "ignoreObjectsInternalsNAME") <span style="color:grey">*ignoreObjectsInternalsNAME*</span>
 
 default:    info
+
 jsonlist2: [Internals] NAME
 
 Durch Eingabe NAME (wie hier im Bsp switch00) oder mehere Namen (durch Komma getrennt) werden die Devices NICHT übertragen.
@@ -81,6 +87,7 @@ Durch Eingabe NAME (wie hier im Bsp switch00) oder mehere Namen (durch Komma get
 ![{alt BildName}](media/Config_Sync_ignorePossibleSets.PNG "ignorePossibleSets") <span style="color:grey">*ignorePossibleSets*</span>
 
 default: getConfig, etRegRaw, egBulk, regSet, deviceMsg, CommandAccepted
+
 jsonlist2: [PossibleSets]
 
 Hier eingetragene PossibleSets (durch Komma getrennt) werden NICHT übertragen.
@@ -89,6 +96,7 @@ Hier eingetragene PossibleSets (durch Komma getrennt) werden NICHT übertragen.
 ![{alt BildName}](media/Config_Sync_ignoreReadings.PNG "ignoreReadings") <span style="color:grey">*ignoreReadings*</span>
 
 default:    currentTrackPositionSimulated, currentTrackPositionSimulatedSec
+
 jsonlist2: [Readings]
 
 Hier eingetragene Readings (durch Komma getrennt) werden NICHT übertragen.
@@ -97,6 +105,7 @@ Hier eingetragene Readings (durch Komma getrennt) werden NICHT übertragen.
 ![{alt BildName}](media/Config_Sync_allowedInternals.PNG "allowedInternals") <span style="color:grey">*allowedInternals*</span>
 
 default: TYPE, NAME
+
 jsonlist2: [Internals]
 
 Durch Eingabe weiterer Werte aus Internals werden diese auch übertragen.
@@ -110,6 +119,7 @@ Anzeige unter dem jeweiligen Objekt/Device
 ![{alt BildName}](media/Config_Sync_allowedAttributes.PNG "allowedAttributes") <span style="color:grey">*allowedAttributes*</span>
 
 default:   room, alias, comment
+
 jsonlist2: [Attributes]
 
 Durch Eingabe weiterer Werte aus Attributes werden diese auch übertragen.
