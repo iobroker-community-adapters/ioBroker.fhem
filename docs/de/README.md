@@ -597,6 +597,9 @@ heating                  |    |
 
 ## 8 FAQ
 
+#### Auswahl bestimmter Device(s) aus FHEM zur Synchronisation in ioBroker ?
+https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/SynchroFHEMconfig.md
+
 #### Update FHEM Adapter von github ?
 1. Admin-Oberfläche Bereich `Adapter` oben links "Installieren aus eigener URL"
 2. VON GITHUB >Adapter auswählen: fhem >INSTALLIEREN
@@ -604,10 +607,10 @@ heating                  |    |
 ![alt-Objektename](media/update_github.PNG "update_github")<span style="color:grey">  
 *update_github*</span>
 
-#### In meiner ioBroker Installation werden nicht alle Module aus FHEM synchronisiert
+#### In meiner ioBroker Installation werden nicht alle Devices/Module aus FHEM synchronisiert
 Ist in FHEM ein Raum ioBroker vorhanden?
 
-#### Objekte werden aus FHEM synchronisiert, danach aber nicht aktuallisiert
+#### Devices/Module werden aus FHEM synchronisiert, danach aber nicht aktuallisiert
 Eine Aktualisierung kann nur bei einem entsprechenden Event in FHEM erfolgen.
 1. FHEM Event monitor auf Einträge prüfen
 2. `fhem.0.info.Settings.logEventFHEM` auf true und in der Admin-Oberfläche Bereich `Log` werden alle über Telnet eingehenden Events angezeigt.
