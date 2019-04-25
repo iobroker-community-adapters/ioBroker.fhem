@@ -1,7 +1,7 @@
 ---
 title:       "FHEM-Adapter: Auswahl Device(s) aus FHEM zur Synchronisation in ioBroker"
 lastChanged: "25.04.2019"
-editLink:    "https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/Synchro.md"
+editLink:    "https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/SynchroFHEMconfig.md"
 ---
 
 # <img src="media/fhem.png" width=150 hight=150/>&emsp;FHEM-Adapter<br> Auswahl Device(s) aus FHEM zur Synchronisation in ioBroker
