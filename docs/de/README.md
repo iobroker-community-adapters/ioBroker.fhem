@@ -1,8 +1,8 @@
-----
+---
 title:       "FHEM-Adapter"
-lastChanged: "19.04.2019"
+lastChanged: "02.05.2019"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
----)
+---
 
 
 !>Achtung!   
@@ -244,7 +244,7 @@ Objekt                    | Zugriff | Bescheibung
 &emsp;&emsp;**:**                          |  R  | 
 &emsp;&emsp;**:**                          |  RW | 
 
-> Einem Objekt state ist immer eine Rolle zugeordnet. **[Übersicht Rollen](#besonderheiten_rollen)** **[Übersicht Funktionen](#besonderheiten_funktionen)** 
+> Bei einem state-Objekt kann der Name nach der ersten Synchronisation frei geändert werden. fhem.x.info.Configurations.autoName=false verhindert ein erneutes Überschreiben nach Resync. Einem Objekt state ist immer eine Rolle zugeordnet. **[Übersicht Rollen](#besonderheiten_rollen)** **[Übersicht Funktionen](#besonderheiten_funktionen)** 
 
 <a name="objekte_c_r"/>
 
@@ -336,9 +336,9 @@ Objekt                                                 | Zugriff | Bescheibung  
 **[fhem.o](#objekte)**                                 |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**info**                                         |     | Information und mehr
 &emsp;&emsp;**[Commands](#info_commands)**             |     | Befehlszeile FHEM
-&emsp;&emsp;**[Configurations](#info_configurations)** |     | 
+&emsp;&emsp;**[Configurations](#info_configurations)** |     | Einstellungen Funktionen und Synchro
 &emsp;&emsp;**[Debug](#info_debug)**                   |     | Debug Modus
-&emsp;&emsp;**[Info](#info_info)**                     |     | 
+&emsp;&emsp;**[Info](#info_info)**                     |     | Info zur Synchro
 &emsp;&emsp;**[Settings](#info_settings)**             |     | Auswahl Einträge für Admin-Oberfläche Bereich `LOG`  
 &emsp;&emsp;**connection**                             |  R  | Status Verbindung zu FHEM                            | true/false
 &emsp;&emsp;**resync**                                 |  RW | Start Resync FHEM                                    | true/false
@@ -359,10 +359,10 @@ Objekt                    | Zugriff | Bescheibung | Wert
 **[fhem.o](#objekte)**            |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[info](#objekte_i)**      |     | Information und mehr
 &emsp;&emsp;**Commands**          |     | Befehlszeile FHEM
-&emsp;&emsp;&emsp;**createSwitch**|  RW | Erzeugt dummy als Schalter im Raum  | NAME room
+&emsp;&emsp;&emsp;**createSwitch**|  RW | Erzeugt dummy NAME als Schalter im Raum room| NAME room
 &emsp;&emsp;&emsp;**lastCommand** |  R  | Letzer Befehl von ioBroker an FHEM | Zeichenkette
 &emsp;&emsp;&emsp;**resultFHEM**  |  R  | Liefert Ergebnis von sendFHEM | Zeichenkette
-&emsp;&emsp;&emsp;**sendFHEM**    |  RW | Entspricht Befehlszeile in FHEM zB update check | Zeichenkette
+&emsp;&emsp;&emsp;**sendFHEM**    |  RW | Entspricht Befehlszeile in FHEM zB update check. Erfolgreiche Ausführung wird mit done quittiert | Zeichenkette
 
 <a name="info_configurations"/>
 
@@ -386,8 +386,13 @@ Objekt                                           | Zugriff | Bescheibung | Wert
 &emsp;&emsp;&emsp;**allowedInternals**            |  RW | Sync Internals (default = `TYPE,NAME`) | Internals oder Internals1,Internals2 usw
 &emsp;&emsp;&emsp;**autoConfigFHEM**              |  RW | Erlaubt folgende Änderungen in FHEM 1.Für TYPE=SONOSPLAYER `attr xxx generateVolumeEvent 1` damit Lautstärke übertragen wird. 2. TYPE = HUEBridge 'attr xxx createGroupReadings 1' Readings für HUEGroup 3.Am Ende der Synchronisation `save` zum Speichern der Änderungen. (default=`false`) | true/false
 &emsp;&emsp;&emsp;**autoFunction**                |  RW | Funktionen werden bei Neustart abhängig von Version FHEM Adaper vergeben (default=`false`) Für Adapter `Material UI`wird `true`empfohlen. Bei `false` können Funktionen selber vergeben werden und es erfolgt keine Änderung durch den Adapter | true/false
+&emsp;&emsp;&emsp;**autoName**                |  RW | Bei Resync Name state-Objekt überschreiben (default=`false`)  | true/false
+&emsp;&emsp;&emsp;**autoRest**                |  RW | Bei Resync min,max,unit,read,write state-Objekt überschreiben (default=`false`)  | true/false
 &emsp;&emsp;&emsp;**autoRole**                    |  RW | Rollen werden bei Neustart abhängig von Version FHEM Adaper vergeben  (default=`false`) Für Adapter `Material UI` wird `true`empfohlen. Bei `false` können Rollen selber vergeben werden und es erfolgt keine Änderung durch den Adapter. | true/false
 &emsp;&emsp;&emsp;**autoSamrtName**               |  RW | Automatische Anlage Smart Geräte für Adapter Cloud (default=`true`) Nur Instanz fhem.0! | true/false
+&emsp;&emsp;&emsp;**autoStates**               |  RW | Bei Resync States state-Objekt überschreiben (default=`false`) | true/false
+&emsp;&emsp;&emsp;**autoType**               |  RW | Bei Resync Type state-Objekt überschreiben (default=`false`) | true/false
+&emsp;&emsp;&emsp;**deleteUnusedObjects**               |  RW | Bei Resync unbenutzte Objekte/States löschen (default=`true`) | true/false
 &emsp;&emsp;&emsp;**ignoreObjectsAttributesroom** |  RW | Kein Sync von Modulen mit Attributes:room | room oder room1,room2 usw
 &emsp;&emsp;&emsp;**ignoreObjectsInternalsNAME**  |  RW | Kein Sync von Modulen mit Internals:NAME (default=`info`) | NAME oder NAME1,NAME2 usw
 &emsp;&emsp;&emsp;**ignoreObjectsInternalsTYPE**  |  RW | Kein Sync von Modulen mit Internals:TYPE | TYPE oder TYPE1,TYPE2 usw
