@@ -26,7 +26,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '24.04.19';
+const buildDate = '02.05.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const ts_start = Date.now();   //21.04.19
 //Debug
@@ -35,7 +35,13 @@ let debugNAME = [];
 let autoRole = false;
 let autoFunction = false;
 let autoConfigFHEM = false;
-let autoSmartName = true;
+let autoSmartName = false;
+//02.05.19
+let autoName = false;
+let autoType = false;
+let autoStates = false;
+let autoRest = false;
+
 let oldState = false;
 let deleteUnusedObjects = true;
 let onlySyncNAME = [];
@@ -491,6 +497,7 @@ function syncObjects(objects, cb) {
     }
     if (resync) {
         adapter.log.debug('[syncObjects] Abbruch durch resync');
+        cb();   //02.05.19
         return;
     }
     const obj = objects.shift();
@@ -519,22 +526,46 @@ function syncObjects(objects, cb) {
                     updateText = updateText + ' native';
                 }
                 if (JSON.stringify(obj.common) !== JSON.stringify(oldObj.common)) {
-                    newObj.common.name = obj.common.name;
+                    //02.05.19
+                    //newObj.common.name = obj.common.name;
                     updateText = updateText + ' common';
                     if (autoSmartName) {
                         newObj.common.smartName = obj.common.smartName;
                     }
+                    //02.05.19
                     if (autoRole) {
-                        newObj.common.type = obj.common.type;
                         newObj.common.role = obj.common.role;
+                    }
+                    if (autoName) {
+                        newObj.common.name = obj.common.name;
+                    }
+                    if (autoType) {
+                        newObj.common.type = obj.common.type;
+                    }
+                    if (autoStates) {
+                        newObj.common.states = obj.common.states;
+                    }
+                    if (autoRest) {
                         newObj.common.min = obj.common.min;
                         newObj.common.max = obj.common.max;
                         newObj.common.unit = obj.common.unit;
                         newObj.common.read = obj.common.read;
                         newObj.common.write = obj.common.write;
-                        newObj.common.states = obj.common.states;
                         //newObj.common.desc = obj.common.desc;
                     }
+                    /*
+                     if (autoRole) {
+                     newObj.common.type = obj.common.type;
+                     newObj.common.role = obj.common.role;
+                     newObj.common.min = obj.common.min;
+                     newObj.common.max = obj.common.max;
+                     newObj.common.unit = obj.common.unit;
+                     newObj.common.read = obj.common.read;
+                     newObj.common.write = obj.common.write;
+                     newObj.common.states = obj.common.states;
+                     //newObj.common.desc = obj.common.desc;
+                     }
+                     */
                 }
                 if (JSON.stringify(newObj) !== JSON.stringify(oldObj)) {
                     if (obj.type === 'channel' && logUpdateChannel) {
@@ -670,9 +701,14 @@ function myObjects(cb) {
         {_id: 'info.Commands.createSwitch', type: 'state', common: {name: 'Create dummy as switch in room FHEM (NAME room)', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         // info.Configurations
         {_id: 'info.Configurations.autoConfigFHEM', type: 'state', common: {name: 'FUNCTION - allow special configurations FHEM', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: 'info.Configurations.autoFunction', type: 'state', common: {name: 'FUNCTION - set function automatically (use Adapter Material)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: 'info.Configurations.autoRole', type: 'state', common: {name: 'FUNCTION - set role automatically (use Adapter Material)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
-        {_id: 'info.Configurations.autoSmartName', type: 'state', common: {name: 'FUNCTION - if fhem.0 set smartName automatically (Adapter Cloud)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Configurations.autoFunction', type: 'state', common: {name: 'FUNCTION - resync set function of object (use Adapter Material)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Configurations.autoRole', type: 'state', common: {name: 'FUNCTION - resync set role of object (use Adapter Material)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Configurations.autoSmartName', type: 'state', common: {name: 'FUNCTION - if fhem.0 resync set SmartName of object (Adapter Cloud/IoT)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        //02.05.19
+        {_id: 'info.Configurations.autoName', type: 'state', common: {name: 'FUNCTION - resync set type of object', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Configurations.autoType', type: 'state', common: {name: 'FUNCTION - resync set type of object', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Configurations.autoStates', type: 'state', common: {name: 'FUNCTION - resync set states of object', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        {_id: 'info.Configurations.autoRest', type: 'state', common: {name: 'FUNCTION - resync set read,write,min,max,unit of object', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
         {_id: 'info.Configurations.deleteUnusedObjects', type: 'state', common: {name: 'FUNCTION - delete unused objects automatically', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
         {_id: 'info.Configurations.allowedIOBin', type: 'state', common: {name: 'SYNC - allowed objects send2FHEM', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.ignoreObjectsInternalsTYPE', type: 'state', common: {name: 'SYNC - ignore device(s) TYPE (default: ' + ignoreObjectsInternalsTYPES + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
@@ -815,6 +851,11 @@ function getConfigurations(cb) {
     getSetting('info.Configurations.autoFunction', autoFunction, value => autoFunction = value);
     getSetting('info.Configurations.autoConfigFHEM', autoConfigFHEM, value => autoConfigFHEM = value);
     getSetting('info.Configurations.autoSmartName', autoSmartName, value => autoSmartName = value);
+    //02.05.19
+    getSetting('info.Configurations.autoName', autoName, value => autoName = value);
+    getSetting('info.Configurations.autoType', autoType, value => autoType = value);
+    getSetting('info.Configurations.autoStates', autoStates, value => autoStates = value);
+    getSetting('info.Configurations.autoRest', autoRest, value => autoRest = value);
     getSetting('info.Configurations.deleteUnusedObjects', deleteUnusedObjects, value => deleteUnusedObjects = value);
     getSetting('info.Configurations.oldState', oldState, value => {
         oldState = value;
