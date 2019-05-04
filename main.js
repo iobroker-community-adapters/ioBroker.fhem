@@ -26,7 +26,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '02.05.19';
+const buildDate = '04.05.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const ts_start = Date.now();   //21.04.19
 //Debug
@@ -35,7 +35,7 @@ let debugNAME = [];
 let autoRole = false;
 let autoFunction = false;
 let autoConfigFHEM = false;
-let autoSmartName = false;
+let autoSmartName = true;
 //02.05.19
 let autoName = false;
 let autoType = false;
@@ -536,7 +536,7 @@ function syncObjects(objects, cb) {
                     if (autoRole) {
                         newObj.common.role = obj.common.role;
                     }
-                    if (autoName) {
+                    if (autoName || newObj.type === 'channel') {
                         newObj.common.name = obj.common.name;
                     }
                     if (autoType) {
@@ -1285,7 +1285,8 @@ function parseObjects(objs, cb) {
                         _id: id,
                         type: 'state',
                         common: {
-                            name: objs[i].Name + ' ' + attr,
+                            //04.05.19 name: objs[i].Name + ' ' + attr,
+                            name: alias + ' ' + attr,
                             type: 'string',
                             role: 'text',
                             read: true,
@@ -1322,7 +1323,8 @@ function parseObjects(objs, cb) {
                         _id: id,
                         type: 'state',
                         common: {
-                            name: objs[i].Name + ' ' + attr,
+                            //040519 name: objs[i].Name + ' ' + attr,
+                            name: alias + ' ' + attr,
                             type: 'string',
                             role: 'text',
                             read: true,
@@ -1371,7 +1373,8 @@ function parseObjects(objs, cb) {
                         _id: id,
                         type: 'state',
                         common: {
-                            name: objs[i].Name + ' ' + parts[0],
+                            //040519 name: objs[i].Name + ' ' + parts[0],
+                            name: alias + ' ' + parts[0],
                             type: 'string',
                             role: 'state',
                             read: false,
@@ -1571,7 +1574,8 @@ function parseObjects(objs, cb) {
                             _id: id,
                             type: 'state',
                             common: {
-                                name: objs[i].Name + ' ' + attr,
+                                //040519 name: objs[i].Name + ' ' + attr,
+                                name: alias + ' ' + attr,
                                 //type: 'string',      19.04.09
                                 type: undefined,
                                 role: undefined,
@@ -1655,7 +1659,8 @@ function parseObjects(objs, cb) {
                                     _id: adapter.namespace + '.' + name + '.state_switch',
                                     type: 'state',
                                     common: {
-                                        name: objs[i].Name + ' ' + 'state_switch',
+                                        //040519 name: objs[i].Name + ' ' + 'state_switch',
+                                        name: alias + ' ' + 'state_switch',
                                         type: 'boolean',
                                         role: 'switch',
                                         read: true,
@@ -1712,7 +1717,8 @@ function parseObjects(objs, cb) {
                                     _id: adapter.namespace + '.' + name + '.state_boolean',
                                     type: 'state',
                                     common: {
-                                        name: objs[i].Name + ' ' + 'state_boolean',
+                                        //040519 name: objs[i].Name + ' ' + 'state_boolean',
+                                        name: alias + ' ' + 'state_boolean',
                                         type: 'boolean',
                                         role: SBrole,
                                         read: true,
@@ -1739,7 +1745,8 @@ function parseObjects(objs, cb) {
                                     _id: adapter.namespace + '.' + name + '.state_value',
                                     type: 'state',
                                     common: {
-                                        name: objs[i].Name + ' ' + 'state_value',
+                                        //040519 name: objs[i].Name + ' ' + 'state_value',
+                                        name: alias + ' ' + 'state_value',
                                         type: 'number',
                                         role: 'value',
                                         read: true,
@@ -1770,7 +1777,8 @@ function parseObjects(objs, cb) {
                                     _id: adapter.namespace + '.' + name + '.state_media',
                                     type: 'state',
                                     common: {
-                                        name: objs[i].Name + ' ' + 'state_media',
+                                        //040519 name: objs[i].Name + ' ' + 'state_media',
+                                        name: alias + ' ' + 'state_media',
                                         type: 'boolean',
                                         role: 'media.state',
                                         read: true,
