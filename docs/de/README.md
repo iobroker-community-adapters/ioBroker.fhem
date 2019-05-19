@@ -1,6 +1,6 @@
 ---
 title:       "FHEM-Adapter"
-lastChanged: "02.05.2019"
+lastChanged: "19.05.2019"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
 ---
 
@@ -389,7 +389,7 @@ Objekt                                           | Zugriff | Bescheibung | Wert
 &emsp;&emsp;&emsp;**autoName**                |  RW | Bei Resync Name state-Objekt überschreiben (default=`false`)  | true/false
 &emsp;&emsp;&emsp;**autoRest**                |  RW | Bei Resync min,max,unit,read,write state-Objekt überschreiben (default=`false`)  | true/false
 &emsp;&emsp;&emsp;**autoRole**                    |  RW | Rollen werden bei Neustart abhängig von Version FHEM Adaper vergeben  (default=`false`) Für Adapter `Material UI` wird `true`empfohlen. Bei `false` können Rollen selber vergeben werden und es erfolgt keine Änderung durch den Adapter. | true/false
-&emsp;&emsp;&emsp;**autoSamrtName**               |  RW | Automatische Anlage Smart Geräte für Adapter Cloud (default=`true`) Nur Instanz fhem.0! | true/false
+&emsp;&emsp;&emsp;**autoSamrtName**               |  RW | Bei Resync smartName überschreiben (default=`true`) Automatische Anlage Smart Geräte für Adapter Cloud. Nur Instanz fhem.0! | true/false
 &emsp;&emsp;&emsp;**autoStates**               |  RW | Bei Resync States state-Objekt überschreiben (default=`false`) | true/false
 &emsp;&emsp;&emsp;**autoType**               |  RW | Bei Resync Type state-Objekt überschreiben (default=`false`) | true/false
 &emsp;&emsp;&emsp;**deleteUnusedObjects**               |  RW | Bei Resync unbenutzte Objekte/States löschen (default=`true`) | true/false
