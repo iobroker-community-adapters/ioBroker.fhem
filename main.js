@@ -26,7 +26,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '04.05.19';
+const buildDate = '22.05.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const ts_start = Date.now();   //21.04.19
 //Debug
@@ -1448,11 +1448,15 @@ function parseObjects(objs, cb) {
                         obj.native.level_temperature = true;
                         if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
                             obj.common.smartName = {
-                                'de': alias
+                                'de': alias,
+                                //220519
+                                'smartType': 'THERMOSTAT'
                             };
                         }
                     }
                     if (dimPossibleSets.indexOf(parts[0]) !== -1) {
+                        //220519
+                        let typ='LIGHT';
                         Cstates = false;
                         obj.common.role = 'level.dimmer';
                         obj.common.unit = '%';
@@ -1460,10 +1464,13 @@ function parseObjects(objs, cb) {
                         if (objs[i].Attributes.subType === 'blindActuator') {
                             obj.common.role = 'level.blind';
                             obj.native.level_blind = true;
+                            typ='kein Typ';
                         }
                         if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
                             obj.common.smartName = {
-                                'de': alias
+                                'de': alias,
+                                //220519
+                                'smartType': typ
                             };
                         }
                     }
@@ -1487,7 +1494,9 @@ function parseObjects(objs, cb) {
                         obj.native.rgb = true;
                         if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
                             obj.common.smartName = {
-                                'de': alias
+                                'de': alias,
+                                //220519
+                                'smartType': 'LIGHT'
                             };
                         }
                     }
@@ -1498,7 +1507,9 @@ function parseObjects(objs, cb) {
                         obj.native.ct = true;
                         if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
                             obj.common.smartName = {
-                                'de': alias
+                                'de': alias,
+                                //220519
+                                'smartType': 'LIGHT'
                             };
                         }
                     }
@@ -1674,7 +1685,9 @@ function parseObjects(objs, cb) {
                                 //Schaltaktor aus FHEM in Cloud-Adapter hinzufügen                            
                                 if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
                                     obj_switch.common.smartName = {
-                                        'de': alias
+                                        'de': alias,
+                                        //220519
+                                        'smartType': 'SWITCH'
                                     };
                                 }
                                 if (objs[i].Internals.TYPE === 'HUEDevice' && objs[i].Attributes.subType !== 'switch') {
