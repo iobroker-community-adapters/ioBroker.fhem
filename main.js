@@ -26,7 +26,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '22.05.19';
+const buildDate = '01.06.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const ts_start = Date.now();   //21.04.19
 //Debug
