@@ -331,7 +331,7 @@ function parseEvent(event) {
                     } else if (obj && !obj.common.write) {
                         adapter.log.warn('event FHEM "' + event + '" > object "' + parts[2] + '" common.write not true');
                     } else if (obj && obj.common.write) {
-                        let setState = event.substr(parts[0].length + parts[1].length + parts[2].length + 2);
+                        let setState = event.substr(parts[0].length + parts[1].length + parts[2].length + 3);
                         logEventFHEMstate && adapter.log.info('event FHEM(s) "' + event + '" > ' + parts[2] + ' (' + setState + ')');
                         adapter.setForeignState(parts[2], setState, false);
                     }
