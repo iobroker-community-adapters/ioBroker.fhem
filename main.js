@@ -26,7 +26,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '06.06.19';
+const buildDate = '06.06.19a';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const ts_start = Date.now();   //21.04.19
 //Debug
@@ -1722,7 +1722,7 @@ function parseObjects(objs, cb) {
                                     if (SBrole === 'sensor')
                                         adapter.log.warn('for full function of sensor "' + name + '" use door,window,Tür,Fenster in alias of device');
                                 }
-                                if (valOrg === 'motion' || valOrg === 'nomotion' || valOrg === 'noMotion' || valOrg === "Motion') {
+                                if (valOrg === 'motion' || valOrg === 'nomotion' || valOrg === 'noMotion' || valOrg === 'Motion') {
                                     SBrole = 'sensor.motion';
                                     Funktion = 'sensor';
                                 }
