@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "fhem",
-        "version":                  "1.2.1",
+        "version":                  "1.2.2",
         "title":                    "FHEM connection",
         "desc":                     {
            "en": "FHEM",
@@ -9,6 +9,17 @@
            "ru": "FHEM"
 	    },
         "news": {
+	    "1.2.2" :{
+                "en": "Several fixes and changes",
+                "de": "Mehrere Korrekturen und Änderungen",
+                "ru": "Несколько исправлений и изменений",
+                "pt": "Várias correções e mudanças",
+                "nl": "Verschillende oplossingen en wijzigingen",
+                "fr": "Plusieurs corrections et modifications",
+                "it": "Diverse correzioni e modifiche",
+                "es": "Varias correcciones y cambios",
+                "pl": "Kilka poprawek i zmian"
+            },
 	    "1.2.1" :{
                 "en": "Several fixes and changes",
                 "de": "Mehrere Korrekturen und Änderungen",
