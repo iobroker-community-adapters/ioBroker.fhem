@@ -13,7 +13,7 @@ let telnetIn = null; // receive events
 let connected = false;
 const queue = [];
 const queueL = [];
-const eventP = [];
+const eventP = [];   //21.04.19
 let fhemIN = {};
 let fhemINs = {};
 let fhemIgnore = {};
@@ -26,9 +26,9 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '12.06.19';
+const buildDate = '06.06.19b';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
-const ts_start = Date.now();
+const ts_start = Date.now();   //21.04.19
 //Debug
 let debugNAME = [];
 //Configuratios
@@ -36,10 +36,12 @@ let autoRole = false;
 let autoFunction = false;
 let autoConfigFHEM = false;
 let autoSmartName = true;
+//02.05.19
 let autoName = false;
 let autoType = false;
 let autoStates = false;
 let autoRest = false;
+
 let oldState = false;
 let deleteUnusedObjects = true;
 let onlySyncNAME = [];
@@ -74,6 +76,7 @@ let logEventFHEMreading = false;
 let logEventFHEMstate = false;
 let logUnhandledEventFHEM = true;
 let logIgnoreConfigurations = true;
+let ts_update;   //need?
 //parseObject
 const dimPossibleSets = ['pct', 'brightness', 'dim'];
 const volumePossibleSets = ['Volume', 'volume', 'GroupVolume'];
@@ -180,6 +183,7 @@ function checkID(event, val, name, attr, id) {
     }
     return id;
 }
+
 function parseEvent(event) {
     if (!event) {
         return;
@@ -449,6 +453,7 @@ function parseEvent(event) {
                         lastNameQueue = parts[1];
                         lastNameTS = Date.now();
                     }
+
                 } else {
                     if (logEventFHEMreading && typ === 'reading') {
                         adapter.log.info('event FHEM(r) "' + event + '" > ' + id + ' ' + val);
@@ -492,7 +497,7 @@ function syncObjects(objects, cb) {
     }
     if (resync) {
         adapter.log.debug('[syncObjects] Abbruch durch resync');
-        cb();
+        cb();   //02.05.19
         return;
     }
     const obj = objects.shift();
@@ -521,10 +526,13 @@ function syncObjects(objects, cb) {
                     updateText = updateText + ' native';
                 }
                 if (JSON.stringify(obj.common) !== JSON.stringify(oldObj.common)) {
+                    //02.05.19
+                    //newObj.common.name = obj.common.name;
                     updateText = updateText + ' common';
                     if (autoSmartName) {
                         newObj.common.smartName = obj.common.smartName;
                     }
+                    //02.05.19
                     if (autoRole) {
                         newObj.common.role = obj.common.role;
                     }
@@ -543,6 +551,7 @@ function syncObjects(objects, cb) {
                         newObj.common.unit = obj.common.unit;
                         newObj.common.read = obj.common.read;
                         newObj.common.write = obj.common.write;
+                        //newObj.common.desc = obj.common.desc;
                     }
                 }
                 if (JSON.stringify(newObj) !== JSON.stringify(oldObj)) {
@@ -682,6 +691,7 @@ function myObjects(cb) {
         {_id: 'info.Configurations.autoFunction', type: 'state', common: {name: 'FUNCTION - resync set function of object (use Adapter Material)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
         {_id: 'info.Configurations.autoRole', type: 'state', common: {name: 'FUNCTION - resync set role of object (use Adapter Material)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
         {_id: 'info.Configurations.autoSmartName', type: 'state', common: {name: 'FUNCTION - if fhem.0 resync set SmartName of object (Adapter Cloud/IoT)', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
+        //02.05.19
         {_id: 'info.Configurations.autoName', type: 'state', common: {name: 'FUNCTION - resync set type of object', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
         {_id: 'info.Configurations.autoType', type: 'state', common: {name: 'FUNCTION - resync set type of object', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
         {_id: 'info.Configurations.autoStates', type: 'state', common: {name: 'FUNCTION - resync set states of object', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
@@ -828,6 +838,7 @@ function getConfigurations(cb) {
     getSetting('info.Configurations.autoFunction', autoFunction, value => autoFunction = value);
     getSetting('info.Configurations.autoConfigFHEM', autoConfigFHEM, value => autoConfigFHEM = value);
     getSetting('info.Configurations.autoSmartName', autoSmartName, value => autoSmartName = value);
+    //02.05.19
     getSetting('info.Configurations.autoName', autoName, value => autoName = value);
     getSetting('info.Configurations.autoType', autoType, value => autoType = value);
     getSetting('info.Configurations.autoStates', autoStates, value => autoStates = value);
@@ -900,7 +911,8 @@ function getDebug(cb) {
     });
 }
 function startSync(cb) {
-    adapter.log.debug('[startSync] start');
+    ts_update = Date.now();
+    adapter.log.debug('[startSync] start ts_update = ' + ts_update + ' connected = ' + connected);
     let send = 'jsonlist2';
     if (onlySyncNAME.length) {
         send = send + ' ' + onlySyncNAME + ',' + adapter.namespce + '.send2ioB';
@@ -976,6 +988,7 @@ function startSync(cb) {
                                                 adapter.log.info('> activate ' + adapter.namespace + '.alive room ioB_System every 5 minutes');
                                                 setAlive();
                                                 adapter.log.warn('> more info FHEM Adapter visit ' + linkREADME);
+                                                //processEventFHEM();                                                                                                      //21.04.19
                                                 adapter.log.info('END ===== Synchronised FHEM in ' + Math.round((Date.now() - ts_start)) + ' ms :-)');
                                                 synchro = false;
                                                 firstRun = false;
@@ -1066,6 +1079,7 @@ function parseObjects(objs, cb) {
     let id;
     let obj;
     let name;
+    let alias;
     let suche = 'no';
     const debugShow = '';
     if (firstRun) {
@@ -1177,13 +1191,15 @@ function parseObjects(objs, cb) {
             let isOn = false;
             let isOff = false;
             let setStates = {};
-            let alias = objs[i].Name;
+            //let alias = objs[i].Name;
             let Funktion = 'no';
             name = objs[i].Name.replace(/\./g, '_');
             id = adapter.namespace + '.' + name;
             //alias?
             if (objs[i].Attributes && objs[i].Attributes.alias) {
                 alias = objs[i].Attributes.alias;
+            } else {
+                alias = objs[i].Name;
             }
             obj = {
                 _id: id,
@@ -1253,13 +1269,11 @@ function parseObjects(objs, cb) {
                         (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.warn(debugN + ' >> ' + attr + ' = ' + objs[i].Attributes[attr] + ' > no sync - not included in ' + adapter.namespace + '.info.Config.allowedAttributes');
                         continue;
                     }
-                    id = adapter.namespace + '.' + name + '.' + 'Attributes.' + attr.replace(/\./g, '_');
                     const val = objs[i].Attributes[attr];
                     obj = {
-                        _id: id,
+                        _id: id + '.' + 'Attributes.' + attr.replace(/\./g, '_'),
                         type: 'state',
                         common: {
-                            //04.05.19 name: objs[i].Name + ' ' + attr,
                             name: alias + ' ' + attr,
                             type: 'string',
                             role: 'text',
@@ -1291,13 +1305,11 @@ function parseObjects(objs, cb) {
                         (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.warn(debugN + ' >> ' + attr + ' = ' + objs[i].Internals[attr] + ' > no sync - not included in ' + adapter.namespace + '.info.Config.allowedInternals');
                         continue;
                     }
-                    id = adapter.namespace + '.' + name + '.' + 'Internals.' + attr.replace(/\./g, '_');
                     const val = objs[i].Internals[attr];
                     obj = {
-                        _id: id,
+                        _id: id + '.' + 'Internals.' + attr.replace(/\./g, '_'),
                         type: 'state',
                         common: {
-                            //040519 name: objs[i].Name + ' ' + attr,
                             name: alias + ' ' + attr,
                             type: 'string',
                             role: 'text',
@@ -1337,13 +1349,12 @@ function parseObjects(objs, cb) {
                         continue;
                     }
                     const stateName = parts[0].replace(/\./g, '_');
-                    id = adapter.namespace + '.' + name + '.' + stateName;
                     if (parts[0] === 'off')
                         isOff = true;
                     if (parts[0] === 'on')
                         isOn = true;
                     obj = {
-                        _id: id,
+                        _id: id + '.' + stateName,
                         type: 'state',
                         common: {
                             name: alias + ' ' + parts[0],
@@ -1421,11 +1432,13 @@ function parseObjects(objs, cb) {
                         if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
                             obj.common.smartName = {
                                 'de': alias,
+                                //220519
                                 'smartType': 'THERMOSTAT'
                             };
                         }
                     }
                     if (dimPossibleSets.indexOf(parts[0]) !== -1) {
+                        //220519
                         let typ = 'LIGHT';
                         Cstates = false;
                         obj.common.role = 'level.dimmer';
@@ -1439,6 +1452,7 @@ function parseObjects(objs, cb) {
                         if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
                             obj.common.smartName = {
                                 'de': alias,
+                                //220519
                                 'smartType': typ
                             };
                         }
@@ -1464,6 +1478,7 @@ function parseObjects(objs, cb) {
                         if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
                             obj.common.smartName = {
                                 'de': alias,
+                                //220519
                                 'smartType': 'LIGHT'
                             };
                         }
@@ -1476,6 +1491,7 @@ function parseObjects(objs, cb) {
                         if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
                             obj.common.smartName = {
                                 'de': alias,
+                                //220519
                                 'smartType': 'LIGHT'
                             };
                         }
@@ -1502,6 +1518,7 @@ function parseObjects(objs, cb) {
                         obj.common.role = 'media.mode.shuffle';
                         obj.native.bol0 = true;
                     }
+
                     if (parts[0].indexOf('RGB') !== -1) {
                         obj.common.role = 'light.color.rgb';
                         obj.native.rgb = true;
@@ -1510,7 +1527,8 @@ function parseObjects(objs, cb) {
                         obj.common.role = 'light.color.hsv';
                         obj.native.hsv = true;
                     }
-                    (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + parts[0] + ' = ' + parts[1] + ' > ' + id + ' | type: ' + obj.common.type + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | min: ' + obj.common.min + ' | max: ' + obj.common.max + ' | unit: ' + obj.common.unit + ' | states: ' + JSON.stringify(obj.common.states));
+                    //(debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + parts[0] + ' = ' + parts[1] + ' > ' + id + ' | type: ' + obj.common.type + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | min: ' + obj.common.min + ' | max: ' + obj.common.max + ' | unit: ' + obj.common.unit + ' | states: ' + JSON.stringify(obj.common.states));
+                    (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + parts[0] + ' = ' + parts[1] + ' > ' + obj._id + ' | type: ' + obj.common.type + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | min: ' + obj.common.min + ' | max: ' + obj.common.max + ' | unit: ' + obj.common.unit + ' | states: ' + JSON.stringify(obj.common.states));
                     objects.push(obj);
                     states.push({
                         id: obj._id,
@@ -1521,7 +1539,8 @@ function parseObjects(objs, cb) {
                     setStates[stateName] = obj;
                     //Function?
                     if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
-                        setFunction(id, Funktion, name);
+                        //setFunction(id, Funktion, name);
+                        setFunction(obj._id, Funktion, name);
                     }
                 }
             }
@@ -1538,7 +1557,6 @@ function parseObjects(objs, cb) {
                         continue;
                     }
                     const stateName = attr.replace(/\./g, '_');
-                    id = adapter.namespace + '.' + name + '.' + stateName;
                     // PossibleSets?
                     let combined = false;
                     if (setStates[stateName]) {
@@ -1548,7 +1566,7 @@ function parseObjects(objs, cb) {
                         obj.native.Readings = true;
                     } else {
                         obj = {
-                            _id: id,
+                            _id: id + '.' + stateName,
                             type: 'state',
                             common: {
                                 name: alias + ' ' + attr,
@@ -1631,7 +1649,7 @@ function parseObjects(objs, cb) {
                                 obj.native.onoff = true;
                                 Funktion = 'switch';
                                 let obj_switch = {
-                                    _id: adapter.namespace + '.' + name + '.state_switch',
+                                    _id: id + '.state_switch',
                                     type: 'state',
                                     common: {
                                         name: alias + ' ' + 'state_switch',
@@ -1649,6 +1667,7 @@ function parseObjects(objs, cb) {
                                 if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
                                     obj_switch.common.smartName = {
                                         'de': alias,
+                                        //220519
                                         'smartType': 'SWITCH'
                                     };
                                 }
@@ -1689,9 +1708,10 @@ function parseObjects(objs, cb) {
                                     Funktion = 'sensor';
                                 }
                                 let obj_sensor = {
-                                    _id: adapter.namespace + '.' + name + '.state_boolean',
+                                    _id: id + '.state_boolean',
                                     type: 'state',
                                     common: {
+                                        //040519 name: objs[i].Name + ' ' + 'state_boolean',
                                         name: alias + ' ' + 'state_boolean',
                                         type: 'boolean',
                                         role: SBrole,
@@ -1716,9 +1736,10 @@ function parseObjects(objs, cb) {
                             if (typeof (convertFhemStateValue(val)) === "number") {
                                 obj.native.StateValue = true;
                                 let obj_sensor = {
-                                    _id: adapter.namespace + '.' + name + '.state_value',
+                                    _id: id + '.state_value',
                                     type: 'state',
                                     common: {
+                                        //040519 name: objs[i].Name + ' ' + 'state_value',
                                         name: alias + ' ' + 'state_value',
                                         type: 'number',
                                         role: 'value',
@@ -1747,7 +1768,7 @@ function parseObjects(objs, cb) {
                                     valMedia = true;
                                 }
                                 let obj_media = {
-                                    _id: adapter.namespace + '.' + name + '.state_media',
+                                    _id: id + '.state_media',
                                     type: 'state',
                                     common: {
                                         name: alias + ' ' + 'state_media',
@@ -1793,6 +1814,7 @@ function parseObjects(objs, cb) {
                         combined && (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' > ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' (Value Possible Set)');
                         !combined && (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' > ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | Funktion: ' + Funktion);
                         objects.push(obj);
+                        //???????????
                         if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
                             if (Funktion === 'switch')
                                 id = adapter.namespace + '.' + name;
@@ -1800,6 +1822,7 @@ function parseObjects(objs, cb) {
                                 id = adapter.namespace + '.' + name + '.state_switch';
                             setFunction(id, Funktion, name);
                         }
+
                     }
                 }
                 delete objs[i].Readings;
@@ -1999,6 +2022,21 @@ function convertFhemStateValue(val) {
         return 0;
     return val;
 }
+/*
+ function readValue(id, cb) {
+ telnetOut.send('get ' + fhemObjects[id].native.Name + ' ' + fhemObjects[id].native.Attribute, (err, result) => {
+ err && adapter.log.error('readValue: ' + err);
+ if (result) {
+ result = convertFhemValue(result.substring(fhemObjects[id].native.Name.length + fhemObjects[id].native.Attribute + 5));
+ if (result !== '') {
+ adapter.setForeignState(id, result, true);
+ adapter.log.info('readValue: ' + id + result);
+ }
+ }
+ cb && cb();
+ });
+ }
+ */
 function writeValue(id, val, cb) {
     adapter.log.debug('[writeValue] ' + id + ' ' + val);
     let cmd;
@@ -2119,6 +2157,7 @@ function writeValue(id, val, cb) {
     }
     // bol0?
     if (fhemObjects[id].native.bol0) {
+        //convertBol0(val);
         if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true) {
             val = '1';
         }
@@ -2237,6 +2276,7 @@ function unusedObjects(check, cb) {
                     debugNAME.indexOf(channelS[2]) !== -1 && adapter.log.info('[' + channelS[2] + '] detect "' + id + '" - readingsGroup > no delete');
                     continue;
                 }
+
                 if (check !== '*')
                     delete fhemObjects[id];
                 if (!fhemObjects[id]) {
