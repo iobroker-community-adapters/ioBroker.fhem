@@ -26,7 +26,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '12.06.19';
+const buildDate = '28.06.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const ts_start = Date.now();
 //Debug
@@ -328,7 +328,9 @@ function parseEvent(event) {
                         adapter.log.warn('event FHEM "' + event + '" > object "' + parts[2] + '" common.write not true');
                     } else if (obj && obj.common.write) {
                         let setState = event.substr(parts[0].length + parts[1].length + parts[2].length + 3);
+                        //280619
                         if (obj.common.type === 'number') {
+                            //adapter.log.warn('TYPE number!');
                             setState = parseInt(setState);
                         }
                         logEventFHEMstate && adapter.log.info('event FHEM(s) "' + event + '" > ' + parts[2] + ' (' + setState + ')');
