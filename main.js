@@ -26,7 +26,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '28.06.19';
+const buildDate = '12.07.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const ts_start = Date.now();
 //Debug
@@ -328,9 +328,7 @@ function parseEvent(event) {
                         adapter.log.warn('event FHEM "' + event + '" > object "' + parts[2] + '" common.write not true');
                     } else if (obj && obj.common.write) {
                         let setState = event.substr(parts[0].length + parts[1].length + parts[2].length + 3);
-                        //280619
                         if (obj.common.type === 'number') {
-                            //adapter.log.warn('TYPE number!');
                             setState = parseInt(setState);
                         }
                         logEventFHEMstate && adapter.log.info('event FHEM(s) "' + event + '" > ' + parts[2] + ' (' + setState + ')');
@@ -1302,7 +1300,6 @@ function parseObjects(objs, cb) {
                         _id: id,
                         type: 'state',
                         common: {
-                            //040519 name: objs[i].Name + ' ' + attr,
                             name: alias + ' ' + attr,
                             type: 'string',
                             role: 'text',
@@ -1674,7 +1671,8 @@ function parseObjects(objs, cb) {
                                 });
                             }
                             // (create state_boolean)
-                            if (typeof (convertFhemStateBoolean(valOrg)) === "boolean" && 'sonos myBroker HM_CFG_USB2 FB_Callmonitor'.indexOf(name) === -1) {
+                            //120719
+                            if ((typeof (convertFhemStateBoolean(valOrg)) === "boolean" || objs[i].Attributes.subType === 'motionDetector')&& 'sonos myBroker HM_CFG_USB2 FB_Callmonitor'.indexOf(name) === -1) {
                                 obj.native.StateBoolean = true;
                                 let SBrole = 'bol';
                                 if (valOrg === 'present' || valOrg === 'absent')
@@ -1689,7 +1687,8 @@ function parseObjects(objs, cb) {
                                     if (SBrole === 'sensor')
                                         adapter.log.warn('for full function of sensor "' + name + '" use door,window,Tür,Fenster in alias of device');
                                 }
-                                if (valOrg.toLowerCase() === 'motion' || valOrg.toLowerCase() === 'nomotion') {
+                                //120719
+                                if (valOrg.toLowerCase() === 'motion' || valOrg.toLowerCase() === 'nomotion' || objs[i].Attributes.subType === 'motionDetector') {
                                     SBrole = 'sensor.motion';
                                     Funktion = 'sensor';
                                 }
