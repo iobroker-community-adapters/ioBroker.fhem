@@ -4,16 +4,17 @@
 
 'use strict';
 const utils = require('@iobroker/adapter-core');
-const Telnet = require(__dirname + '/lib/telnet');
-const adapter = utils.Adapter('fhem');
+const adapterName  = require('./package.json').name.split('.').pop();
+const Telnet = require('./lib/telnet');
+
 // Telnet sessions
 let telnetOut = null; // read config and write values 
 let telnetIn = null; // receive events
+let adapter;
 
 let connected = false;
 const queue = [];
 const queueL = [];
-const eventP = [];
 let fhemIN = {};
 let fhemINs = {};
 let fhemIgnore = {};
@@ -28,10 +29,10 @@ let resync = false;
 let debug = false;
 const buildDate = '12.07.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
-const ts_start = Date.now();
-//Debug
+const tsStart = Date.now();
+// Debug
 let debugNAME = [];
-//Configuratios
+// Configurations
 let autoRole = false;
 let autoFunction = false;
 let autoConfigFHEM = false;
@@ -50,8 +51,8 @@ const ignoreObjectsInternalsTYPES = [];
 let ignoreObjectsInternalsTYPE = [];
 const ignoreObjectsInternalsNAMES = ['info'];
 let ignoreObjectsInternalsNAME = [];
-const ignoreObjectsAttributesroomS = [];
-let ignoreObjectsAttributesroom = [];
+const ignoreObjectsAttributesRoomS = [];
+let ignoreObjectsAttributesRoom = [];
 const ignorePossibleSetsS = ['getConfig', 'etRegRaw', 'egBulk', 'regSet', 'deviceMsg', 'CommandAccepted'];
 let ignorePossibleSets = [];
 const ignoreReadingsS = ['currentTrackPositionSimulated', 'currentTrackPositionSimulatedSec'];
@@ -82,95 +83,107 @@ const Utemperature = ['temperature', 'measured-temp', 'desired-temp', 'degrees',
 const rgbPossibleSets = ['rgb'];
 const Rindicator = ['reachable', 'presence', 'battery', 'Activity', 'present'];
 
-// is called when adapter shuts down - callback has to be called under any circumstances!
-adapter.on('unload', callback => {
-    try {
-        adapter.setState('info.connection', false, true);
-        if (telnetOut) {
-            telnetOut.destroy();
-            telnetOut = null;
+function startAdapter(options) {
+    options = options || {};
+
+    Object.assign(options, {name: adapterName});
+    adapter = new utils.Adapter(options);
+
+    // is called when adapter shuts down - callback has to be called under any circumstances!
+    adapter.on('unload', callback => {
+        try {
+            adapter.setState('info.connection', false, true);
+            if (telnetOut) {
+                telnetOut.destroy();
+                telnetOut = null;
+            }
+            if (telnetIn) {
+                telnetIn.destroy();
+                telnetIn = null;
+            }
+            callback();
+        } catch (e) {
+            callback();
         }
-        if (telnetIn) {
-            telnetIn.destroy();
-            telnetIn = null;
-        }
-        callback();
-    } catch (e) {
-        callback();
-    }
-});
-// is called if a subscribed state changes
-adapter.on('stateChange', (id, state) => {
-    let id_parts = id.split('.');
-    debugNAME.indexOf(id_parts[2]) !== -1 && adapter.log.info('[' + id_parts[2] + '] change state of ' + id + ' ' + JSON.stringify(state));
-    if (!state) {
-        adapter.log.debug('[stateChange] no state - ' + id);
-        return;
-    }
-    if (!Object.keys(fhemINs).length && id.indexOf(adapter.namespace) === -1 || id.indexOf(adapter.namespace) !== -1 && state.ack) {
-        adapter.log.debug('[stateChange] nothing to do - ' + id + ' ' + JSON.stringify(state));
-        return;
-    }
-    let idFHEM = id.replace(/-/g, '_');
-    if (fhemINs[idFHEM]) {
-        if (!fhemIN[idFHEM]) {
-            sendFHEM('define ' + idFHEM + ' dummy');
-            sendFHEM('attr ' + idFHEM + ' alias ' + idFHEM);
-            sendFHEM('attr ' + idFHEM + ' room ioB_IN');
-            sendFHEM('attr ' + idFHEM + ' comment Auto-created by ioBroker ' + adapter.namespace);
-            sendFHEM('set ' + idFHEM + ' ' + state.val);
-            fhemIN[idFHEM] = {id: idFHEM};
-            adapter.setState('info.Info.numberObjectsIOBout', Object.keys(fhemIN).length, true);
-            adapter.log.debug('[stateChange] write FHEM ioBin new' + id + ' ' + JSON.stringify(state));
-        } else {
-            sendFHEM('set ' + idFHEM + ' ' + state.val);
-            adapter.log.debug('[stateChange] write FHEM ioBin' + id + ' ' + JSON.stringify(state));
-        }
-        return;
-    }
-    // you can use the ack flag to detect if it is status (true) or command (false)
-    if (state && !state.ack) {
-        if (!connected) {
-            adapter.log.warn('Cannot send command to "' + id + '", because not connected');
+    });
+    
+    // is called if a subscribed state changes
+    adapter.on('stateChange', (id, state) => {
+        let id_parts = id.split('.');
+        debugNAME.indexOf(id_parts[2]) !== -1 && adapter.log.info('[' + id_parts[2] + '] change state of ' + id + ' ' + JSON.stringify(state));
+        if (!state) {
+            adapter.log.debug('[stateChange] no state - ' + id);
             return;
         }
-        if (id === adapter.namespace + '.info.resync') {
-            queue.push({
-                command: 'resync'
-            });
-            processQueue();
-            return;
-        } else if (fhemObjects[id] || id.indexOf(adapter.namespace + '.info.Commands') !== -1 || id.indexOf(adapter.namespace + '.info.Debug') !== -1 || id.indexOf(adapter.namespace + '.info.Settings') !== -1 || id.indexOf(adapter.namespace + '.info.Configurations') !== -1) {
-            queue.push({
-                command: 'write',
-                id: id,
-                val: state.val
-            });
-            adapter.log.debug('[stateChange] write FHEM - ' + id + ' ' + JSON.stringify(state));
-            processQueue();
+        if (!Object.keys(fhemINs).length && id.indexOf(adapter.namespace) === -1 || id.indexOf(adapter.namespace) !== -1 && state.ack) {
+            adapter.log.debug('[stateChange] nothing to do - ' + id + ' ' + JSON.stringify(state));
             return;
         }
-    }
-    adapter.log.warn('[stateChange] no match ' + id + ' ' + JSON.stringify(state));
-});
-// Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
-adapter.on('message', obj => {
-    if (typeof obj === 'object' && obj.message) {
-        if (obj.command === 'send') {
-            // e.g. send email or pushover or whatever
-            console.log('send command');
-            // Send response in callback if required
-            if (obj.callback) {
-                adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
+        let idFHEM = id.replace(/-/g, '_');
+        if (fhemINs[idFHEM]) {
+            if (!fhemIN[idFHEM]) {
+                sendFHEM('define ' + idFHEM + ' dummy');
+                sendFHEM('attr ' + idFHEM + ' alias ' + idFHEM);
+                sendFHEM('attr ' + idFHEM + ' room ioB_IN');
+                sendFHEM('attr ' + idFHEM + ' comment Auto-created by ioBroker ' + adapter.namespace);
+                sendFHEM('set ' + idFHEM + ' ' + state.val);
+                fhemIN[idFHEM] = {id: idFHEM};
+                adapter.setState('info.Info.numberObjectsIOBout', Object.keys(fhemIN).length, true);
+                adapter.log.debug('[stateChange] write FHEM ioBin new' + id + ' ' + JSON.stringify(state));
+            } else {
+                sendFHEM('set ' + idFHEM + ' ' + state.val);
+                adapter.log.debug('[stateChange] write FHEM ioBin' + id + ' ' + JSON.stringify(state));
+            }
+            return;
+        }
+        // you can use the ack flag to detect if it is status (true) or command (false)
+        if (state && !state.ack) {
+            if (!connected) {
+                adapter.log.warn('Cannot send command to "' + id + '", because not connected');
+                return;
+            }
+            if (id === adapter.namespace + '.info.resync') {
+                queue.push({
+                    command: 'resync'
+                });
+                processQueue();
+                return;
+            } else if (fhemObjects[id] || id.indexOf(adapter.namespace + '.info.Commands') !== -1 || id.indexOf(adapter.namespace + '.info.Debug') !== -1 || id.indexOf(adapter.namespace + '.info.Settings') !== -1 || id.indexOf(adapter.namespace + '.info.Configurations') !== -1) {
+                queue.push({
+                    command: 'write',
+                    id: id,
+                    val: state.val
+                });
+                adapter.log.debug('[stateChange] write FHEM - ' + id + ' ' + JSON.stringify(state));
+                processQueue();
+                return;
             }
         }
-    }
-});
-// is called when databases are connected and adapter received configuration.
-// start here!
-adapter.on('ready', main);
-//========================================================================================================================================== start
+        adapter.log.warn('[stateChange] no match ' + id + ' ' + JSON.stringify(state));
+    });
+    
+    // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
+    adapter.on('message', obj => {
+        if (typeof obj === 'object' && obj.message) {
+            if (obj.command === 'send') {
+                // e.g. send email or pushover or whatever
+                console.log('send command');
+                // Send response in callback if required
+                if (obj.callback) {
+                    adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
+                }
+            }
+        }
+    });
+    
+    // is called when databases are connected and adapter received configuration.
+    // start here!
+    adapter.on('ready', main);
+    
+    return adapter;
+}
 
+//========================================================================================================================================== start
 function checkID(event, val, name, attr, id) {
     for (const f in fhemObjects) {
         if (fhemObjects.hasOwnProperty(f) && fhemObjects[f].native.Name === name && fhemObjects[f].native.Attribute === attr) {
@@ -319,7 +332,7 @@ function parseEvent(event) {
             }
             //send2ioB ?
             if (parts[1] === adapter.namespace + '.send2ioB') {
-                adapter.getForeignObject(parts[2], function (err, obj) {
+                adapter.getForeignObject(parts[2], (err, obj) => {
                     if (err) {
                         adapter.log.error('error:' + err);
                     } else if (!obj) {
@@ -357,11 +370,11 @@ function parseEvent(event) {
                     adapter.setState(id_state + '.state_media', val, true);
                 }
                 // state_bollean?
-                if (fhemObjects[id_state + '.state_boolean'] && typeof (convertFhemStateBoolean(parts[2])) === "boolean") {
+                if (fhemObjects[id_state + '.state_boolean'] && typeof (convertFhemStateBoolean(parts[2])) === 'boolean') {
                     adapter.setState(id_state + '.state_boolean', convertFhemStateBoolean(parts[2]), true);
                 }
                 // state_value?
-                if (fhemObjects[id_state + '.state_value'] && typeof (convertFhemStateValue(parts[2])) === "number") {
+                if (fhemObjects[id_state + '.state_value'] && typeof (convertFhemStateValue(parts[2])) === 'number') {
                     adapter.setState(id_state + '.state_value', convertFhemStateValue(parts[2]), true);
                 }
                 // special for ZWave dim
@@ -387,9 +400,9 @@ function parseEvent(event) {
         if (pos !== -1) {
             let typ;
             let idTest = checkID(event, val, parts[1], 'state', id);
-            adapter.getState(idTest, function (err, state) {
+            adapter.getState(idTest, (err, state) => {
                 err && adapter.log.error('[parseEvent] rs? ' + err);
-                if (state !== null && typeof (state.val) !== "boolean" && state.val.substring(0, parts[2].length) === parts[2]) {
+                if (state !== null && typeof (state.val) !== 'boolean' && state.val.substring(0, parts[2].length) === parts[2]) {
                     val = convertFhemValue(event.substring(parts[0].length + parts[1].length + 2));
                     id = checkID(event, val, parts[1], 'state', id);
                     typ = 'state';
@@ -465,7 +478,6 @@ function parseEvent(event) {
                         ts: ts
                     });
                 }
-                return;
             });
         }
     } catch (err) {
@@ -632,7 +644,7 @@ function syncFunction(funktion, members, cb) {
                 },
                 native: {}
             };
-            adapter.log.debug('create' + obj._id + '"');
+            adapter.log.debug('create "' + obj._id + '"');
             adapter.setForeignObject(obj._id, obj, err => {
                 err && adapter.log.error('[syncFunction] ' + err);
                 cb();
@@ -693,7 +705,7 @@ function myObjects(cb) {
         {_id: 'info.Configurations.allowedIOBin', type: 'state', common: {name: 'SYNC - allowed objects send2FHEM', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.ignoreObjectsInternalsTYPE', type: 'state', common: {name: 'SYNC - ignore device(s) TYPE (default: ' + ignoreObjectsInternalsTYPES + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.ignoreObjectsInternalsNAME', type: 'state', common: {name: 'SYNC - ignore device(s) NAME (default: ' + ignoreObjectsInternalsNAMES + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
-        {_id: 'info.Configurations.ignoreObjectsAttributesroom', type: 'state', common: {name: 'SYNC - ignore device(s) of room(s) (default: ' + ignoreObjectsAttributesroomS + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
+        {_id: 'info.Configurations.ignoreObjectsAttributesroom', type: 'state', common: {name: 'SYNC - ignore device(s) of room(s) (default: ' + ignoreObjectsAttributesRoomS + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.allowedAttributes', type: 'state', common: {name: 'SYNC - allowed Attributes (default:  ' + allowedAttributesS + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.allowedInternals', type: 'state', common: {name: 'SYNC - allowed Internals (default: ' + allowedInternalsS + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.ignoreReadings', type: 'state', common: {name: 'SYNC - ignore Readings (default: ' + ignoreReadingsS + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
@@ -808,7 +820,7 @@ function getConfig(id, config, cb) {
                 err && adapter.log.error('[getConfig] ' + err);
                 adapter.log.debug('[getConfig] getState ' + id + ': ' + JSON.stringify(obj));
                 if (obj && obj.val) {
-                    const part = obj.val.split(",");
+                    const part = obj.val.split(',');
                     if (part[0]) {
                         for (const i in part) {
                             config.push(part[i].trim());
@@ -842,8 +854,8 @@ function getConfigurations(cb) {
     allowedIOBin = allowedIOBinS.slice();
     getConfig('info.Configurations.allowedIOBin', allowedIOBin, value => {
     });
-    ignoreObjectsAttributesroom = ignoreObjectsAttributesroomS.slice();
-    getConfig('info.Configurations.ignoreObjectsAttributesroom', ignoreObjectsAttributesroom, value => {
+    ignoreObjectsAttributesRoom = ignoreObjectsAttributesRoomS.slice();
+    getConfig('info.Configurations.ignoreObjectsAttributesroom', ignoreObjectsAttributesRoom, value => {
     });
     ignoreObjectsInternalsNAME = ignoreObjectsInternalsNAMES.slice();
     getConfig('info.Configurations.ignoreObjectsInternalsNAME', ignoreObjectsInternalsNAME, value => {
@@ -883,7 +895,7 @@ function getDebug(cb) {
     adapter.getState('info.Debug.activate', (err, obj) => {
         err && adapter.log.error('[getDebug] ' + err);
         if (obj) {
-            const part = obj.val.split(",");
+            const part = obj.val.split(',');
             if (part[0]) {
                 for (const i in part) {
                     debugNAME.push(part[i].trim());
@@ -979,7 +991,7 @@ function startSync(cb) {
                                                 adapter.log.info('> activate ' + adapter.namespace + '.alive room ioB_System every 5 minutes');
                                                 setAlive();
                                                 adapter.log.warn('> more info FHEM Adapter visit ' + linkREADME);
-                                                adapter.log.info('END ===== Synchronised FHEM in ' + Math.round((Date.now() - ts_start)) + ' ms :-)');
+                                                adapter.log.info('END ===== Synchronised FHEM in ' + Math.round((Date.now() - tsStart)) + ' ms :-)');
                                                 synchro = false;
                                                 firstRun = false;
                                                 cb && cb();
@@ -1096,7 +1108,7 @@ function parseObjects(objs, cb) {
         adapter.setState('info.Info.roomioBroker', iobroker, true);
         iobroker && adapter.log.info('> only sync device(s) from room(s) = ' + onlySyncRoom + ' - ' + adapter.namespace + '.info.Info.roomioBroker (' + iobroker + ')');
         onlySyncNAME.length && adapter.log.info('> only sync device(s) = ' + onlySyncNAME + ' - ' + adapter.namespace + '.info.Configurations.onlySyncNAME (' + onlySyncNAME + ')');
-        ignoreObjectsAttributesroom.length && adapter.log.info('> no sync device(s) of room = ' + ignoreObjectsAttributesroom + ' - ' + adapter.namespace + '.info.Configurations.ignoreObjectsAttributesroom (' + ignoreObjectsAttributesroom + ')');
+        ignoreObjectsAttributesRoom.length && adapter.log.info('> no sync device(s) of room = ' + ignoreObjectsAttributesRoom + ' - ' + adapter.namespace + '.info.Configurations.ignoreObjectsAttributesroom (' + ignoreObjectsAttributesRoom + ')');
         ignoreObjectsInternalsNAME.length && adapter.log.info('> no sync device(s) with Internals:NAME = ' + ignoreObjectsInternalsNAME + ' - ' + adapter.namespace + '.info.Configurations.ignoreObjectsInternalsNAME (' + ignoreObjectsInternalsNAME + ')');
         ignoreObjectsInternalsTYPE.length && adapter.log.info('> no sync device(s) with Internals:TYPE = ' + ignoreObjectsInternalsTYPE + ' - ' + adapter.namespace + '.info.Configurations.ignoreObjectsInternalsTYPE (' + ignoreObjectsInternalsTYPE + ')');
     }
@@ -1128,8 +1140,8 @@ function parseObjects(objs, cb) {
                 (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - included in ' + adapter.namespace + '.info.Config.ignoreObjectsInternalsNAME');
                 continue;
             }
-            if (ignoreObjectsAttributesroom.indexOf(objs[i].Attributes.room) !== -1) {
-                logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | room: ' + ignoreObjectsAttributesroom + ' | ' + ' ' + (i + 1) + '/' + objs.length);
+            if (ignoreObjectsAttributesRoom.indexOf(objs[i].Attributes.room) !== -1) {
+                logIgnoreConfigurations && adapter.log.info('ignore FHEM device "' + objs[i].Name + '" | room: ' + ignoreObjectsAttributesRoom + ' | ' + ' ' + (i + 1) + '/' + objs.length);
                 (debugNAME.indexOf(objs[i].Name) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - included in ' + adapter.namespace + '.info.Config.ignoreObjectsAttributesroom');
                 continue;
             }
@@ -1672,7 +1684,7 @@ function parseObjects(objs, cb) {
                             }
                             // (create state_boolean)
                             //120719
-                            if ((typeof (convertFhemStateBoolean(valOrg)) === "boolean" || objs[i].Attributes.subType === 'motionDetector')&& 'sonos myBroker HM_CFG_USB2 FB_Callmonitor'.indexOf(name) === -1) {
+                            if ((typeof (convertFhemStateBoolean(valOrg)) === 'boolean' || objs[i].Attributes.subType === 'motionDetector')&& 'sonos myBroker HM_CFG_USB2 FB_Callmonitor'.indexOf(name) === -1) {
                                 obj.native.StateBoolean = true;
                                 let SBrole = 'bol';
                                 if (valOrg === 'present' || valOrg === 'absent')
@@ -1717,7 +1729,7 @@ function parseObjects(objs, cb) {
                                 });
                             }
                             // (create state_value)
-                            if (typeof (convertFhemStateValue(val)) === "number") {
+                            if (typeof (convertFhemStateValue(val)) === 'number') {
                                 obj.native.StateValue = true;
                                 let obj_sensor = {
                                     _id: adapter.namespace + '.' + name + '.state_value',
@@ -2241,8 +2253,9 @@ function unusedObjects(check, cb) {
                     debugNAME.indexOf(channelS[2]) !== -1 && adapter.log.info('[' + channelS[2] + '] detect "' + id + '" - readingsGroup > no delete');
                     continue;
                 }
-                if (check !== '*')
+                if (check !== '*') {
                     delete fhemObjects[id];
+                }
                 if (!fhemObjects[id]) {
                     if (channelS[3] === 'Internals' && channelS[4] === 'TYPE') {
                         queueL.push({
@@ -2333,6 +2346,7 @@ function setAlive() {
     setTimeout(setAlive, 300000);
 }
 //end ==================================================================================================================================
+
 function main() {
     adapter.log.debug('[main] start');
     adapter.config.host = adapter.config.host || '127.0.0.1';
@@ -2387,9 +2401,7 @@ function main() {
             connected = false;
             adapter.setState('info.connection', false, true);
             adapter.log.warn('Disconnected FHEM telnet ' + adapter.config.host + ':' + adapter.config.port + ' > Auto Restart Adapter!');
-            setTimeout(function () {
-                adapter.restart();
-            }, 1000);
+            setTimeout(() => adapter.restart(), 1000);
         }
     });
     telnetOut.on('close', () => {
@@ -2400,4 +2412,13 @@ function main() {
             adapter.setState('info.connection', false, true);
         }
     });
+}
+
+// If started as allInOne mode => return function to create instance
+// @ts-ignore
+if (module.parent) {
+    module.exports = startAdapter;
+} else {
+    // or start the instance directly
+    startAdapter();
 }

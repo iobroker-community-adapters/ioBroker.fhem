@@ -1,200 +1,114 @@
 {
-    "common": {
-        "name":                     "fhem",
-        "version":                  "1.2.2",
-        "title":                    "FHEM connection",
-        "desc":                     {
-           "en": "FHEM",
-           "de": "FHEM",
-           "ru": "FHEM"
-	    },
-        "news": {
-	    "1.2.2" :{
-                "en": "Several fixes and changes",
-                "de": "Mehrere Korrekturen und Änderungen",
-                "ru": "Несколько исправлений и изменений",
-                "pt": "Várias correções e mudanças",
-                "nl": "Verschillende oplossingen en wijzigingen",
-                "fr": "Plusieurs corrections et modifications",
-                "it": "Diverse correzioni e modifiche",
-                "es": "Varias correcciones y cambios",
-                "pl": "Kilka poprawek i zmian"
-            },
-	    "1.2.1" :{
-                "en": "Several fixes and changes",
-                "de": "Mehrere Korrekturen und Änderungen",
-                "ru": "Несколько исправлений и изменений",
-                "pt": "Várias correções e mudanças",
-                "nl": "Verschillende oplossingen en wijzigingen",
-                "fr": "Plusieurs corrections et modifications",
-                "it": "Diverse correzioni e modifiche",
-                "es": "Varias correcciones y cambios",
-                "pl": "Kilka poprawek i zmian"
-            },
-	    "1.2.0" :{
-                "en": "Several fixes and changes",
-                "de": "Mehrere Korrekturen und Änderungen",
-                "ru": "Несколько исправлений и изменений",
-                "pt": "Várias correções e mudanças",
-                "nl": "Verschillende oplossingen en wijzigingen",
-                "fr": "Plusieurs corrections et modifications",
-                "it": "Diverse correzioni e modifiche",
-                "es": "Varias correcciones y cambios",
-                "pl": "Kilka poprawek i zmian"
-            },
-	    "1.1.1" :{
-                "en": "Several fixes and changes",
-                "de": "Mehrere Korrekturen und Änderungen",
-                "ru": "Несколько исправлений и изменений",
-                "pt": "Várias correções e mudanças",
-                "nl": "Verschillende oplossingen en wijzigingen",
-                "fr": "Plusieurs corrections et modifications",
-                "it": "Diverse correzioni e modifiche",
-                "es": "Varias correcciones y cambios",
-                "pl": "Kilka poprawek i zmian"
-            },
-            "1.1.0": {
-              "en": "Big changes",
-              "de": "Große veränderungen",
-              "ru": "Большие изменения",
-              "pt": "Grandes mudanças",
-              "nl": "Grote veranderingen",
-              "fr": "Grands changements",
-              "it": "Grandi cambiamenti",
-              "es": "Grandes cambios",
-              "pl": "Duże zmiany"
-            },
-            "1.0.0": {
-              "en": "Min/max are defined as number now",
-              "de": "Min / Max sind jetzt als Nummer definiert",
-              "ru": "Мин / макс определяются как число сейчас",
-              "pt": "Min / max são definidos como número agora",
-              "nl": "Min / max worden nu als nummer gedefinieerd",
-              "fr": "Min / max sont définis comme un nombre maintenant",
-              "it": "Min / max sono definiti come numero ora",
-              "es": "Min / max se definen como número ahora",
-              "pl": "Min / max są teraz zdefiniowane jako liczba"
-            },
-            "0.5.6" : {
-              "en": "Some roles were updated",
-              "de": "Einige Rollen wurden aktualisiert",
-              "ru": "Некоторые роли были обновлены",
-              "pt": "Algumas funções foram atualizadas",
-              "nl": "Sommige rollen zijn bijgewerkt",
-              "fr": "Certains rôles ont été mis à jour",
-              "it": "Alcuni ruoli sono stati aggiornati",
-              "es": "Algunos roles fueron actualizados",
-              "pl": "Niektóre role zostały zaktualizowane"
-            },
-            "0.5.5" :{
-                "en": "Several fixes and changes\nAdmin3 support",
-                "de": "Mehrere Korrekturen und Änderungen\nAdmin3-Unterstützung",
-                "ru": "Несколько исправлений и изменений\nПоддержка Admin3",
-                "pt": "Várias correções e mudanças\nSuporte Admin3",
-                "nl": "Verschillende oplossingen en wijzigingen\nAdmin3-ondersteuning",
-                "fr": "Plusieurs correctifs et modifications\nSupport Admin3",
-                "it": "Diverse correzioni e modifiche\nSupporto per Admin3",
-                "es": "Varias correcciones y cambios\nSoporte de Admin3",
-                "pl": "Kilka poprawek i zmian\nObsługa Admin3"
-            },
-            "0.5.2" :{
-                "en": "Several fixes and changes",
-                "de": "Mehrere Korrekturen und Änderungen",
-                "ru": "Несколько исправлений и изменений",
-                "pt": "Várias correções e mudanças",
-                "nl": "Verschillende oplossingen en wijzigingen",
-                "fr": "Plusieurs corrections et modifications",
-                "it": "Diverse correzioni e modifiche",
-                "es": "Varias correcciones y cambios",
-                "pl": "Kilka poprawek i zmian"
-            },
-            "0.5.0" :{
-                "en": "Several fixes and changes",
-                "de": "Mehrere Korrekturen und Änderungen",
-                "ru": "Несколько исправлений и изменений",
-                "pt": "Várias correções e mudanças",
-                "nl": "Verschillende oplossingen en wijzigingen",
-                "fr": "Plusieurs corrections et modifications",
-                "it": "Diverse correzioni e modifiche",
-                "es": "Varias correcciones y cambios",
-                "pl": "Kilka poprawek i zmian"
-            },
-            "0.4.2" :{
-                "en": "Fix wordings",
-                "de": "Fixe Formulierungen",
-                "ru": "Исправить формулировки",
-                "pt": "Corrigir formulações",
-                "nl": "Corrigeer formuleringen",
-                "fr": "Corriger les libellés",
-                "it": "Diciture fisse",
-                "es": "Reparar frases",
-                "pl": "Popraw tekst"
-            },
-          "0.4.1" :{
-            "en": "add link to FHEM im admin",
-            "de": "Link zu FHEM im Admin hinzugefügt",
-            "ru": "Добавлена ссылка на FHEM в admin"
-          },
-          "0.4.0" :{
-            "en": "fix some types\ndefine custom prompt",
-            "de": "Korrigiere manche Typen\nMan kann Prompt definieren",
-            "ru": "Исправлено несколько типов\nМожно задать свой промпт"
-          },
-          "0.3.0" :{
-            "en": "add password for telnet\nfix some types",
-            "de": "Passwordunterstützung hinzugefügt\nKorrigiere manche Typen",
-            "ru": "Добавлена поддержка пароля\nИсправлено несколько типов"
-          },
-          "0.2.2" :{
-            "en": "implement On/Off state and fix RGB\nadd debug output by control",
-            "de": "implement On/Off state and fix RGB\nadd debug output by control",
-            "ru": "implement On/Off state and fix RGB\nadd debug output by control"
-          },
-          "0.2.1" :{
-            "en": "support of RGB values for control",
-            "de": "support of RGB values for control",
-            "ru": "support of RGB values for control"
-          },
-          "0.2.0" :{
-            "en": "implemented write\ntry to read meta information if unknown event received",
-            "de": "implemented write\ntry to read meta information if unknown event received",
-            "ru": "implemented write\ntry to read meta information if unknown event received"
-          },
-          "0.1.0" :{
-            "en": "initial checkin",
-            "de": "initial checkin",
-            "ru": "initial checkin"
-          }
-        },
-        "license": "MIT",
-	"localLink":                "http://%host%:8083",
-        "platform":                 "Javascript/Node.js",
-        "mode":                     "daemon",
-        "icon":                     "fhem.png",
-        "enabled":                  true,
-        "materialize":              true,
-	    "extIcon":                  "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.fhem/master/admin/fhem.png",
-	    "keywords":                 ["FHEM"],
-        "readme":                   "https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/README.md",
-	    "loglevel":                 "info",
-        "type":                     "iot-systems",
-	"authors": [
-            "bluefox <dogafox@gmail.com>"
-        ]
+  "common": {
+    "name": "fhem",
+    "version": "1.3.0",
+    "title": "FHEM connection",
+    "desc": {
+      "en": "FHEM",
+      "de": "FHEM",
+      "ru": "FHEM"
     },
-    "native": {
-      "port":                 7072,
-      "host":                 "127.0.0.1",
-      "reconnectTimeout":     30000,
-      "password":             "",
-      "prompt":               "fhem>"
+    "news": {
+      "1.3.0": {
+        "en": "Compact mode was added",
+        "de": "Kompaktmodus wurde hinzugefügt",
+        "ru": "Компактный режим был добавлен",
+        "pt": "Modo compacto foi adicionado",
+        "nl": "Compact-modus is toegevoegd",
+        "fr": "Le mode compact a été ajouté",
+        "it": "È stata aggiunta la modalità compatta",
+        "es": "Se agregó el modo compacto",
+        "pl": "Dodano tryb kompaktowy",
+        "zh-cn": "紧凑模式已添加"
+      },
+      "1.2.2": {
+        "en": "Several fixes and changes",
+        "de": "Mehrere Korrekturen und Änderungen",
+        "ru": "Несколько исправлений и изменений",
+        "pt": "Várias correções e mudanças",
+        "nl": "Verschillende oplossingen en wijzigingen",
+        "fr": "Plusieurs corrections et changements",
+        "it": "Diverse correzioni e modifiche",
+        "es": "Varias correcciones y cambios.",
+        "pl": "Kilka poprawek i zmian",
+        "zh-cn": "几个修复和更改"
+      },
+      "1.2.1": {
+        "en": "Several fixes and changes",
+        "de": "Mehrere Korrekturen und Änderungen",
+        "ru": "Несколько исправлений и изменений",
+        "pt": "Várias correções e mudanças",
+        "nl": "Verschillende oplossingen en wijzigingen",
+        "fr": "Plusieurs corrections et modifications",
+        "it": "Diverse correzioni e modifiche",
+        "es": "Varias correcciones y cambios",
+        "pl": "Kilka poprawek i zmian"
+      },
+      "1.2.0": {
+        "en": "Several fixes and changes",
+        "de": "Mehrere Korrekturen und Änderungen",
+        "ru": "Несколько исправлений и изменений",
+        "pt": "Várias correções e mudanças",
+        "nl": "Verschillende oplossingen en wijzigingen",
+        "fr": "Plusieurs corrections et modifications",
+        "it": "Diverse correzioni e modifiche",
+        "es": "Varias correcciones y cambios",
+        "pl": "Kilka poprawek i zmian"
+      },
+      "1.1.1": {
+        "en": "Several fixes and changes",
+        "de": "Mehrere Korrekturen und Änderungen",
+        "ru": "Несколько исправлений и изменений",
+        "pt": "Várias correções e mudanças",
+        "nl": "Verschillende oplossingen en wijzigingen",
+        "fr": "Plusieurs corrections et modifications",
+        "it": "Diverse correzioni e modifiche",
+        "es": "Varias correcciones y cambios",
+        "pl": "Kilka poprawek i zmian"
+      },
+      "1.1.0": {
+        "en": "Big changes",
+        "de": "Große veränderungen",
+        "ru": "Большие изменения",
+        "pt": "Grandes mudanças",
+        "nl": "Grote veranderingen",
+        "fr": "Grands changements",
+        "it": "Grandi cambiamenti",
+        "es": "Grandes cambios",
+        "pl": "Duże zmiany"
+      }
     },
-    "objects": [
-
+    "license": "MIT",
+    "localLink": "http://%host%:8083",
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "icon": "fhem.png",
+    "enabled": true,
+    "materialize": true,
+    "compact": true,
+    "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.fhem/master/admin/fhem.png",
+    "keywords": [
+      "FHEM"
     ],
+    "readme": "https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/README.md",
+    "loglevel": "info",
+    "type": "iot-systems",
+    "authors": [
+      "bluefox <dogafox@gmail.com>"
+    ]
+  },
+  "native": {
+    "port": 7072,
+    "host": "127.0.0.1",
+    "reconnectTimeout": 30000,
+    "password": "",
+    "prompt": "fhem>"
+  },
+  "objects": [
+  ],
   "instanceObjects": [
     {
-      "_id":  "info",
+      "_id": "info",
       "type": "channel",
       "common": {
         "name": "Information"
@@ -202,28 +116,28 @@
       "native": {}
     },
     {
-      "_id":  "info.connection",
+      "_id": "info.connection",
       "type": "state",
       "common": {
-        "role":  "indicator.connected",
-        "name":  "If connected to FHEM server",
-        "type":  "boolean",
-        "read":  true,
+        "role": "indicator.connected",
+        "name": "If connected to FHEM server",
+        "type": "boolean",
+        "read": true,
         "write": false,
-        "def":   false
+        "def": false
       },
       "native": {}
     },
     {
-      "_id":  "info.resync",
+      "_id": "info.resync",
       "type": "state",
       "common": {
-        "role":  "state",
-        "name":  "read all states from FHEM anew",
-        "type":  "boolean",
-        "read":  true,
+        "role": "state",
+        "name": "read all states from FHEM anew",
+        "type": "boolean",
+        "read": true,
         "write": true,
-        "def":   false
+        "def": false
       },
       "native": {}
     }
