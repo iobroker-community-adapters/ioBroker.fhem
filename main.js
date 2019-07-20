@@ -4,7 +4,7 @@
 
 'use strict';
 const utils = require('@iobroker/adapter-core');
-const adapterName  = require('./package.json').name.split('.').pop();
+const adapterName = require('./package.json').name.split('.').pop();
 const Telnet = require('./lib/telnet');
 
 // Telnet sessions
@@ -27,7 +27,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '12.07.19';
+const buildDate = '20.07.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 // Debug
@@ -106,7 +106,7 @@ function startAdapter(options) {
             callback();
         }
     });
-    
+
     // is called if a subscribed state changes
     adapter.on('stateChange', (id, state) => {
         let id_parts = id.split('.');
@@ -119,7 +119,11 @@ function startAdapter(options) {
             adapter.log.debug('[stateChange] nothing to do - ' + id + ' ' + JSON.stringify(state));
             return;
         }
-        let idFHEM = id.replace(/-/g, '_');
+        //180719
+        //idFHEM = id.replace(/#/g, '_');
+        //let idFHEM = id.replace(/[-#]/g, '_');
+        //adapter.log.warn(idFHEM);
+        let idFHEM = convertIOBname(id);
         if (fhemINs[idFHEM]) {
             if (!fhemIN[idFHEM]) {
                 sendFHEM('define ' + idFHEM + ' dummy');
@@ -161,7 +165,7 @@ function startAdapter(options) {
         }
         adapter.log.warn('[stateChange] no match ' + id + ' ' + JSON.stringify(state));
     });
-    
+
     // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
     adapter.on('message', obj => {
         if (typeof obj === 'object' && obj.message) {
@@ -175,15 +179,23 @@ function startAdapter(options) {
             }
         }
     });
-    
+
     // is called when databases are connected and adapter received configuration.
     // start here!
     adapter.on('ready', main);
-    
+
     return adapter;
 }
 
 //========================================================================================================================================== start
+//180719
+function convertIOBname(id) {
+    let idFHEM = id.replace(/[-#]/g, '_');
+    
+    if (id !== idFHEM)
+        adapter.log.warn('[convertIOBname] ' + id + ' --> ' + idFHEM);
+    return idFHEM;
+}
 function checkID(event, val, name, attr, id) {
     for (const f in fhemObjects) {
         if (fhemObjects.hasOwnProperty(f) && fhemObjects[f].native.Name === name && fhemObjects[f].native.Attribute === attr) {
@@ -343,6 +355,13 @@ function parseEvent(event) {
                         let setState = event.substr(parts[0].length + parts[1].length + parts[2].length + 3);
                         if (obj.common.type === 'number') {
                             setState = parseInt(setState);
+                            //setState = JSON.parse(setState);
+                        }
+                        //180719
+                        if (obj.common.type === 'boolean') {
+                            //adapter.log.warn (setState);
+                            setState = JSON.parse(setState);
+                            //adapter.log.warn (setState);
                         }
                         logEventFHEMstate && adapter.log.info('event FHEM(s) "' + event + '" > ' + parts[2] + ' (' + setState + ')');
                         adapter.setForeignState(parts[2], setState, false);
@@ -1040,7 +1059,10 @@ function checkSubscribe(cb) {
                         continue;
                     }
                     adapter.subscribeForeignStates(id);
-                    let idFHEM = id.replace(/-/g, '_');
+                    //180719
+                    //let idFHEM = id.replace(/-/g, '_');
+                    //idFHEM = id.replace(/#/g, '_');
+                    let idFHEM = convertIOBname(id);
                     fhemINs[idFHEM] = {id: idFHEM};
                     adapter.log.debug('[checkSubscribe] id = ' + id + ' / idFHEM = ' + idFHEM);
                 }
@@ -1684,7 +1706,7 @@ function parseObjects(objs, cb) {
                             }
                             // (create state_boolean)
                             //120719
-                            if ((typeof (convertFhemStateBoolean(valOrg)) === 'boolean' || objs[i].Attributes.subType === 'motionDetector')&& 'sonos myBroker HM_CFG_USB2 FB_Callmonitor'.indexOf(name) === -1) {
+                            if ((typeof (convertFhemStateBoolean(valOrg)) === 'boolean' || objs[i].Attributes.subType === 'motionDetector') && 'sonos myBroker HM_CFG_USB2 FB_Callmonitor'.indexOf(name) === -1) {
                                 obj.native.StateBoolean = true;
                                 let SBrole = 'bol';
                                 if (valOrg === 'present' || valOrg === 'absent')
