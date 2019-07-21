@@ -27,7 +27,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '20.07.19';
+const buildDate = '21.07.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 // Debug
@@ -63,7 +63,7 @@ const allowedInternalsS = ['TYPE', 'NAME'];
 let allowedInternals = [];
 const allowedIOBinS = [];
 let allowedIOBin = [];
-//Settings
+// Settings
 let logCheckObject = false;
 let logUpdateChannel = false;
 let logCreateChannel = true;
@@ -75,7 +75,7 @@ let logEventFHEMreading = false;
 let logEventFHEMstate = false;
 let logUnhandledEventFHEM = true;
 let logIgnoreConfigurations = true;
-//parseObject
+// parseObject
 const dimPossibleSets = ['pct', 'brightness', 'dim'];
 const volumePossibleSets = ['Volume', 'volume', 'GroupVolume'];
 const temperaturePossibleSets = ['desired-temp'];
@@ -119,10 +119,6 @@ function startAdapter(options) {
             adapter.log.debug('[stateChange] nothing to do - ' + id + ' ' + JSON.stringify(state));
             return;
         }
-        //180719
-        //idFHEM = id.replace(/#/g, '_');
-        //let idFHEM = id.replace(/[-#]/g, '_');
-        //adapter.log.warn(idFHEM);
         let idFHEM = convertIOBname(id);
         if (fhemINs[idFHEM]) {
             if (!fhemIN[idFHEM]) {
@@ -187,15 +183,7 @@ function startAdapter(options) {
     return adapter;
 }
 
-//========================================================================================================================================== start
-//180719
-function convertIOBname(id) {
-    let idFHEM = id.replace(/[-#]/g, '_');
-    
-    if (id !== idFHEM)
-        adapter.log.warn('[convertIOBname] ' + id + ' --> ' + idFHEM);
-    return idFHEM;
-}
+// ========================================================================================================================================== start
 function checkID(event, val, name, attr, id) {
     for (const f in fhemObjects) {
         if (fhemObjects.hasOwnProperty(f) && fhemObjects[f].native.Name === name && fhemObjects[f].native.Attribute === attr) {
@@ -353,16 +341,10 @@ function parseEvent(event) {
                         adapter.log.warn('event FHEM "' + event + '" > object "' + parts[2] + '" common.write not true');
                     } else if (obj && obj.common.write) {
                         let setState = event.substr(parts[0].length + parts[1].length + parts[2].length + 3);
-                        if (obj.common.type === 'number') {
+                        if (obj.common.type === 'number')
                             setState = parseInt(setState);
-                            //setState = JSON.parse(setState);
-                        }
-                        //180719
-                        if (obj.common.type === 'boolean') {
-                            //adapter.log.warn (setState);
+                        if (obj.common.type === 'boolean')
                             setState = JSON.parse(setState);
-                            //adapter.log.warn (setState);
-                        }
                         logEventFHEMstate && adapter.log.info('event FHEM(s) "' + event + '" > ' + parts[2] + ' (' + setState + ')');
                         adapter.setForeignState(parts[2], setState, false);
                     }
@@ -1059,9 +1041,6 @@ function checkSubscribe(cb) {
                         continue;
                     }
                     adapter.subscribeForeignStates(id);
-                    //180719
-                    //let idFHEM = id.replace(/-/g, '_');
-                    //idFHEM = id.replace(/#/g, '_');
                     let idFHEM = convertIOBname(id);
                     fhemINs[idFHEM] = {id: idFHEM};
                     adapter.log.debug('[checkSubscribe] id = ' + id + ' / idFHEM = ' + idFHEM);
@@ -1218,7 +1197,7 @@ function parseObjects(objs, cb) {
             let Funktion = 'no';
             name = objs[i].Name.replace(/\./g, '_');
             id = adapter.namespace + '.' + name;
-            //alias?
+            // alias?
             if (objs[i].Attributes && objs[i].Attributes.alias) {
                 alias = objs[i].Attributes.alias;
             }
@@ -1268,7 +1247,7 @@ function parseObjects(objs, cb) {
             }
             objects.push(obj);
             logCheckObject && adapter.log.info('check channel ' + id + ' | name: ' + alias + ' | room: ' + objs[i].Attributes.room + ' | role: ' + obj.common.role + ' | function: ' + Funktion + ' | ' + ' ' + (i + 1) + '/' + objs.length);
-            //Rooms
+            // Rooms
             if (objs[i].Attributes && objs[i].Attributes.room) {
                 const rrr = objs[i].Attributes.room.split(',');
                 for (let r = 0; r < rrr.length; r++) {
@@ -1296,7 +1275,6 @@ function parseObjects(objs, cb) {
                         _id: id,
                         type: 'state',
                         common: {
-                            //04.05.19 name: objs[i].Name + ' ' + attr,
                             name: alias + ' ' + attr,
                             type: 'string',
                             role: 'text',
@@ -1394,7 +1372,7 @@ function parseObjects(objs, cb) {
                             possibleSets: true
                         }
                     };
-                    //special FS20
+                    // special FS20
                     if (objs[i].Internals.TYPE === 'FS20' && !parts[1]) {
                         if (['on', 'off', 'toggle', 'dimup', 'dimdown', 'dimupdown', 'dim06%', 'dim12%', 'dim18%', 'dim25%', 'dim31%', 'dim37%', 'dim43%', 'dim50%', 'dim56%', 'dim62%', 'dim68%', 'dim75%', 'dim81%', 'dim87%', 'dim93%', 'dim100%'].indexOf(parts[0]) !== -1) {
                             obj.common.type = 'boolean';
@@ -1407,7 +1385,7 @@ function parseObjects(objs, cb) {
                             obj.common.type = 'boolean';
                             obj.common.role = 'button';
                             obj.native.noArg = true;
-                            //special SONOS
+                            // special SONOS
                             if (parts[0] === 'Play')
                                 obj.common.role = 'button.play';
                             if (parts[0] === 'Pause')
@@ -1427,7 +1405,7 @@ function parseObjects(objs, cb) {
                             obj.common.min = parseInt(_slider[1]);
                             obj.common.max = parseInt(_slider[3]);
                             obj.native.slider = true;
-                            //special
+                            // special
                             if (_slider[2] !== '1') {
                                 obj.common.desc = 'limited function: slider step ' + _slider[2] + ' <> 1';
                             }
@@ -1555,7 +1533,7 @@ function parseObjects(objs, cb) {
                         ack: true
                     });
                     setStates[stateName] = obj;
-                    //Function?
+                    // Function?
                     if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
                         setFunction(id, Funktion, name);
                     }
@@ -1704,8 +1682,7 @@ function parseObjects(objs, cb) {
                                     ack: true
                                 });
                             }
-                            // (create state_boolean)
-                            //120719
+                            // create state_boolean
                             if ((typeof (convertFhemStateBoolean(valOrg)) === 'boolean' || objs[i].Attributes.subType === 'motionDetector') && 'sonos myBroker HM_CFG_USB2 FB_Callmonitor'.indexOf(name) === -1) {
                                 obj.native.StateBoolean = true;
                                 let SBrole = 'bol';
@@ -1721,7 +1698,6 @@ function parseObjects(objs, cb) {
                                     if (SBrole === 'sensor')
                                         adapter.log.warn('for full function of sensor "' + name + '" use door,window,Tür,Fenster in alias of device');
                                 }
-                                //120719
                                 if (valOrg.toLowerCase() === 'motion' || valOrg.toLowerCase() === 'nomotion' || objs[i].Attributes.subType === 'motionDetector') {
                                     SBrole = 'sensor.motion';
                                     Funktion = 'sensor';
@@ -1750,7 +1726,7 @@ function parseObjects(objs, cb) {
                                     ack: true
                                 });
                             }
-                            // (create state_value)
+                            // create state_value
                             if (typeof (convertFhemStateValue(val)) === 'number') {
                                 obj.native.StateValue = true;
                                 let obj_sensor = {
@@ -1777,7 +1753,7 @@ function parseObjects(objs, cb) {
                                     ack: true
                                 });
                             }
-                            // detect SONOS state (create media.state)
+                            // create media.state
                             if (objs[i].Internals.TYPE === 'SONOSPLAYER') {
                                 obj.native.media = true;
                                 let valMedia = false;
@@ -1895,7 +1871,7 @@ function setFunction(id, Funktion, name) {
 function sendFHEM(cmd, detect) {
     adapter.log.debug('[sendFHEM] cmd=' + cmd + ' / detecct=' + detect);
     if (autoConfigFHEM || !detect) {
-        queue.push({//püfen 21.04.19
+        queue.push({
             command: 'write',
             id: adapter.namespace + '.info.Commands.sendFHEM',
             val: cmd
@@ -1906,6 +1882,12 @@ function sendFHEM(cmd, detect) {
     } else if (detect) {
         adapter.log.warn('detect ' + detect + ': missing "' + cmd + '" > set manually in FHEM or automatically "' + adapter.namespace + '.info.Configurations.autoConfigFhem" = true | more info README.md');
     }
+}
+function convertIOBname(id) {
+    let idFHEM = id.replace(/[-#]/g, '_');
+    if (id !== idFHEM)
+        adapter.log.debug('[convertIOBname] ' + id + ' --> ' + idFHEM);
+    return idFHEM;
 }
 function convertAttr(attr, val) {
     if (attr === 'rgb') {
@@ -2110,7 +2092,7 @@ function writeValue(id, val, cb) {
     if (id.indexOf(adapter.namespace + '.info.Commands') !== -1) {
         // sendFHEM?
         if (id === adapter.namespace + '.info.Commands.sendFHEM') {
-            adapter.setState('info.Commands.sendFHEM', val, true);                       //21.04.19
+            adapter.setState('info.Commands.sendFHEM', val, true);
             logEventIOB && adapter.log.info('event ioBroker "' + id + ' ' + val + '" > ' + val);
             telnetOut.send(val, (err, result) => {
                 err && adapter.log.error('[writeValue] ' + err);
@@ -2367,7 +2349,7 @@ function setAlive() {
     sendFHEM('set ' + adapter.namespace + '.alive on-for-timer 360');
     setTimeout(setAlive, 300000);
 }
-//end ==================================================================================================================================
+// end ==================================================================================================================================
 
 function main() {
     adapter.log.debug('[main] start');
