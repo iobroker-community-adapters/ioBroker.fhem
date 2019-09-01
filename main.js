@@ -28,7 +28,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '24.08.19';
+const buildDate = '01.09.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let timer = null;  //23.08.19
@@ -1016,6 +1016,15 @@ function startSync(cb) {
                 objects = JSON.parse(result);
             } catch (e) {
                 adapter.log.error('[startSync] Cannot parse answer for jsonlist2: ' + e);
+                //01.09.19
+                let stelle = Number(e.message.replace(/[^0-9]/g, ""));
+                let stelleN = result.lastIndexOf('NAME', stelle);
+                let stelleName = result.indexOf(',', stelleN);
+                adapter.log.warn('> check device '+ result.substr(stelleN, stelleName - stelleN)+' of FHEM');
+                let stelleE = result.indexOf('Name', stelleN);
+                adapter.log.debug(result.substr(stelleN, stelleE - stelleN));
+                if (firstRun)
+                    adapter.setForeignState('system.adapter.fhem.1.alive', false, false);
             }
             if (objects) {
                 adapter.log.debug('[startSync] objects');
@@ -2428,7 +2437,7 @@ function processQueueL(cb) {
 function setAlive() {
     adapter.log.debug('[setAlive] start setAlive 300 sec');
     sendFHEM('set ' + adapter.namespace + '.alive on-for-timer 360');
-    setTimeout(setAlive, 5*60000);
+    setTimeout(setAlive, 5 * 60000);
 }
 function getAlive() {    //23.08.19
     adapter.log.debug('[getAlive] alive true - start');
