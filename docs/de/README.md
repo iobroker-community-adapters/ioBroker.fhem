@@ -1,6 +1,6 @@
 ---
 title:       "FHEM-Adapter"
-lastChanged: "19.05.2019"
+lastChanged: "01.09.2019"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
 ---
 
@@ -444,6 +444,7 @@ Objekt                    | Zugriff | Bescheibung | Wert
 &emsp;&emsp;**[Configurations](#info_configurations)**  |     | 
 &emsp;&emsp;**[Debug](#info_debug)**                    |     | Debug Modus
 &emsp;&emsp;**Info**                                    |     | Info
+&emsp;&emsp;&emsp;**alive**                             |  R  | Verbindung FHEM > ioBroker | true/false
 &emsp;&emsp;&emsp;**buildDate**                         |  R  | Datum Version | 18.10.18
 &emsp;&emsp;&emsp;**numberDevicesFHEM**                 |  R  | Anzahl Device(s) FHEM (jsonlist2) | Zahl
 &emsp;&emsp;&emsp;**numberDevicesFHEMsync**             |  R  | Anzahl Device(s) FHEM synchronisiert | Zahl
