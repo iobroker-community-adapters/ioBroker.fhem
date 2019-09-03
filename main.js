@@ -28,7 +28,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '01.09.19';
+const buildDate = '03.09.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let timer = null;  //23.08.19
@@ -227,13 +227,14 @@ function parseEvent(event) {
     }
     return;
 }
-function processEventFHEM() {
+function processEventFHEM(cb) {
     if (!eventP.length) {
+        cb && cb();
         return;
     }
     const command = eventP.shift();
     adapter.log.debug('[processEventFHEM] "' + command.event + '"  / todo: ' + eventP.length);
-    parseEventFHEM(command.event, () => setImmediate(processEventFHEM));
+    parseEventFHEM(command.event, () => setImmediate(processEventFHEM, cb));
 }
 function parseEventFHEM(event, cb) {
     if (!event) {
@@ -565,7 +566,7 @@ function parseEventFHEM(event, cb) {
 function syncStates(states, cb) {
     if (!states || !states.length) {
         adapter.log.debug('[syncStates] end');
-        cb();
+        cb && cb();
         return;
     }
     const state = states.shift();
@@ -799,12 +800,13 @@ function myObjects(cb) {
         // info.Info
         {_id: 'info.Info.buildDate', type: 'state', common: {name: 'Date of main.js', type: 'string', read: true, write: false, role: 'text'}, native: {}},
         {_id: 'info.Info.roomioBroker', type: 'state', common: {name: 'room of fhem.x.info.Configurations.onlySyncRoom exist', type: 'boolean', read: true, write: false, role: 'indicator'}, native: {}},
-        {_id: 'info.Info.numberDevicesFHEM', type: 'state', common: {name: 'Number of devices FHEM (jsonlist2)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
-        {_id: 'info.Info.numberDevicesFHEMsync', type: 'state', common: {name: 'Number of devices FHEM (synchro)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
+        {_id: 'info.Info.numberDevicesFHEM', type: 'state', common: {name: 'Number devices of FHEM (jsonlist2)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
+        {_id: 'info.Info.numberDevicesFHEMsync', type: 'state', common: {name: 'Number devices of FHEM (synchronized)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
         {_id: 'info.Info.numberObjectsIOBout', type: 'state', common: {name: 'Number of objects IOB out', type: 'number', read: true, write: false, role: 'value'}, native: {}},
         {_id: 'info.Info.numberObjectsIOBoutSub', type: 'state', common: {name: 'Number of objects IOB out (possible)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
         {_id: 'info.Info.numberObjectsIOBin', type: 'state', common: {name: 'Number of objects IOB in', type: 'number', read: true, write: false, role: 'value'}, native: {}},
         {_id: 'info.Info.alive', type: 'state', common: {name: 'FHEM alive', type: 'boolean', read: true, write: false, role: 'indicator.connected'}, native: {}}, //23.08.19
+        {_id: 'info.Info.numberDevicesFHEMignored', type: 'state', common: {name: 'Number devices of FHEM (ignored)', type: 'number', read: true, write: false, role: 'value'}, native: {}}, //03.09.19
         // info.Settings
         {_id: 'info.Settings.logCheckObject', type: 'state', common: {name: 'LOG "check channel ....." ', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
         {_id: 'info.Settings.logCreateChannel', type: 'state', common: {name: 'LOG "Create channel ....." ', type: 'boolean', read: true, write: true, role: 'switch'}, native: {}},
@@ -828,7 +830,7 @@ function myObjects(cb) {
             if (i === newPoints.length - 1) {
                 adapter.log.info('> objects ' + adapter.namespace + '.info OK');
                 adapter.log.debug('[myObjects] end');
-                cb();
+                cb && cb();
             }
         });
     }
@@ -985,7 +987,7 @@ function getDebug(cb) {
             } else {
                 adapter.log.info('> nothing to do - ' + adapter.namespace + '.' + 'info.Debug.activate');
             }
-            adapter.log.debug('[getDebug] end');
+            adapter.log.debug('[getDebug] obj end');
             cb && cb();
         } else {
             adapter.log.debug('[getDebug] end');
@@ -993,115 +995,51 @@ function getDebug(cb) {
         }
     });
 }
-function startSync(cb) {
-    adapter.log.debug('[startSync] start');
+function syncFHEM(cb) {
+    adapter.log.debug('[syncFHEM] start');
     let send = 'jsonlist2';
     if (onlySyncNAME.length) {
         send = send + ' ' + onlySyncNAME + ',' + adapter.namespce + '.send2ioB';
         adapter.log.info('> only jsonlist2 ' + onlySyncNAME + ' - ' + adapter.namespace + '.info.Configurations.onlySyncNAME (' + onlySyncNAME + ')');
     }
+    if (!connected) {
+        adapter.log.info('> Connected FHEM telnet ' + adapter.config.host + ':' + adapter.config.port + ' and send telnet "' + send + '"');
+    }
     // send command JsonList2
     telnetOut.send(send, (err, result) => {
-        err && adapter.log.error('[startSync] telnetOut.send: ' + err);
+        err && adapter.log.error('[syncFHEM] telnetOut.send: ' + err);
         if (!connected) {
-            adapter.log.info('> Connected FHEM telnet ' + adapter.config.host + ':' + adapter.config.port);
-            adapter.log.info('> send telnet "' + send + '"');
             connected = true;
             adapter.setState('info.connection', true, true);
         }
         if (result) {
-            adapter.log.debug('[startSync] result');
+            adapter.log.debug('[syncFHEM] result OK');
             let objects = null;
             try {
                 objects = JSON.parse(result);
             } catch (e) {
-                adapter.log.error('[startSync] Cannot parse answer for jsonlist2: ' + e);
                 //01.09.19
-                let stelle = Number(e.message.replace(/[^0-9]/g, ""));
-                let stelleN = result.lastIndexOf('NAME', stelle);
-                let stelleName = result.indexOf(',', stelleN);
-                adapter.log.warn('> check device '+ result.substr(stelleN, stelleName - stelleN)+' of FHEM');
-                let stelleE = result.indexOf('Name', stelleN);
-                adapter.log.debug(result.substr(stelleN, stelleE - stelleN));
+                if (e.name === 'SyntaxError' && e.message.startsWith('Unexpected token') === true) {
+                    let stelle = Number(e.message.replace(/[^0-9]/g, ""));
+                    let stelleN = result.lastIndexOf('NAME', stelle);
+                    let stelleName = result.indexOf(',', stelleN);
+                    adapter.log.error ('> SyntaxError jsonlist2 of FHEM device ' + result.substr(stelleN, stelleName - stelleN) + ' --> stop instance ' + adapter.namespace);
+                    let stelleE = result.indexOf('Name', stelleN);
+                    adapter.log.debug('[syncFHEM] SyntaxError: ' + result.substr(stelleN, stelleE - stelleN));
+                } else {
+                    adapter.log.error('[syncFHEM] Cannot parse answer for jsonlist2: ' + e);
+                }
                 if (firstRun)
                     adapter.setForeignState('system.adapter.fhem.1.alive', false, false);
             }
             if (objects) {
-                adapter.log.debug('[startSync] objects');
+                adapter.log.debug('[syncFHEM] objects OK');
                 adapter.log.info('> get ' + objects.Results.length + ' Device(s) of FHEM');
-                checkSubscribe((cb) => {
-                    parseObjects(objects.Results, () => {
-                        unusedObjects('*', (cb) => {
-                            adapter.log.info('STEP 10 ==== check/create FHEM dummy Devices in room ioB_System');
-                            //23.08.19 set FHEMalive true
-                            adapter.setState('info.Info.alive', false, true);
-                            if (fhemObjects[adapter.namespace + '.send2ioB']) {
-                                adapter.log.warn('> please use ' + adapter.namespace + '.send2ioB instead of send2ioB > delete send2ioB');
-                                sendFHEM('delete send2ioB');
-                            }
-                            let newID;
-                            newID = adapter.namespace + '.send2ioB';
-                            adapter.log.info('> dummy ' + newID + ' - use to set objects/states of ioBroker from FHEM');
-                            if (!fhemObjects[adapter.namespace + '.' + adapter.namespace.replace(/\./g, '_') + '_send2ioB']) {
-                                sendFHEM('define ' + newID + ' dummy');
-                                sendFHEM('attr ' + newID + ' alias ' + newID);
-                                sendFHEM('attr ' + newID + ' room ioB_System');
-                                sendFHEM('attr ' + newID + ' comment Auto-created by ioBroker ' + adapter.namespace);
-                            }
-                            newID = adapter.namespace + '.alive';
-                            adapter.log.info('> dummy ' + newID + ' - use to check alive FHEM Adapter in FHEM');
-                            if (!fhemIgnore[newID]) {
-                                sendFHEM('define ' + newID + ' dummy');
-                                sendFHEM('attr ' + newID + ' alias ' + newID);
-                                sendFHEM('attr ' + newID + ' room ioB_System');
-                                sendFHEM('attr ' + newID + ' useSetExtensions 1');
-                                sendFHEM('attr ' + newID + ' setList on:noArg off:noArg');
-                                //sendFHEM('attr ' + newID + ' event-on-change-reading .*');    23.08.19
-                                sendFHEM('attr ' + newID + ' comment Auto-created by ioBroker ' + adapter.namespace);
-                            }
-                            //23.08.19
-                            else {
-                                sendFHEM('deleteattr ' + newID + ' event-on-change-reading');
-                            }
-                            adapter.log.info('STEP 11 ==== info Synchro');
-                            adapter.getStates('info.Info.*', (err, obj) => {
-                                err && adapter.log.error('[getSetting] ' + err);
-                                if (obj) {
-                                    let end = 0;
-                                    for (const id in obj) {
-                                        if (!obj.hasOwnProperty(id)) {
-                                            continue;
-                                        }
-                                        adapter.getObject(id, (err, objO) => {
-                                            err && adapter.log.error('[getSetting] ' + err);
-                                            if (objO) {
-                                                adapter.log.info('> ' + objO.common.name + ' = ' + obj[id].val + ' - ' + id + ' (' + obj[id].val + ')');
-                                            }
-                                            end++;
-                                            if (end === Object.keys(obj).length) {
-                                                adapter.log.debug('fhemIgnore = ' + JSON.stringify(fhemIgnore));
-                                                adapter.log.debug('fhemIN = ' + JSON.stringify(fhemIN));
-                                                adapter.log.debug('fhemINs = ' + JSON.stringify(fhemINs));
-                                                adapter.log.info('> activate ' + adapter.namespace + '.alive room ioB_System every 5 minutes');
-                                                setAlive();
-                                                adapter.log.warn('> more info FHEM Adapter visit ' + linkREADME);
-                                                adapter.log.info(eventP.length + ' event(s)');
-                                                processEventFHEM();
-                                                adapter.log.info('END ===== Synchronised FHEM in ' + Math.round((Date.now() - tsStart)) + ' ms :-)');
-                                                synchro = false;
-                                                firstRun = false;
-                                                cb && cb();
-                                            }
-                                        });
-                                    }
-                                }
-                            });
-                            if (cb) {
-                                cb();
-                                cb = null;
-                            }
-                        });
-                    });
+                parseObjects(objects.Results, () => {
+                    if (cb) {
+                        cb();
+                        cb = null;
+                    }
                 });
             } else if (cb) {
                 cb();
@@ -1114,7 +1052,6 @@ function startSync(cb) {
     });
 }
 function checkSubscribe(cb) {
-    adapter.log.info('STEP 06 ===== check Subscribe');
     adapter.log.debug('[checkSubscribe] start ');
     if (!allowedIOBin.length) {
         adapter.log.info('> nothing to do - ' + adapter.namespace + '.info.Configurations.allowedIOBin');
@@ -1122,7 +1059,6 @@ function checkSubscribe(cb) {
         cb && cb();
         return;
     }
-    adapter.log.info('check ' + adapter.namespace + '.info.Configurations.allowedIOBin');
     let end = 0;
     allowedIOBin.forEach(search => {
         adapter.getForeignStates(search + '*', (err, states) => {
@@ -1178,7 +1114,6 @@ function parseObjLog(mode, name, val, text, cb) {
     return cb;
 }
 function parseObjects(objs, cb) {
-    firstRun && adapter.log.info('STEP 07 ===== parse Objects');
     const rooms = {};
     const objects = [];
     const states = [];
@@ -1209,7 +1144,7 @@ function parseObjects(objs, cb) {
             }
         }
         adapter.setState('info.Info.numberDevicesFHEM', objs.length, true);
-        adapter.log.info('> check channel - ' + objs.length + ' Device(s) of FHEM found');
+        firstRun && adapter.log.info('STEP 07 ===== parse Objects - check ' + objs.length + ' Device(s) of FHEM found');
         adapter.setState('info.Info.roomioBroker', iobroker, true);
         iobroker && adapter.log.info('> only sync device(s) from room(s) = ' + onlySyncRoom + ' - ' + adapter.namespace + '.info.Info.roomioBroker (' + iobroker + ')');
         onlySyncNAME.length && adapter.log.info('> only sync device(s) = ' + onlySyncNAME + ' - ' + adapter.namespace + '.info.Configurations.onlySyncNAME (' + onlySyncNAME + ')');
@@ -1934,6 +1869,7 @@ function parseObjects(objs, cb) {
             state = state + 1;
         }
     }
+    adapter.setState('info.Info.numberDevicesFHEMignored', Object.keys(fhemIgnore).length, true);    //03.09.19
     if (firstRun) {
         adapter.setState('info.Info.numberObjectsIOBout', Object.keys(fhemINs).length, true);
         adapter.log.info('> ' + Object.keys(fhemINs).length + ' objects to send FHEM detected (ioBout)');
@@ -1967,7 +1903,7 @@ function setFunction(id, Funktion, name) {
         functions[fff[f]].push(id);
     }
 }
-function sendFHEM(cmd, detect) {
+function sendFHEM(cmd, detect, cb) {
     adapter.log.debug('[sendFHEM] cmd=' + cmd + ' / detect=' + detect);
     if (autoConfigFHEM || !detect) {
         queue.push({
@@ -1975,11 +1911,14 @@ function sendFHEM(cmd, detect) {
             id: adapter.namespace + '.info.Commands.sendFHEM',
             val: cmd
         });
-        processQueue();
-        if (detect)
-            adapter.log.info('detect ' + detect + ' and "' + adapter.namespace + '.info.Configurations.autoConfigFHEM" = true  > ' + cmd + ' | more info README.md');
+        processQueue(() => {
+            if (detect)
+                adapter.log.info('detect ' + detect + ' and "' + adapter.namespace + '.info.Configurations.autoConfigFHEM" = true  > ' + cmd + ' | more info README.md');
+            cb && cb(); //03.09.19
+        });
     } else if (detect) {
         adapter.log.warn('detect ' + detect + ': missing "' + cmd + '" > set manually in FHEM or automatically "' + adapter.namespace + '.info.Configurations.autoConfigFhem" = true | more info README.md');
+        cb && cb(); //03.09.19
     }
 }
 function convertIOBname(id) {
@@ -2258,7 +2197,7 @@ function writeValue(id, val, cb) {
         cb && cb();
     });
 }
-function requestMeta(name, attr, value, event, cb) {
+function requestMeta(name, cb) {
     adapter.log.debug('[requestMeta] check channel ' + name + ' > jsonlist2 ' + name);
     // send command JsonList2
     telnetOut.send('jsonlist2 ' + name, (err, result) => {
@@ -2324,7 +2263,6 @@ function deleteState(name, cb) {
 }
 function unusedObjects(check, cb) {
     adapter.log.debug('[unusedObjects] start ' + check);
-    firstRun && adapter.log.info('STEP 09 ===== check delete unused objects');
     if (!deleteUnusedObjects) {
         adapter.log.info('> delete unused objects (' + check + ') > no automatically delete - info.Configurations.deleteUnusedObjecs not true!');
         cb && cb();
@@ -2392,10 +2330,12 @@ function resyncFHEM() {
     fhemIN = {};
     fhemINs = {};
     adapter.setState('info.resync', false, true);
-    startSync();
+    syncFHEM();
 }
-function processQueue() {
+function processQueue(cb) {
     if (telnetOut.isCommandRunning() || !queue.length) {
+        adapter.log.debug('[processQueue] ende');
+        cb && cb();
         return;
     }
     const command = queue.shift();
@@ -2404,15 +2344,15 @@ function processQueue() {
         adapter.log.debug('[processQueue] detected Resync FHEM');
         setTimeout(resyncFHEM, 5000);
     } else if (command.command === 'read') {
-        readValue(command.id, () => setImmediate(processQueue));
+        readValue(command.id, () => setImmediate(processQueue, cb));
     } else if (command.command === 'write') {
         adapter.log.debug('[processQueue] ' + command.id + ' ' + command.val);
-        writeValue(command.id, command.val, () => setImmediate(processQueue));
+        writeValue(command.id, command.val, () => setImmediate(processQueue, cb));
     } else if (command.command === 'meta') {
-        requestMeta(command.name, command.attr, command.val, command.event, () => setImmediate(processQueue));
+        requestMeta(command.name, () => setImmediate(processQueue, cb));
     } else {
         adapter.log.error('[processQueue] Unknown task: ' + command.command);
-        setImmediate(processQueue);
+        setImmediate(processQueue, cb);
     }
 }
 function processQueueL(cb) {
@@ -2424,14 +2364,14 @@ function processQueueL(cb) {
     const command = queueL.shift();
     adapter.log.debug('[processQueueL] ' + command.command + ' ' + command.name);
     if (command.command === 'delObject') {
-        deleteObject(command.name, () => setImmediate(processQueueL));
+        deleteObject(command.name, () => setImmediate(processQueueL, cb));
     } else if (command.command === 'delState') {
-        deleteState(command.name, () => setImmediate(processQueueL));
+        deleteState(command.name, () => setImmediate(processQueueL, cb));
     } else if (command.command === 'delChannel') {
-        deleteChannel(command.name, () => setImmediate(processQueueL));
+        deleteChannel(command.name, () => setImmediate(processQueueL, cb));
     } else {
         adapter.log.error('Unknown task: ' + command.command);
-        setImmediate(processQueueL);
+        setImmediate(processQueueL, cb);
     }
 }
 function setAlive() {
@@ -2442,7 +2382,6 @@ function setAlive() {
 function getAlive() {    //23.08.19
     adapter.log.debug('[getAlive] alive true - start');
     adapter.setState('info.Info.alive', true, true);
-    //let timer = null;
     if (timer) {
         clearTimeout(timer);
         adapter.log.debug('[getAlive] alive reset timer');
@@ -2492,8 +2431,87 @@ function main() {
                     getConfigurations(() => {
                         adapter.log.info('STEP 04 ===== Activate Debug-Mode for channel(s) - check ' + adapter.namespace + '.' + 'info.Debug');
                         getDebug(() => {
-                            adapter.log.info('STEP 05 ===== connect FHEM and send jsonlist2');
-                            startSync(() => {
+                            adapter.log.info('STEP 05 ===== check Subscribe - check ' + adapter.namespace + '.info.Configurations.allowedIOBin');
+                            checkSubscribe(() => {
+                                adapter.log.info('STEP 06 ===== connect FHEM and send jsonlist2 (syncFHEM)');
+                                syncFHEM(() => {
+                                    adapter.log.info('STEP 09 ===== check delete unused objects');
+                                    unusedObjects('*', () => {
+                                        adapter.log.info('STEP 10 ==== check/create FHEM dummy Devices in room ioB_System');
+                                        //23.08.19 set FHEMalive false
+                                        adapter.setState('info.Info.alive', false, true);
+                                        if (fhemObjects[adapter.namespace + '.send2ioB']) {
+                                            adapter.log.warn('> please use ' + adapter.namespace + '.send2ioB instead of send2ioB > delete send2ioB');
+                                            sendFHEM('delete send2ioB');
+                                        }
+                                        let newID;
+                                        newID = adapter.namespace + '.send2ioB';
+                                        adapter.log.info('> dummy ' + newID + ' - use to set objects/states of ioBroker from FHEM');
+                                        if (!fhemObjects[adapter.namespace + '.' + adapter.namespace.replace(/\./g, '_') + '_send2ioB']) {
+                                            sendFHEM('define ' + newID + ' dummy');
+                                            sendFHEM('attr ' + newID + ' alias ' + newID);
+                                            sendFHEM('attr ' + newID + ' room ioB_System');
+                                            sendFHEM('attr ' + newID + ' comment Auto-created by ioBroker ' + adapter.namespace);
+                                        }
+                                        newID = adapter.namespace + '.alive';
+                                        adapter.log.info('> dummy ' + newID + ' - use to check alive FHEM Adapter in FHEM');
+                                        if (!fhemIgnore[newID]) {
+                                            sendFHEM('define ' + newID + ' dummy');
+                                            sendFHEM('attr ' + newID + ' alias ' + newID);
+                                            sendFHEM('attr ' + newID + ' room ioB_System');
+                                            sendFHEM('attr ' + newID + ' useSetExtensions 1');
+                                            sendFHEM('attr ' + newID + ' setList on:noArg off:noArg');
+                                            //sendFHEM('attr ' + newID + ' event-on-change-reading .*');    23.08.19
+                                            sendFHEM('attr ' + newID + ' comment Auto-created by ioBroker ' + adapter.namespace);
+                                        }
+                                        //23.08.19
+                                        else {
+                                            sendFHEM('deleteattr ' + newID + ' event-on-change-reading');
+                                        }
+
+                                        adapter.log.info('STEP 11 ==== activate ');
+                                        adapter.log.info('> save FHEM: Wrote configuration to fhem.cfg');
+                                        sendFHEM('save');
+                                        setTimeout(function () {
+                                            adapter.log.info('> activate ' + adapter.namespace + '.alive room ioB_System every 5 minutes');
+                                            setAlive();
+                                            setTimeout(function () {
+                                                adapter.log.info('> processed ' + eventP.length + ' event(s) of FHEM saved during synchro');
+                                                processEventFHEM(() => {
+                                                    adapter.log.info('STEP 12 ==== info Synchro');
+                                                    adapter.log.debug('fhemIgnore = ' + JSON.stringify(fhemIgnore));
+                                                    adapter.log.debug('fhemIN = ' + JSON.stringify(fhemIN));
+                                                    adapter.log.debug('fhemINs = ' + JSON.stringify(fhemINs));
+                                                    adapter.getStates('info.Info.*', (err, obj) => {
+                                                        err && adapter.log.error('[getSetting] ' + err);
+                                                        if (obj) {
+                                                            let end = 0;
+                                                            for (const id in obj) {
+                                                                if (!obj.hasOwnProperty(id)) {
+                                                                    continue;
+                                                                }
+                                                                adapter.getObject(id, (err, objO) => {
+                                                                    err && adapter.log.error('[getSetting] ' + err);
+                                                                    if (objO) {
+                                                                        adapter.log.info('> ' + objO.common.name + ' = ' + obj[id].val + ' - ' + id + ' (' + obj[id].val + ')');
+                                                                    }
+                                                                    end++;
+                                                                    if (end === Object.keys(obj).length) {
+                                                                        adapter.log.warn('> more info FHEM Adapter visit ' + linkREADME);
+                                                                        adapter.log.info('END ===== Synchronised FHEM in ' + Math.round((Date.now() - tsStart)) + ' ms :-)');
+                                                                        synchro = false;
+                                                                        firstRun = false;
+                                                                    }
+                                                                });
+                                                            }
+                                                        }
+                                                    });
+                                                });
+                                            }, 2000);
+                                        }, 500);
+
+                                    });
+                                });
                             });
                         });
                     });
