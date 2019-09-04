@@ -28,7 +28,7 @@ let firstRun = true;
 let synchro = true;
 let resync = false;
 let debug = false;
-const buildDate = '03.09.19';
+const buildDate = '05.09.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let timer = null;  //23.08.19
@@ -111,57 +111,56 @@ function startAdapter(options) {
 
 // is called if a subscribed state changes
     adapter.on('stateChange', (id, state) => {
-        let id_parts = id.split('.');
-        debugNAME.indexOf(id_parts[2]) !== -1 && adapter.log.info('[' + id_parts[2] + '] change state of ' + id + ' ' + JSON.stringify(state));
         if (!state) {
             adapter.log.debug('[stateChange] no state - ' + id);
             return;
         }
-        if (!Object.keys(fhemINs).length && id.indexOf(adapter.namespace) === -1 || id.indexOf(adapter.namespace) !== -1 && state.ack) {
-            adapter.log.debug('[stateChange] nothing to do - ' + id + ' ' + JSON.stringify(state));
-            return;
-        }
-        let idFHEM = convertIOBname(id);
-        if (fhemINs[idFHEM]) {
-            if (!fhemIN[idFHEM]) {
-                sendFHEM('define ' + idFHEM + ' dummy');
-                sendFHEM('attr ' + idFHEM + ' alias ' + idFHEM);
-                sendFHEM('attr ' + idFHEM + ' room ioB_IN');
-                sendFHEM('attr ' + idFHEM + ' comment Auto-created by ioBroker ' + adapter.namespace);
-                sendFHEM('set ' + idFHEM + ' ' + state.val);
-                fhemIN[idFHEM] = {id: idFHEM};
-                adapter.setState('info.Info.numberObjectsIOBout', Object.keys(fhemIN).length, true);
-                adapter.log.debug('[stateChange] write FHEM ioBin new' + id + ' ' + JSON.stringify(state));
-            } else {
-                sendFHEM('set ' + idFHEM + ' ' + state.val);
-                adapter.log.debug('[stateChange] write FHEM ioBin' + id + ' ' + JSON.stringify(state));
-            }
-            return;
-        }
         // you can use the ack flag to detect if it is status (true) or command (false)
-        if (state && !state.ack) {
+        if (!state.ack && id.startsWith(adapter.namespace)) {
             if (!connected) {
-                adapter.log.warn('Cannot send command to "' + id + '", because not connected');
+                adapter.log.debug('[stateChange] Cannot send command to "' + id + '", because not connected');
                 return;
             }
-            if (id === adapter.namespace + '.info.resync') {
-                queue.push({
-                    command: 'resync'
-                });
-                processQueue();
-                return;
-            } else if (fhemObjects[id] || id.indexOf(adapter.namespace + '.info.Commands') !== -1 || id.indexOf(adapter.namespace + '.info.Debug') !== -1 || id.indexOf(adapter.namespace + '.info.Settings') !== -1 || id.indexOf(adapter.namespace + '.info.Configurations') !== -1) {
+            if (fhemObjects[id] || id.indexOf(adapter.namespace + '.info.Commands') !== -1 || id.indexOf(adapter.namespace + '.info.Debug') !== -1 || id.indexOf(adapter.namespace + '.info.Settings') !== -1 || id.indexOf(adapter.namespace + '.info.Configurations') !== -1) {
                 queue.push({
                     command: 'write',
                     id: id,
                     val: state.val
                 });
-                adapter.log.debug('[stateChange] write FHEM - ' + id + ' ' + JSON.stringify(state));
+                adapter.log.debug('[stateChange] send FHEM - ' + id + ' - ' + JSON.stringify(state));
+                processQueue();
+                return;
+            } else if (id === adapter.namespace + '.info.resync') {
+                queue.push({
+                    command: 'resync'
+                });
                 processQueue();
                 return;
             }
+        } else {
+            if (!Object.keys(fhemINs).length || id.indexOf(adapter.namespace) !== -1) {
+                adapter.log.debug('[stateChange] nothing to do - ' + id + ' - ' + JSON.stringify(state));
+                return;
+            }
+            let idFHEM = convertIOBname(id);
+            if (fhemINs[idFHEM]) {
+                if (!fhemIN[idFHEM]) {
+                    adapter.log.debug('[stateChange] send FHEM - define ' + idFHEM + ' dummy - ' + id);
+                    sendFHEM('define ' + idFHEM + ' dummy');
+                    sendFHEM('attr ' + idFHEM + ' alias ' + idFHEM);
+                    sendFHEM('attr ' + idFHEM + ' room ioB_IN');
+                    sendFHEM('attr ' + idFHEM + ' comment Auto-created by ioBroker ' + adapter.namespace);
+                    sendFHEM('set ' + idFHEM + ' ' + state.val);
+                    fhemIN[idFHEM] = {id: idFHEM};
+                    adapter.setState('info.Info.numberObjectsIOBout', Object.keys(fhemIN).length, true);
+                } else {
+                    sendFHEM('set ' + idFHEM + ' ' + state.val);
+                }
+                adapter.log.debug('[stateChange] send FHEM ' + idFHEM + ' - ' + id + ' ' + JSON.stringify(state));
+                return;
+            }
         }
-        adapter.log.warn('[stateChange] no match ' + id + ' ' + JSON.stringify(state));
+        adapter.log.warn('[stateChange] no match - ' + id + ' ' + JSON.stringify(state));
     });
 
 // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
@@ -181,7 +180,6 @@ function startAdapter(options) {
 // is called when databases are connected and adapter received configuration.
     // start here!
     adapter.on('ready', main);
-
     return adapter;
 }
 
@@ -539,7 +537,6 @@ function parseEventFHEM(event, cb) {
                         lastNameQueue = parts[1];
                         lastNameTS = Date.now();
                     }
-
                 } else {                              //noch prüfen
                     if (typ === 'reading') {
                         parseOK(event, id, val, ts, 'reading', parts[1], 'r', cb);
@@ -1023,7 +1020,7 @@ function syncFHEM(cb) {
                     let stelle = Number(e.message.replace(/[^0-9]/g, ""));
                     let stelleN = result.lastIndexOf('NAME', stelle);
                     let stelleName = result.indexOf(',', stelleN);
-                    adapter.log.error ('> SyntaxError jsonlist2 of FHEM device ' + result.substr(stelleN, stelleName - stelleN) + ' --> stop instance ' + adapter.namespace);
+                    adapter.log.error('> SyntaxError jsonlist2 of FHEM device ' + result.substr(stelleN, stelleName - stelleN) + ' --> stop instance ' + adapter.namespace);
                     let stelleE = result.indexOf('Name', stelleN);
                     adapter.log.debug('[syncFHEM] SyntaxError: ' + result.substr(stelleN, stelleE - stelleN));
                 } else {
@@ -1729,7 +1726,6 @@ function parseObjects(objs, cb) {
                                 if (objs[i].Attributes.subType === 'motionDetector') {
                                     sensor[1] = 'sensor.motion';
                                 }
-
                                 if (sensor[1] === 'sensor')
                                     adapter.log.warn('for full function of sensor "' + name + '" use door,window,Tür,Tuer,Fenster in alias of device');
                                 obj.native.StateBoolean = true;
@@ -2285,7 +2281,6 @@ function unusedObjects(check, cb) {
                     debugNAME.indexOf(channelS[2]) !== -1 && adapter.log.info('[' + channelS[2] + '] detect "' + id + '" - readingsGroup > no delete');
                     continue;
                 }
-
                 if (check !== '*')
                     delete fhemObjects[id];
                 if (!fhemObjects[id]) {
@@ -2387,7 +2382,7 @@ function getAlive() {    //23.08.19
         adapter.log.debug('[getAlive] alive reset timer');
     }
     timer = setTimeout(function () {
-        adapter.log.error('Connection FHEM gestört!');
+        adapter.log.error('Connection FHEM --> ioBroker');
         adapter.log.debug('[getAlive] alive false');
         adapter.setState('info.Info.alive', false, true);
     }, 6 * 60000);
