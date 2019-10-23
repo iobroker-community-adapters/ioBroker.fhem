@@ -881,6 +881,7 @@ FHEM
 
 ## 12 Entwicklerbereich
 * github ioBroker.fhem https://github.com/ioBroker/ioBroker.fhem
+* translate https://translator.iobroker.in/ 
 * Markdown: Syntax https://iobroker.github.io/ioBroker.docs/#/community/docmarkdown
 
 <a name=historie/> 
