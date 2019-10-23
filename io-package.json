@@ -10,17 +10,18 @@
     },
     "news": {
       "1.4.0": {
-        "en": "optimized adapter",
+        "adapter optimized": {
+        "en": "adapter optimized",
         "de": "Adapter optimiert",
-        "ru": "? ",
-        "pt": "?",
-        "nl": "?",
-        "fr": "?",
-        "it": "?",
-        "es": "?",
-        "pl": "?",
-        "zh-cn"?"
-      },
+        "ru": "адаптер оптимизирован",
+        "pt": "adaptador otimizado",
+        "nl": "adapter geoptimaliseerd",
+        "fr": "adaptateur optimisé",
+        "it": "adattatore ottimizzato",
+        "es": "adaptador optimizado",
+        "pl": "adapter zoptymalizowany",
+        "zh-cn": "适配器优化"
+      }
       "1.3.0": {
         "en": "Compact mode was added",
         "de": "Kompaktmodus wurde hinzugefügt",
