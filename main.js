@@ -1346,6 +1346,8 @@ function parseObjects(ff, objs, cb) {
                                 id = channel;
                             if (Funktion === 'switch' && objs[i].Internals.TYPE === 'HUEDevice')
                                 id = channel + '.state_switch';
+                            if (Funktion === 'sensor')
+                                id = channel + '.state_boolean';
                             adapter.log.debug(fn + 'Funktion: ' + Funktion + ' für ' + id);
                             setFunction(id, Funktion, nameIob);
                         }
