@@ -14,6 +14,7 @@ let connected = false;
 const eventIOB = [];
 const delObj = [];
 const eventQueue = [];
+const setStateQueue = [];
 let fhemIN = {};
 let fhemINs = {};
 let fhemIgnore = {};
@@ -27,7 +28,9 @@ let firstRun = true;
 let synchro = true;
 let debug = false;
 let aktivQueue = false;
-const buildDate = '24.10.19';
+let aktivSetState = false;
+let activeEvent = false;
+const buildDate = '28.10.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let timer = null;
@@ -149,7 +152,7 @@ function startAdapter(options) {
         // no ack and from adapter
         if (!state.ack && id.startsWith(adapter.namespace)) {
             if (id === adapter.namespace + '.info.resync') {
-                logWarn(fn, '----- Resync');
+                logWarn(fn, '----- request restart adapter');
                 eventIOB.push({
                     command: 'resync'
                 });
@@ -208,6 +211,14 @@ function firstCheck(ff, cb) {
 function myObjects(ff, cb) {
     let fn = ff + '[myObjects] ';
     logDebug(fn, '', 'start', 'D');
+    setState(fn, 'info.Info.buildDate', buildDate, true);
+    let start = '----- start FHEM Adapter Instanz ' + adapter.namespace;
+    setState(fn, 'info.Info.lastWarn', start, true);
+    setState(fn, 'info.Info.lastError', start, true);
+    setState(fn, 'info.Info.lastInfo', start, true);
+    setState(fn, 'info.Info.lastSend2ioB', start, true);
+    setState(fn, 'info.Info.lastIOBout', start, true);
+    setState(fn, 'info.Commands.lastCommand', start, true);
     let id;
     const newPoints = [
         // info.Commands
@@ -255,6 +266,7 @@ function myObjects(ff, cb) {
         {_id: 'info.Info.numberDevicesFHEMignored', type: 'state', common: {name: 'Number devices of FHEM (ignored)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
         {_id: 'info.Info.lastWarn', type: 'state', common: {name: 'lastWarn', type: 'string', read: true, write: false, role: 'text'}, native: {}},
         {_id: 'info.Info.lastError', type: 'state', common: {name: 'lastError', type: 'string', read: true, write: false, role: 'text'}, native: {}},
+        {_id: 'info.Info.lastInfo', type: 'state', common: {name: 'lastInfo', type: 'string', read: true, write: false, role: 'text'}, native: {}},
         {_id: 'info.Info.lastSend2ioB', type: 'state', common: {name: 'lastSend2ioB', type: 'string', read: true, write: false, role: 'text'}, native: {}},
         {_id: 'info.Info.lastIOBout', type: 'state', common: {name: 'lastIOBout', type: 'string', read: true, write: false, role: 'text'}, native: {}},
         //{_id: 'info.Info.TEST', type: 'state', common: {name: 'TEST', type: 'string', read: true, write: true, role: 'text'}, native: {}},
@@ -342,7 +354,7 @@ function deleteMyObjects(ff, i, cb) {
 }
 //STEP 02
 function getConfigurationsSYNC(ff, cb) {
-    let fn = ff + '[getConfigurationsSYNC] > ';
+    let fn = ff + '[getConfigurationsSYNC] ';
     logDebug(fn, '', 'start', 'D');
     if (!firstRun)
         logInfo(fn, 'change Configurations of FUNCTION ===== check ' + adapter.namespace + '.' + 'info.Configurations (true or value) - select function of Adapter and Devices to sync');
@@ -384,7 +396,7 @@ function getConfigurationsSYNC(ff, cb) {
 }
 //STEP 03
 function getConfigurationsFUNCTION(ff, cb) {
-    let fn = ff + '[getConfigurationsFUNCTION] >';
+    let fn = ff + '[getConfigurationsFUNCTION] ';
     logDebug(fn, '', 'start', 'D');
     if (!firstRun)
         logInfo(fn, 'change Configurations of FUNCTION ===== check ' + adapter.namespace + '.' + 'info.Configurations (value) - Devices to sync');
@@ -406,7 +418,7 @@ function getConfigurationsFUNCTION(ff, cb) {
 }
 //STEP 04
 function getSettings(ff, cb) {
-    let fn = ff + '[getSettings] > ';
+    let fn = ff + '[getSettings] ';
     logDebug(fn, '', 'start', 'D');
     if (!firstRun)
         logInfo(fn, 'change Settings ===== check ' + adapter.namespace + '.' + 'info.Settings (true) - select message ioBroker admin > LOG');
@@ -454,7 +466,7 @@ function getSetting(ff, id, callback, cb) {
     });
 }
 function getConfig(ff, id, config, cb) {
-    let fn = ff + '[getConfig] > ';
+    let fn = ff + '[getConfig] ';
     adapter.log.debug(fn + id + ' (' + config + ')');
     adapter.getObject(id, (e, obj) => {
         e && logError(fn, e);
@@ -480,7 +492,7 @@ function getConfig(ff, id, config, cb) {
 }
 //STEP 05
 function getDebug(ff, cb) {
-    let fn = ff + '[getDebug] > ';
+    let fn = ff + '[getDebug] ';
     logDebug(fn, '', 'start', 'D');
     if (!firstRun)
         logInfo(fn, 'CHANGE debug ===== check ' + adapter.namespace + '.' + 'info.Debug - Activate Debug-Mode for channel(s)');
@@ -509,7 +521,7 @@ function getDebug(ff, cb) {
 }
 //STEP 06
 function checkSubscribe(ff, cb) {
-    let fn = ff + '[checkSubscribe] > ';
+    let fn = ff + '[checkSubscribe] ';
     logDebug(fn, '', 'start', 'D');
     if (!allowedIOBin.length) {
         logInfo(fn, '> no sync - ' + adapter.namespace + '.info.Configurations.allowedIOBin');
@@ -1234,7 +1246,7 @@ function parseObjects(ff, objs, cb) {
                                     sensor[1] = 'sensor.motion';
                                 }
                                 if (sensor[1] === 'sensor')
-                                    adapter.log.warn('for full function of sensor "' + device + '" use door,window,Tür,Tuer,Fenster in alias of device');
+                                    logWarn(fn, 'detect sensor "' + device + '" - for full function of sensor use door,window,Tür,Tuer,Fenster in alias of device');
                                 obj.native.StateBoolean = true;
                                 let obj_sensor = {
                                     _id: channel + '.state_boolean',
@@ -1341,6 +1353,7 @@ function parseObjects(ff, objs, cb) {
                         combined && (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' > ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' (Value Possible Set)');
                         !combined && (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' > ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | Funktion: ' + Funktion);
                         objects.push(obj);
+
                         if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
                             if (Funktion === 'switch')
                                 id = channel;
@@ -1372,7 +1385,7 @@ function parseObjects(ff, objs, cb) {
             state = state + 1;
         }
     }
-    setState(fn, 'info.Info.numberDevicesFHEMignored', Object.keys(fhemIgnore).length, true); //03.09.19
+    setState(fn, 'info.Info.numberDevicesFHEMignored', Object.keys(fhemIgnore).length, true);
     if (firstRun) {
         setState(fn, 'info.Info.numberObjectsIOBout', Object.keys(fhemIN).length, true);
         logInfo(fn, '> ' + Object.keys(fhemIN).length + ' objects to send FHEM detected (ioBout)');
@@ -1547,7 +1560,7 @@ function syncFunctions(functions, cb) {
     cb && cb();
 }
 function syncFunction(funktion, members, cb) {
-    let fn = '[syncFunction] > ';
+    let fn = '[syncFunction] ';
     adapter.log.debug(fn + '(' + funktion + ') ' + members);
     adapter.getForeignObject('enum.functions.' + funktion, (e, obj) => {
         if (!obj) {
@@ -1589,7 +1602,7 @@ function syncFunction(funktion, members, cb) {
 }
 function syncStates(states, cb) {
     let ts = Date.now();
-    let fn = '[syncStates] > ';
+    let fn = '[syncStates] ';
     if (!states || !states.length) {
         adapter.log.debug(fn + 'end');
         cb();
@@ -1631,7 +1644,7 @@ function setFunction(id, Funktion, name) {
  */
 //STEP 10
 function unusedObjects(ff, check, cb) {
-    let fn = ff + '[unusedObjects] > ';
+    let fn = ff + '[unusedObjects] ';
     logDebug(fn, '', 'start - ' + check, 'D');
     //adapter.log.debug(fn + check);
     if (!deleteUnusedObjects) {
@@ -1981,7 +1994,7 @@ function writeValue(ff, id, val, cb) {
     }
 }
 function requestMeta(ff, name, cb) {
-    let fn = ff + '[requestMeta] > ';
+    let fn = ff + '[requestMeta] ';
     logDebug(fn, name, 'requestMeta: check channel ' + name + ' > jsonlist2 ' + name, 'D');
     telnetOut.send('jsonlist2 ' + name, (e, result) => {
         e && logError(fn, e);
@@ -2031,14 +2044,16 @@ function eventFHEM(ff, event) {
     } else {
         logDebug(fn, event, 'eventFHEM: "' + event + '"', 'D');
     }
-    if (!firstRun) {
+    if (!firstRun && !activeEvent) {
         processEvent(fn);
     }
     return;
 }
 function processEvent(ff, cb) {
     let fn = ff + '[processEvent] ';
+    activeEvent = true;
     if (!eventQueue.length) {
+        activeEvent = false;
         cb && cb();
         return;
     }
@@ -2336,7 +2351,7 @@ function eventOK(ff, event, id, val, ts, info, device, channel, cb) {
     if (logDevelop) {
         tE = ' (' + Math.round((Date.now() - ts)) + ' ms) ';
     }
-    let out = 'event FHEM: ' + tE + event + ' | ' + info + ' <' + alias + '> ' + id + ' ' + val;
+    let out = 'event FHEM: ' + tE + alias + ' | ' + event + ' | ' + info + ' > ' + id + ' ' + val;
     if (debugNAME.indexOf(device) !== -1) {
         adapter.log.info(device + ' | ' + out);
     } else {
@@ -2441,14 +2456,14 @@ function getUnit(name) {
 }
 // convert
 function convertNameIob(ff, id) {
-    let fn = ff + '[convertNameIob] > ';
+    let fn = ff + '[convertNameIob] ';
     let idFHEM = id.replace(/[-#]/g, '_');
     if (id !== idFHEM)
         logDebug(fn, id, 'convertNameIob: ' + id + ' --> ' + idFHEM, 'D');
     return idFHEM;
 }
 function convertNameFHEM(ff, name) {
-    let fn = ff + '[convertNameFHEM] > ';
+    let fn = ff + '[convertNameFHEM] ';
     let id = name.replace(/\./g, '_');
     if (name !== id)
         logDebug(fn, name, 'convertNameFHEM: ' + name + ' --> ' + id, 'D');
@@ -2588,7 +2603,7 @@ function convertFhemSensor(ff, val, device) {
 }
 // more
 function getAlive(ff) {
-    let fn = ff + '[getAlive] > ';
+    let fn = ff + '[getAlive] ';
     adapter.log.debug(fn + 'alive true - start');
     setState(fn, 'info.Info.alive', true, true);
     if (timer) {
@@ -2602,15 +2617,47 @@ function getAlive(ff) {
     }, 6 * 60000);
 }
 function setState(ff, id, val, ack, ts, cb) {
-    let fn = ff + ' ' + '[setState] > ';
-    adapter.setState(id, val, ack, ts, e => {
-        e && logError(fn, id + ' ' + e);
-        let dif = Math.round((Date.now() - ts));
-        logDebug(fn, id, 'setState: ' + id + ' ' + val + ' (' + dif + ' ms)', 'D');
-        /*
-         if (dif > 5000 && !firstRun)
-         adapter.log.warn(fn + id + ' ' + val + ' (' + dif + ' ms)');
-         */
+    let fn = ff + '[setState] ';
+    if (!id) {
+        adapter.log.warn(fn + 'no id - return');
+        return;
+    }
+    setStateQueue.push({
+        id: id,
+        val: val,
+        ack: ack,
+        ts: ts
+    });
+    if (!aktivSetState)
+        processSetState(fn);
+    cb && cb();
+    return;
+}
+function processSetState(ff, cb) {
+    let fn = ff + '[processSetState] ';
+    aktivSetState = true;
+    if (!processSetState.length) {
+        aktivSetState = false;
+        cb && cb();
+        return;
+    }
+    const command = setStateQueue.shift();
+    // noch prüfen !!
+    if (command === undefined) {
+        aktivSetState = false;
+        cb && cb();
+        return;
+    }
+    let dif = Math.round((Date.now() - command.ts));
+    logDebug(fn, command.id, command.id + ' ' + command.val + ' / todo: ' + setStateQueue.length + ' (' + dif + ')', 'D');
+    setStateDo(fn, command, () => setImmediate(processSetState, ff, cb));
+}
+function setStateDo(ff, command, cb) {
+    let fn = ff + ' ' + '[setStateDo] ';
+    adapter.setState(command.id, command.val, command.ack, command.ts, e => {
+        e && logError(fn, command.id + ' ' + e);
+        let dif = Math.round((Date.now() - command.ts));
+        logDebug(fn, command.id, command.id + ' ' + command.val + ' (' + dif + ' ms)', 'D');
         cb && cb();
     });
 }
@@ -2691,6 +2738,7 @@ function logError(ff, text) {
 }
 function logInfo(ff, text, cb) {
     let fn = ff + '[logInfo] ';
+    setState(fn, 'info.Info.lastInfo', text, true);
     if (!logNoInfo) {
         adapter.log.info(text);
         cb && cb();
@@ -2733,13 +2781,6 @@ function main() {
             firstCheck(fn, () => {
                 logInfo(fn, 'STEP 01 ===== buildDate ' + buildDate + ' - check objects ' + adapter.namespace + '.info');
                 myObjects(fn, () => {
-                    setState(fn, 'info.Info.buildDate', buildDate, true);
-                    let start = '----- start FHEM Adapter Instanz ' + adapter.namespace;
-                    setState(fn, 'info.Info.lastWarn', start, true);
-                    setState(fn, 'info.Info.lastError', start, true);
-                    setState(fn, 'info.Info.lastSend2ioB', start, true);
-                    setState(fn, 'info.Info.lastIOBout', start, true);
-                    setState(fn, 'info.Commands.lastCommand', start, true);
                     logInfo(fn, 'STEP 02 ===== Devices to sync (SYNC) - check ' + adapter.namespace + '.' + 'info.Configurations (value)');
                     getConfigurationsSYNC(fn, () => {
                         logInfo(fn, 'STEP 03 ===== select function of Adapter (FUNCTION)  - check ' + adapter.namespace + '.' + 'info.Configurations (true)');
@@ -2770,7 +2811,7 @@ function main() {
                                                     sendFHEM(fn, 'attr ' + newID + ' comment Auto-created by ioBroker ' + adapter.namespace);
                                                 }
                                                 newID = adapter.namespace + '.alive';
-                                                logInfo('> dummy ' + newID + ' - use to check alive FHEM Adapter in FHEM');
+                                                logInfo(fn,'> dummy ' + newID + ' - use to check alive FHEM Adapter in FHEM');
                                                 if (!fhemIgnore[newID]) {
                                                     sendFHEM(fn, 'define ' + newID + ' dummy');
                                                     sendFHEM(fn, 'attr ' + newID + ' alias ' + newID);
@@ -2808,12 +2849,14 @@ function main() {
                                                                     adapter.getObject(id, (e, objO) => {
                                                                         e && logError('[getSetting] ', e);
                                                                         if (objO) {
-                                                                            logInfo(fn, '> ' + objO.common.name + ' = ' + obj[id].val + ' - ' + id + ' (' + obj[id].val + ')');
+                                                                            logInfo(fn, '> ' + objO.common.name + ' = ' + obj[id].val + ' - ' + id);
                                                                         }
                                                                         end++;
                                                                         if (end === Object.keys(obj).length) {
-                                                                            adapter.log.warn('> more info FHEM Adapter visit ' + linkREADME);
-                                                                            adapter.log.info('END ===== Synchronised FHEM in ' + Math.round((Date.now() - tsStart)) + ' ms :-)');
+                                                                            logWarn(fn, '> more info FHEM Adapter visit ' + linkREADME);
+                                                                            if (logNoInfo)
+                                                                                adapter.log.info('END ===== Synchronised FHEM in ' + Math.round((Date.now() - tsStart)) + ' ms :-)');
+                                                                            logInfo(fn, 'END ===== Synchronised FHEM in ' + Math.round((Date.now() - tsStart)) + ' ms :-)');
                                                                             synchro = false;
                                                                             firstRun = false;
                                                                         }
