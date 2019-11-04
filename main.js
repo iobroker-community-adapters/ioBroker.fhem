@@ -30,7 +30,7 @@ let debug = false;
 let aktivQueue = false;
 let aktivSetState = false;
 let activeEvent = false;
-const buildDate = '28.10.19';
+const buildDate = '04.11.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let timer = null;
@@ -439,7 +439,8 @@ function getSettings(ff, cb) {
     });
 }
 // more
-function getSetting(ff, id, callback, cb) {
+//function getSetting(ff, id, callback, cb) {
+function getSetting(ff, id, callback) {
     let fn = ff + '[getSetting] ';
     logDebug(fn, '', id, 'D');
     adapter.getObject(id, (e, obj) => {
@@ -451,17 +452,17 @@ function getSetting(ff, id, callback, cb) {
                     logDebug(fn, '', id + ' ' + state.val, '');
                     state.val && logInfo(fn, '> ' + obj.common.name + ' - ' + id + ' (' + state.val + ')');
                     callback(state.val);
-                    cb && cb();
+                    //cb && cb();
                 } else {
                     logDebug(fn, '', id + ' - no state found', '');
                     callback();
-                    cb && cb();
+                    //cb && cb();
                 }
             });
         } else {
             logDebug(fn, '', id + ' - no object found', '');
             callback();
-            cb && cb();
+            //cb && cb();
         }
     });
 }
@@ -536,7 +537,7 @@ function checkSubscribe(ff, cb) {
                 logError(fn, 'error: ' + e);
             } else {
                 adapter.log.debug(fn + 'detected' + JSON.stringify(states));
-                logInfo(fn, '> ' + Object.keys(states).length + ' state(s) of "' + search + '" detected');
+                logInfo(fn, '> detected ' + Object.keys(states).length + ' state(s) of "' + search + '"');
                 for (const id in states) {
                     if (!states.hasOwnProperty(id)) {
                         continue;
@@ -618,7 +619,7 @@ function parseObjects(ff, objs, cb) {
     const states = [];
     let id;
     let obj;
-    let name;
+    //let name;
     let alias;
     let suche = 'no';
     const debugShow = '';
@@ -685,7 +686,6 @@ function parseObjects(ff, objs, cb) {
                     continue;
                 }
             }
-
             if (onlySyncNAME.length && onlySyncNAME.indexOf(objs[i].Internals.NAME) === -1) {
                 logIgnoreConfig(device, 'NAME <> ' + onlySyncNAME, i, objs.length);
                 (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - not included in ' + adapter.namespace + '.info.Config.onlySyncNAME');
@@ -1233,8 +1233,9 @@ function parseObjects(ff, objs, cb) {
                                 });
                             }
                             // sensor?
-                            const sensor = convertFhemSensor(fn, valOrg, device);
-                            if ((typeof (sensor[0]) === "boolean" || objs[i].Attributes.subType === 'motionDetector') && 'sonos myBroker HM_CFG_USB2 FB_Callmonitor'.indexOf(name) === -1) {
+                            let type = objs[i].Internals.TYPE;
+                            const sensor = convertFhemSensor(fn, valOrg, device, type);
+                            if ((typeof (sensor[0]) === "boolean" || objs[i].Attributes.subType === 'motionDetector')) {
                                 logDebug(fn, device, 'detect sensor - ' + device, 'D');
                                 Funktion = 'sensor';
                                 obj.common.write = false;
@@ -1353,14 +1354,15 @@ function parseObjects(ff, objs, cb) {
                         combined && (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' > ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' (Value Possible Set)');
                         !combined && (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' > ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | Funktion: ' + Funktion);
                         objects.push(obj);
-
                         if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
+                            id = obj._id;
                             if (Funktion === 'switch')
                                 id = channel;
                             if (Funktion === 'switch' && objs[i].Internals.TYPE === 'HUEDevice')
                                 id = channel + '.state_switch';
                             if (Funktion === 'sensor')
                                 id = channel + '.state_boolean';
+                            //noch ändern
                             adapter.log.debug(fn + 'Funktion: ' + Funktion + ' für ' + id);
                             setFunction(id, Funktion, nameIob);
                         }
@@ -1392,18 +1394,16 @@ function parseObjects(ff, objs, cb) {
         setState(fn, 'info.Info.numberDevicesFHEMsync', channel, true);
         logInfo(fn, '> check channel - ' + channel + ' Device(s) of FHEM synchronized');
         logInfo(fn, 'STEP 09 ===== Synchro objects, rooms, functions, states');
-        logInfo(fn, '> check ' + objects.length + ' object(s) - ' + channel + ' channel(s) with ' + state + ' state(s) / ' + states.length + ' state(s) to sync: ');
-        if (state !== states.length) {
-            adapter.log.warn('object state(s) <> state(s) to sync');
-        }
     }
-    firstRun && logInfo(fn, '> check ' + objects.length + ' object(s) update/create');
+    firstRun && logInfo(fn, '> update/create ' + objects.length + ' object(s) / ' + channel + ' channel(s) ' + ' and ' + state + ' state(s)');
     syncObjects(objects, () => {
-        firstRun && logInfo(fn, '> check ' + Object.keys(rooms).length + ' room(s) update/create');
+        firstRun && logInfo(fn, '> update/create ' + Object.keys(rooms).length + ' room(s)');
         syncRooms(rooms, () => {
-            firstRun && logInfo(fn, '> check ' + Object.keys(functions).length + ' function(s) update/create');
+            firstRun && logInfo(fn, '> update/create ' + Object.keys(functions).length + ' function(s)');
             syncFunctions(functions, () => {
-                firstRun && logInfo(fn, '> check ' + states.length + ' state(s) update/create');
+                firstRun && logInfo(fn, '> update/create ' + state + ' state(s) / ' + states.length + ' state(s) to sync');
+                if (state !== states.length)
+                    logWarn(fn, 'object state(s) <> state(s) to sync');
                 syncStates(states, () => {
                     debug = false;
                     cb();
@@ -1429,19 +1429,23 @@ function syncObjects(objects, cb) {
     fhemObjects[obj._id] = obj;
     const parts = obj._id.split('.');
     adapter.getForeignObject(obj._id, (e, oldObj) => {
+        //adapter.getObject(obj._id, (e, oldObj) => {   
         if (e)
             logError(fn, e);
         if (!oldObj) {
-            if (obj.type === 'channel') {
-                adapter.log.info('Create channel ' + obj._id + ' (' + obj.common.name + ')');
+            if (obj.type === 'channel' && logCreateChannel) {
+                logInfo(fn, 'Create channel: ' + obj.common.name + ' | ' + obj._id);
+            } else {
+                logDebug(fn, obj._id, 'create object: ' + obj._id + ' (' + obj.type + ')', '');
             }
-            debugNAME.indexOf(parts[2]) !== -1 && adapter.log.info(parts[2] + '| create ' + obj.type + ' ' + obj._id);
             adapter.setForeignObject(obj._id, obj, e => {
+                //adapter.setObject(obj._id, obj, e => {    
                 e && logError(fn, e);
                 setImmediate(syncObjects, objects, cb);
             });
         } else {
             if (JSON.stringify(obj.native) === JSON.stringify(oldObj.native) && JSON.stringify(obj.common) === JSON.stringify(oldObj.common)) {
+                logDebug(fn, obj._id, 'check object: ' + obj._id + ' (' + obj.type + ') OK 1', 'D');
                 setImmediate(syncObjects, objects, cb);
             } else {
                 let newObj = JSON.parse(JSON.stringify(oldObj));
@@ -1477,14 +1481,18 @@ function syncObjects(objects, cb) {
                 }
                 if (JSON.stringify(newObj) !== JSON.stringify(oldObj)) {
                     if (obj.type === 'channel' && logUpdateChannel) {
-                        adapter.log.info('Update channel ' + obj._id + '  (' + oldObj.common.name + ')');
+                        //logInfo(fn,'Update channel ' + obj._id + '  (' + oldObj.common.name + ')');
+                        logInfo(fn, 'Update channel: ' + obj.common.name + ' | ' + obj._id + ' - ' + updateText);
+                    } else {
+                        logDebug(fn, obj._id, 'update object: ' + obj._id + ' (' + obj.type + ') - ' + updateText, '');
                     }
-                    debugNAME.indexOf(parts[2]) !== -1 && adapter.log.info(parts[2] + ' | update ' + obj.type + ' ' + obj._id + ' (' + updateText + ' )');
+                    //debugNAME.indexOf(parts[2]) !== -1 && adapter.log.info(parts[2] + ' | update ' + obj.type + ' ' + obj._id + ' (' + updateText + ' )');
                     adapter.extendObject(obj._id, newObj, e => {
                         e && logError(fn, e);
                         setImmediate(syncObjects, objects, cb);
                     });
                 } else {
+                    logDebug(fn, obj._id, 'check object: ' + obj._id + ' (' + obj.type + ') OK 2 ', 'D');
                     setImmediate(syncObjects, objects, cb);
                 }
             }
@@ -1614,10 +1622,17 @@ function syncStates(states, cb) {
     adapter.getState(id, function (e, stateG) {
         e && logError(fn, 'rs? ' + e);
         if (!stateG || stateG.val !== state.val) {
+            if (!stateG) {
+                logDebug(fn, id, 'create state: ' + id + ' = ' + state.val, '');
+            } else {
+                logDebug(fn, id, 'update state: ' + id + ' = ' + stateG.val + ' > ' + state.val, '');
+            }
+
             setState(fn, id, state.val, true, ts, () => {
                 setImmediate(syncStates, states, cb);
             });
         } else {
+            logDebug(fn, id, 'check state: ' + id + ' = ' + state.val + ' > OK', 'D');
             setImmediate(syncStates, states, cb);
         }
     });
@@ -1661,7 +1676,7 @@ function unusedObjects(ff, check, cb) {
                     continue;
                 }
                 const channelS = id.split('.');
-                logDebug(fn, id, 'check ' + id, '');
+                logDebug(fn, id, 'check ' + id, 'D');
                 if (channelS[2] === 'info') {
                     continue;
                 }
@@ -2005,16 +2020,18 @@ function requestMeta(ff, name, cb) {
                 logDebug(fn, name, 'requestMeta: ' + name + ' - Number of Device(s) ' + objects.totalResultsReturned, 'D');
             } catch (e) {
                 logError(fn, 'Cannot parse answer for "jsonlist2 ' + name + '" - ' + e);
+                cb && cb();
             }
             if (objects.totalResultsReturned > 0) {
                 parseObjects(fn, objects.Results, () => {
                     cb && cb();
                 });
             } else {
-                adapter.log.warn(fn + 'no sync - no result of "jsonlist2 ' + name + '"');
+                logWarn(fn, 'no sync - result of "jsonlist2 ' + name + '" <1');
                 cb && cb();
             }
         } else {
+            logWarn(fn, 'no sync - no result of "jsonlist2 ' + name + '"');
             cb && cb();
         }
     });
@@ -2272,7 +2289,7 @@ function parseEvent(ff, eventIN, cb) {
                         cb && cb();
                         return;
                     }
-                    const sensor = convertFhemSensor(fn, val, device);
+                    const sensor = convertFhemSensor(fn, val, device, '');
                     // state_boolean?
                     search = channel + '.state_boolean';
                     if (fhemObjects[search] || typeof (sensor[0]) === "boolean")
@@ -2582,7 +2599,7 @@ function convertFhemValue(val) {
         return true;
     return val;
 }
-function convertFhemSensor(ff, val, device) {
+function convertFhemSensor(ff, val, device, type) {
     let fn = ff + '[convertFhemSensor] ';
     val = val.toLowerCase();
     let valR = [val, val, val, val];
@@ -2598,6 +2615,8 @@ function convertFhemSensor(ff, val, device) {
         valR = [true, 'sensor.motion', 'value', 2];
     if (val === 'nomotion')
         valR = [false, 'sensor.motion', 'value', 0];
+    if ('SONOS MQTT HMLAN FB_CALLMONITOR'.indexOf(type) !== -1)
+        valR = [val, val, val, val];
     logDebug(fn, device, 'convertFhemSensor: ' + val + ' > ' + valR, 'D');
     return valR;
 }
@@ -2811,7 +2830,7 @@ function main() {
                                                     sendFHEM(fn, 'attr ' + newID + ' comment Auto-created by ioBroker ' + adapter.namespace);
                                                 }
                                                 newID = adapter.namespace + '.alive';
-                                                logInfo(fn,'> dummy ' + newID + ' - use to check alive FHEM Adapter in FHEM');
+                                                logInfo(fn, '> dummy ' + newID + ' - use to check alive FHEM Adapter in FHEM');
                                                 if (!fhemIgnore[newID]) {
                                                     sendFHEM(fn, 'define ' + newID + ' dummy');
                                                     sendFHEM(fn, 'attr ' + newID + ' alias ' + newID);
