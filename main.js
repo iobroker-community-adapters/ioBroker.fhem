@@ -30,7 +30,7 @@ let debug = false;
 let aktivQueue = false;
 let aktivSetState = false;
 let activeEvent = false;
-const buildDate = '04.11.19';
+const buildDate = '11.11.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let timer = null;
@@ -41,6 +41,7 @@ let logDevelop;
 // info.Configurations
 let autoRole;
 let autoFunction;
+let autoRoom;
 let autoConfigFHEM;
 let autoSmartName;
 let autoName;
@@ -89,7 +90,6 @@ const temperaturePossibleSets = ['desired-temp'];
 const Utemperature = ['temperature', 'measured-temp', 'desired-temp', 'degrees', 'box_cputemp', 'temp_c', 'cpu_temp', 'cpu_temp_avg'];
 const rgbPossibleSets = ['rgb'];
 const Rindicator = ['reachable', 'presence', 'battery', 'Activity', 'present'];
-
 function startAdapter(options) {
     options = options || {};
     Object.assign(options, {name: adapterName});
@@ -120,12 +120,6 @@ function startAdapter(options) {
             adapter.log.debug(fn + 'no state - ' + id);
             return;
         }
-        // ???
-        if (!Object.keys(fhemINs).length && id.indexOf(adapter.namespace) === -1 || id.indexOf(adapter.namespace) !== -1 && state.ack) {
-            //adapter.log.warn('[stateChange] nothing to do - ' + id + ' ' + JSON.stringify(state));
-            return;
-        }
-//
         let val = state.val;
         let ack = state.ack;
         logDebug(fn, id, id + ' ' + val + ' ' + JSON.stringify(state), 'D');
@@ -141,11 +135,15 @@ function startAdapter(options) {
                 fhemIN[idFHEM] = {id: idFHEM};
                 fhemIgnore[idFHEM] = {idFHEM};
                 setState(fn, 'info.Info.numberObjectsIOBout', Object.keys(fhemIN).length, true);
+                return;
             } else {
                 sendFHEM(fn, 'set ' + idFHEM + ' ' + val);
+                return;
             }
-            if (!idFHEM.startsWith(adapter.namespace + '.info'))
+            if (!idFHEM.startsWith(adapter.namespace + '.info')) {
                 setState(fn, 'info.Info.lastIOBout', id + ' ' + val, true);
+                return;
+            }
             if (state.ack)
                 return;
         }
@@ -228,13 +226,14 @@ function myObjects(ff, cb) {
         {_id: 'info.Commands.createSwitch', type: 'state', common: {name: 'Create dummy as switch in room FHEM (NAME room)', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         // info.Configurations
         {_id: 'info.Configurations.autoConfigFHEM', type: 'state', common: {name: 'FUNCTION - allow special configurations FHEM', type: 'boolean', role: 'switch', def: true}, native: {}},
-        {_id: 'info.Configurations.autoFunction', type: 'state', common: {name: 'FUNCTION - resync set function of object (use Adapter Material)', type: 'boolean', role: 'switch', def: true}, native: {}},
-        {_id: 'info.Configurations.autoRole', type: 'state', common: {name: 'FUNCTION - resync set role of object (use Adapter Material)', type: 'boolean', role: 'switch', def: true}, native: {}},
-        {_id: 'info.Configurations.autoSmartName', type: 'state', common: {name: 'FUNCTION - resync(fhem.0) set SmartName of object (Adapter Cloud/IoT)', type: 'boolean', role: 'switch', def: true}, native: {}},
-        {_id: 'info.Configurations.autoName', type: 'state', common: {name: 'FUNCTION - resync set name of object', type: 'boolean', role: 'switch', def: true}, native: {}},
-        {_id: 'info.Configurations.autoType', type: 'state', common: {name: 'FUNCTION - resync set type of object', type: 'boolean', role: 'switch', def: true}, native: {}},
-        {_id: 'info.Configurations.autoStates', type: 'state', common: {name: 'FUNCTION - resync set states of object', type: 'boolean', role: 'switch', def: true}, native: {}},
-        {_id: 'info.Configurations.autoRest', type: 'state', common: {name: 'FUNCTION - resync set read,write,min,max,unit of object', type: 'boolean', role: 'switch', def: true}, native: {}},
+        {_id: 'info.Configurations.autoFunction', type: 'state', common: {name: 'FUNCTION - auto create function of object (use Adapter Material)', type: 'boolean', role: 'switch', def: true}, native: {}},
+        {_id: 'info.Configurations.autoRoom', type: 'state', common: {name: 'FUNCTION - auto create room of channel (use Adapter Material)', type: 'boolean', role: 'switch', def: true}, native: {}},
+        {_id: 'info.Configurations.autoRole', type: 'state', common: {name: 'FUNCTION - auto create role of object (use Adapter Material)', type: 'boolean', role: 'switch', def: true}, native: {}},
+        {_id: 'info.Configurations.autoSmartName', type: 'state', common: {name: 'FUNCTION - (fhem.0) auto create SmartName of object (Adapter Cloud/IoT)', type: 'boolean', role: 'switch', def: true}, native: {}},
+        {_id: 'info.Configurations.autoName', type: 'state', common: {name: 'FUNCTION - auto create name of object', type: 'boolean', role: 'switch', def: true}, native: {}},
+        {_id: 'info.Configurations.autoType', type: 'state', common: {name: 'FUNCTION - auto create type of object', type: 'boolean', role: 'switch', def: true}, native: {}},
+        {_id: 'info.Configurations.autoStates', type: 'state', common: {name: 'FUNCTION - auto create states of object', type: 'boolean', role: 'switch', def: true}, native: {}},
+        {_id: 'info.Configurations.autoRest', type: 'state', common: {name: 'FUNCTION - auto create read,write,min,max,unit of object', type: 'boolean', role: 'switch', def: true}, native: {}},
         {_id: 'info.Configurations.deleteUnusedObjects', type: 'state', common: {name: 'FUNCTION - delete unused objects automatically', type: 'boolean', role: 'switch', def: true}, native: {}},
         {_id: 'info.Configurations.oldState', type: 'state', common: {name: 'FUNCTION - old version of state with true/false', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
         {_id: 'info.Configurations.allowedIOBin', type: 'state', common: {name: 'SYNC - allowed objects send2FHEM', type: 'string', read: true, write: true, role: 'state'}, native: {default: '.'}},
@@ -402,6 +401,7 @@ function getConfigurationsFUNCTION(ff, cb) {
         logInfo(fn, 'change Configurations of FUNCTION ===== check ' + adapter.namespace + '.' + 'info.Configurations (value) - Devices to sync');
     getSetting(fn, 'info.Configurations.autoRole', value => autoRole = value);
     getSetting(fn, 'info.Configurations.autoFunction', value => autoFunction = value);
+    getSetting(fn, 'info.Configurations.autoRoom', value => autoRoom = value);
     getSetting(fn, 'info.Configurations.autoConfigFHEM', value => autoConfigFHEM = value);
     getSetting(fn, 'info.Configurations.autoSmartName', value => autoSmartName = value);
     getSetting(fn, 'info.Configurations.autoName', value => autoName = value);
@@ -439,8 +439,7 @@ function getSettings(ff, cb) {
     });
 }
 // more
-//function getSetting(ff, id, callback, cb) {
-function getSetting(ff, id, callback) {
+function getSetting(ff, id, cb) {
     let fn = ff + '[getSetting] ';
     logDebug(fn, '', id, 'D');
     adapter.getObject(id, (e, obj) => {
@@ -451,18 +450,15 @@ function getSetting(ff, id, callback) {
                 if (state) {
                     logDebug(fn, '', id + ' ' + state.val, '');
                     state.val && logInfo(fn, '> ' + obj.common.name + ' - ' + id + ' (' + state.val + ')');
-                    callback(state.val);
-                    //cb && cb();
+                    cb(state.val);
                 } else {
                     logDebug(fn, '', id + ' - no state found', '');
-                    callback();
-                    //cb && cb();
+                    cb();
                 }
             });
         } else {
             logDebug(fn, '', id + ' - no object found', '');
-            callback();
-            //cb && cb();
+            cb();
         }
     });
 }
@@ -619,9 +615,9 @@ function parseObjects(ff, objs, cb) {
     const states = [];
     let id;
     let obj;
-    //let name;
     let alias;
     let suche = 'no';
+    let text;
     const debugShow = '';
     if (firstRun) {
         for (let i = 0; i < objs.length; i++) {
@@ -647,7 +643,7 @@ function parseObjects(ff, objs, cb) {
         setState(fn, 'info.Info.roomioBroker', iobroker, true);
         iobroker && logInfo(fn, '> only sync device(s) from room(s) = ' + onlySyncRoom + ' - ' + adapter.namespace + '.info.Info.roomioBroker (' + iobroker + ')');
         onlySyncNAME.length && logInfo(fn, '> only sync device(s) = ' + onlySyncNAME + ' - ' + adapter.namespace + '.info.Configurations.onlySyncNAME (' + onlySyncNAME + ')');
-        ignoreObjectsAttributesRoom.length && logInfo(fn, '> no sync device(s) of room = ' + ignoreObjectsAttributesRoom + ' - ' + adapter.namespace + '.info.Configurations.ignoreObjectsAttributesroom (' + ignoreObjectsAttributesRoom + ')');
+        ignoreObjectsAttributesRoom.length && logInfo(fn, '> no sync device(s) of room(s) = ' + ignoreObjectsAttributesRoom + ' - ' + adapter.namespace + '.info.Configurations.ignoreObjectsAttributesroom (' + ignoreObjectsAttributesRoom + ')');
         ignoreObjectsInternalsNAME.length && logInfo(fn, '> no sync device(s) with Internals:NAME = ' + ignoreObjectsInternalsNAME + ' - ' + adapter.namespace + '.info.Configurations.ignoreObjectsInternalsNAME (' + ignoreObjectsInternalsNAME + ')');
         ignoreObjectsInternalsTYPE.length && logInfo(fn, '> no sync device(s) with Internals:TYPE = ' + ignoreObjectsInternalsTYPE + ' - ' + adapter.namespace + '.info.Configurations.ignoreObjectsInternalsTYPE (' + ignoreObjectsInternalsTYPE + ')');
     }
@@ -655,85 +651,89 @@ function parseObjects(ff, objs, cb) {
         const device = objs[i].Name;
         const debugN = device + ' | ';
         try {
-            (debugNAME.indexOf(device) !== -1) && adapter.log.info(debugN + ' check FHEM Device');
+            //(debugNAME.indexOf(device) !== -1) && adapter.log.info(debugN + ' check FHEM Device');
             // Auto-created by ioBroker ?
             if (objs[i].Attributes.comment && objs[i].Attributes.comment.indexOf('Auto-created by ioBroker fhem') !== -1) {
                 // nicht eigene Instanz?
                 if (objs[i].Attributes.comment.indexOf('Auto-created by ioBroker ' + adapter.namespace) === -1) {
                     fhemIgnore[device] = {id: device};
-                    logIgnoreConfig(device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
+                    logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
                     continue;
                 }
                 if (!fhemINs[device] && objs[i].Attributes.room.indexOf('ioB_IN') !== -1) {
-                    logIgnoreConfig(device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
+                    logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
                     sendFHEM(fn, 'delete ' + device);
                     continue;
                 }
                 if (fhemINs[device] && objs[i].Attributes.room.indexOf('ioB_IN') !== -1) {
-                    logIgnoreConfig(device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
+                    logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
                     fhemIN[device] = {id: device};
                     fhemIgnore[device] = {id: device};
                     continue;
                 }
                 if (device.indexOf('alive') !== -1) {
-                    logIgnoreConfig(device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
+                    logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
                     fhemIgnore[device] = {id: device};
                     continue;
                 }
                 if (device.indexOf('send2ioB') !== -1) {
-                    logIgnoreConfig(device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
+                    logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
                     fhemIgnore[device] = {id: device};
                     continue;
                 }
             }
+            if (objs[i].Attributes && iobroker) {
+                if (!objs[i].Attributes.room) {
+                    logIgnoreConfig(fn, device, 'no room, iobroker=true', i, objs.length);
+                    continue;
+                } else {
+                    let weiter = true;
+                    let searchRoom = objs[i].Attributes.room.split(',');
+                    for (const r in searchRoom) {
+                        if (onlySyncRoom.indexOf(searchRoom[r]) !== -1 || searchRoom[r] === 'ioB_System') {
+                            logDebug(fn, device, 'detected room ' + searchRoom[r] + '/' + r + ' of FHEM device "' + device + '"', 'D');
+                            weiter = false;
+                        }
+                    }
+                    if (weiter && !synchro) {
+                        unusedObjects(fn, convertNameFHEM(fn, device) + '.*', cb);
+                    }
+                    if (weiter) {
+                        logIgnoreConfig(fn, device, 'room <> ' + onlySyncRoom, i, objs.length);
+                        continue;
+                    }
+                }
+            }
             if (onlySyncNAME.length && onlySyncNAME.indexOf(objs[i].Internals.NAME) === -1) {
-                logIgnoreConfig(device, 'NAME <> ' + onlySyncNAME, i, objs.length);
-                (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - not included in ' + adapter.namespace + '.info.Config.onlySyncNAME');
+                logIgnoreConfig(fn, device, 'NAME <> ' + onlySyncNAME, i, objs.length);
+                //(debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - not included in ' + adapter.namespace + '.info.Config.onlySyncNAME');
                 continue;
             }
             if (onlySyncTYPE.length && onlySyncTYPE.indexOf(objs[i].Internals.TYPE) === -1) {
-                logIgnoreConfig(device, 'TYPE <> ' + onlySyncTYPE, i, objs.length);
-                (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - not included in ' + adapter.namespace + '.info.Config.onlySyncTYPE');
+                logIgnoreConfig(fn, device, 'TYPE <> ' + onlySyncTYPE, i, objs.length);
+                //(debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - not included in ' + adapter.namespace + '.info.Config.onlySyncTYPE');
                 continue;
             }
             if (ignoreObjectsInternalsTYPE.indexOf(objs[i].Internals.TYPE) !== -1) {
-                logIgnoreConfig(device, 'TYPE: ' + ignoreObjectsInternalsTYPE, i, objs.length);
-                (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - included in ' + adapter.namespace + '.info.Config.ignoreObjectsInternalsTYPE');
+                logIgnoreConfig(fn, device, 'TYPE: ' + ignoreObjectsInternalsTYPE, i, objs.length);
+                //(debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - included in ' + adapter.namespace + '.info.Config.ignoreObjectsInternalsTYPE');
                 continue;
             }
             if (ignoreObjectsInternalsNAME.indexOf(objs[i].Internals.NAME) !== -1) {
-                logIgnoreConfig(device, 'NAME: ' + ignoreObjectsInternalsNAME, i, objs.length);
-                (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - included in ' + adapter.namespace + '.info.Config.ignoreObjectsInternalsNAME');
+                logIgnoreConfig(fn, device, 'NAME: ' + ignoreObjectsInternalsNAME, i, objs.length);
+                //(debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - included in ' + adapter.namespace + '.info.Config.ignoreObjectsInternalsNAME');
                 continue;
             }
             if (ignoreObjectsAttributesRoom.indexOf(objs[i].Attributes.room) !== -1) {
-                logIgnoreConfig(device, 'room: ' + ignoreObjectsAttributesRoom, i, objs.length);
-                (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - included in ' + adapter.namespace + '.info.Config.ignoreObjectsAttributesroom');
+                logIgnoreConfig(fn, device, 'room: ' + ignoreObjectsAttributesRoom, i, objs.length);
+                //(debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - included in ' + adapter.namespace + '.info.Config.ignoreObjectsAttributesroom');
                 continue;
             }
             if (objs[i].Attributes && objs[i].Attributes.room === 'hidden') {
+                logIgnoreConfig(fn, device, 'room: hidden', i, objs.length);
                 continue;
             }
-            if (objs[i].Attributes && !objs[i].Attributes.room && iobroker) {
-                continue;
-            }
-            if (objs[i].Attributes && objs[i].Attributes.room && iobroker) {
-                let weiter = true;
-                let searchRoom = objs[i].Attributes.room.split(',');
-                for (const r in searchRoom) {
-                    if (onlySyncRoom.indexOf(searchRoom[r]) !== -1 || searchRoom[r] === 'ioB_System') {
-                        (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' iobroker=true > detected room ' + searchRoom[r] + ' / ' + r);
-                        weiter = false;
-                    }
-                }
-                if (weiter && synchro !== true) {
-                    unusedObjects(fn, convertNameFHEM(fn, device) + '.*', cb);
-                }
-                if (weiter) {
-                    (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - iobroker=true > detected no room');
-                    continue;
-                }
-            }
+            logDebug(fn, device, 'detected FHEM device "' + device + '" to sync', 'D');
             let isOn = false;
             let isOff = false;
             let setStates = {};
@@ -788,13 +788,20 @@ function parseObjects(ff, objs, cb) {
             if (objs[i].Attributes.subType === 'blindActuator') {
                 Funktion = 'blind';
             }
+            //Functions
             if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
                 setFunction(channel, Funktion, nameIob);
             }
             objects.push(obj);
-            logCheckObject && logInfo(fn, 'check channel ' + channel + ' | name: ' + alias + ' | room: ' + objs[i].Attributes.room + ' | role: ' + obj.common.role + ' | function: ' + Funktion + ' | ' + ' ' + (i + 1) + '/' + objs.length);
+
+            text = 'check channel ' + channel + ' | name: ' + alias + ' | room: ' + objs[i].Attributes.room + ' | role: ' + obj.common.role + ' | function: ' + Funktion + ' | ' + ' ' + (i + 1) + '/' + objs.length;
+            if (logCheckObject && debugNAME.indexOf(device) === -1) {
+                logInfo(fn, text);
+            } else {
+                logDebug(fn, device, text, '');
+            }
             //Rooms
-            if (objs[i].Attributes && objs[i].Attributes.room) {
+            if (objs[i].Attributes && objs[i].Attributes.room && autoRoom) {
                 const rrr = objs[i].Attributes.room.split(',');
                 for (let r = 0; r < rrr.length; r++) {
                     rrr[r] = rrr[r].trim();
@@ -1372,10 +1379,10 @@ function parseObjects(ff, objs, cb) {
                 delete objs[i].Readings;
             }
             setStates = null;
+            (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' check channel ' + channel + ' finished!');
         } catch (e) {
             logError(fn, 'Cannot process object: ' + JSON.stringify(objs[i]) + ' ' + e);
         }
-        (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' check FHEM Device finished!!!');
     }
     let channel = 0;
     let state = 0;
@@ -1395,13 +1402,23 @@ function parseObjects(ff, objs, cb) {
         logInfo(fn, '> check channel - ' + channel + ' Device(s) of FHEM synchronized');
         logInfo(fn, 'STEP 09 ===== Synchro objects, rooms, functions, states');
     }
-    firstRun && logInfo(fn, '> update/create ' + objects.length + ' object(s) / ' + channel + ' channel(s) ' + ' and ' + state + ' state(s)');
+    firstRun && logInfo(fn, '> check update/create ' + objects.length + ' object(s) / ' + channel + ' channel(s) ' + ' and ' + state + ' state(s)');
     syncObjects(objects, () => {
-        firstRun && logInfo(fn, '> update/create ' + Object.keys(rooms).length + ' room(s)');
+        text = adapter.namespace + '.info.Configurations.autoRoom (' + autoRoom + ')';
+        if (!autoRoom) {
+            logInfo(fn, '> no auto create of room(s) - ' + text);
+        } else {
+            firstRun && logInfo(fn, '> check update/create ' + Object.keys(rooms).length + ' room(s) - ' + text);
+        }
         syncRooms(rooms, () => {
-            firstRun && logInfo(fn, '> update/create ' + Object.keys(functions).length + ' function(s)');
+            text = adapter.namespace + '.info.Configurations.autoFunction (' + autoFunction + ')';
+            if (!autoFunction) {
+                logInfo(fn, '> no auto create of function(s) - ' + text);
+            } else {
+                firstRun && logInfo(fn, '> check update/create ' + Object.keys(functions).length + ' function(s) - ' + text);
+            }
             syncFunctions(functions, () => {
-                firstRun && logInfo(fn, '> update/create ' + state + ' state(s) / ' + states.length + ' state(s) to sync');
+                firstRun && logInfo(fn, '> check update/create ' + state + ' state(s) / ' + states.length + ' state(s) to sync');
                 if (state !== states.length)
                     logWarn(fn, 'object state(s) <> state(s) to sync');
                 syncStates(states, () => {
@@ -1413,12 +1430,17 @@ function parseObjects(ff, objs, cb) {
     });
 }
 //
-function logIgnoreConfig(name, text, nr, from) {
-    if (logIgnoreConfigurations)
-        adapter.log.info('ignore FHEM device "' + name + '" | ' + text + ' | ' + ' ' + (nr + 1) + '/' + from);
+function logIgnoreConfig(ff, name, text, nr, from) {
+    let fn = ff + '[logIgnoreConfig] ';
+    text = 'ignored FHEM device "' + name + '" > no sync - ' + text + ' | ' + ' ' + (nr + 1) + '/' + from;
+    if (logIgnoreConfigurations && debugNAME.indexOf(name) === -1) {
+        adapter.log.info(text);
+    } else {
+        logDebug(fn, name, text);
+    }
 }
 function syncObjects(objects, cb) {
-    let fn = '[syncObjects] > ';
+    let fn = '[syncObjects] ';
     if (!objects || !objects.length) {
         logDebug(fn, '', fn + 'end', 'D');
         setState(fn, 'info.Info.numberObjectsIOBin', Object.keys(fhemObjects).length, true);
@@ -1481,12 +1503,10 @@ function syncObjects(objects, cb) {
                 }
                 if (JSON.stringify(newObj) !== JSON.stringify(oldObj)) {
                     if (obj.type === 'channel' && logUpdateChannel) {
-                        //logInfo(fn,'Update channel ' + obj._id + '  (' + oldObj.common.name + ')');
                         logInfo(fn, 'Update channel: ' + obj.common.name + ' | ' + obj._id + ' - ' + updateText);
                     } else {
                         logDebug(fn, obj._id, 'update object: ' + obj._id + ' (' + obj.type + ') - ' + updateText, '');
                     }
-                    //debugNAME.indexOf(parts[2]) !== -1 && adapter.log.info(parts[2] + ' | update ' + obj.type + ' ' + obj._id + ' (' + updateText + ' )');
                     adapter.extendObject(obj._id, newObj, e => {
                         e && logError(fn, e);
                         setImmediate(syncObjects, objects, cb);
@@ -1555,6 +1575,7 @@ function syncRoom(room, members, cb) {
     });
 }
 function syncFunctions(functions, cb) {
+    //let fn = '[syncFunctions] ';
     for (const f in functions) {
         if (!functions.hasOwnProperty(f)) {
             continue;
