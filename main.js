@@ -30,7 +30,7 @@ let debug = false;
 let aktivQueue = false;
 let aktivSetState = false;
 let activeEvent = false;
-const buildDate = '11.11.19';
+const buildDate = '14.11.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let timer = null;
@@ -268,7 +268,6 @@ function myObjects(ff, cb) {
         {_id: 'info.Info.lastInfo', type: 'state', common: {name: 'lastInfo', type: 'string', read: true, write: false, role: 'text'}, native: {}},
         {_id: 'info.Info.lastSend2ioB', type: 'state', common: {name: 'lastSend2ioB', type: 'string', read: true, write: false, role: 'text'}, native: {}},
         {_id: 'info.Info.lastIOBout', type: 'state', common: {name: 'lastIOBout', type: 'string', read: true, write: false, role: 'text'}, native: {}},
-        //{_id: 'info.Info.TEST', type: 'state', common: {name: 'TEST', type: 'string', read: true, write: true, role: 'text'}, native: {}},
         // info.Settings
         {_id: 'info.Settings.logCheckObject', type: 'state', common: {name: 'LOG "check channel ....." ', type: 'boolean', role: 'switch', def: false}, native: {}},
         {_id: 'info.Settings.logCreateChannel', type: 'state', common: {name: 'LOG "Create channel ....." ', type: 'boolean', role: 'switch', def: false}, native: {}},
@@ -409,7 +408,6 @@ function getConfigurationsFUNCTION(ff, cb) {
     getSetting(fn, 'info.Configurations.autoStates', value => autoStates = value);
     getSetting(fn, 'info.Configurations.autoRest', value => autoRest = value);
     getSetting(fn, 'info.Configurations.deleteUnusedObjects', value => deleteUnusedObjects = value);
-    //getSetting(fn, 'info.Configurations.logNoInfo', value => logNoInfo = value);
     getSetting(fn, 'info.Configurations.oldState', value => {
         oldState = value;
         logDebug(fn, '', 'end', 'D');
@@ -651,7 +649,6 @@ function parseObjects(ff, objs, cb) {
         const device = objs[i].Name;
         const debugN = device + ' | ';
         try {
-            //(debugNAME.indexOf(device) !== -1) && adapter.log.info(debugN + ' check FHEM Device');
             // Auto-created by ioBroker ?
             if (objs[i].Attributes.comment && objs[i].Attributes.comment.indexOf('Auto-created by ioBroker fhem') !== -1) {
                 // nicht eigene Instanz?
@@ -706,27 +703,22 @@ function parseObjects(ff, objs, cb) {
             }
             if (onlySyncNAME.length && onlySyncNAME.indexOf(objs[i].Internals.NAME) === -1) {
                 logIgnoreConfig(fn, device, 'NAME <> ' + onlySyncNAME, i, objs.length);
-                //(debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - not included in ' + adapter.namespace + '.info.Config.onlySyncNAME');
                 continue;
             }
             if (onlySyncTYPE.length && onlySyncTYPE.indexOf(objs[i].Internals.TYPE) === -1) {
                 logIgnoreConfig(fn, device, 'TYPE <> ' + onlySyncTYPE, i, objs.length);
-                //(debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - not included in ' + adapter.namespace + '.info.Config.onlySyncTYPE');
                 continue;
             }
             if (ignoreObjectsInternalsTYPE.indexOf(objs[i].Internals.TYPE) !== -1) {
                 logIgnoreConfig(fn, device, 'TYPE: ' + ignoreObjectsInternalsTYPE, i, objs.length);
-                //(debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - included in ' + adapter.namespace + '.info.Config.ignoreObjectsInternalsTYPE');
                 continue;
             }
             if (ignoreObjectsInternalsNAME.indexOf(objs[i].Internals.NAME) !== -1) {
                 logIgnoreConfig(fn, device, 'NAME: ' + ignoreObjectsInternalsNAME, i, objs.length);
-                //(debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - included in ' + adapter.namespace + '.info.Config.ignoreObjectsInternalsNAME');
                 continue;
             }
             if (ignoreObjectsAttributesRoom.indexOf(objs[i].Attributes.room) !== -1) {
                 logIgnoreConfig(fn, device, 'room: ' + ignoreObjectsAttributesRoom, i, objs.length);
-                //(debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' no sync - included in ' + adapter.namespace + '.info.Config.ignoreObjectsAttributesroom');
                 continue;
             }
             if (objs[i].Attributes && objs[i].Attributes.room === 'hidden') {
@@ -788,7 +780,7 @@ function parseObjects(ff, objs, cb) {
             if (objs[i].Attributes.subType === 'blindActuator') {
                 Funktion = 'blind';
             }
-            //Functions
+            // Functions
             if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
                 setFunction(channel, Funktion, nameIob);
             }
@@ -800,7 +792,7 @@ function parseObjects(ff, objs, cb) {
             } else {
                 logDebug(fn, device, text, '');
             }
-            //Rooms
+            // Rooms
             if (objs[i].Attributes && objs[i].Attributes.room && autoRoom) {
                 const rrr = objs[i].Attributes.room.split(',');
                 for (let r = 0; r < rrr.length; r++) {
@@ -809,7 +801,7 @@ function parseObjects(ff, objs, cb) {
                     rooms[rrr[r]].push(channel);
                 }
             }
-            //-----------------------------------------
+            // Attributes
             if (objs[i].Attributes) {
                 (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' > check Attributes');
                 if (!objs[i].Attributes.alias) {
@@ -849,7 +841,7 @@ function parseObjects(ff, objs, cb) {
                     });
                 }
             }
-            //-----------------------------------------
+            // Internals
             if (objs[i].Internals) {
                 (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' > check Internals');
                 for (const attr in objs[i].Internals) {
@@ -885,7 +877,7 @@ function parseObjects(ff, objs, cb) {
                     });
                 }
             }
-            //-----------------------------------------
+            // Possible Sets
             if (objs[i].PossibleSets && objs[i].PossibleSets.length > 1) {
                 (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' > check PossibleSets');
                 const attrs = objs[i].PossibleSets.split(' ');
@@ -1097,7 +1089,7 @@ function parseObjects(ff, objs, cb) {
                     }
                 }
             }
-            //-----------------------------------------
+            // Readings
             if (objs[i].Readings) {
                 (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' > check Readings');
                 for (const attr in objs[i].Readings) {
@@ -1280,7 +1272,7 @@ function parseObjects(ff, objs, cb) {
                                     ack: true
                                 });
                             }
-                            // (create state_value)
+                            // create state_value
                             if (typeof (sensor[3]) === "number") {
                                 obj.native.StateValue = true;
                                 let obj_sensor = {
@@ -1307,7 +1299,7 @@ function parseObjects(ff, objs, cb) {
                                     ack: true
                                 });
                             }
-                            // detect SONOS state (create media.state)
+                            // create media.state
                             if (objs[i].Internals.TYPE === 'SONOSPLAYER') {
                                 obj.native.media = true;
                                 let valMedia = false;
@@ -1373,7 +1365,6 @@ function parseObjects(ff, objs, cb) {
                             adapter.log.debug(fn + 'Funktion: ' + Funktion + ' für ' + id);
                             setFunction(id, Funktion, nameIob);
                         }
-
                     }
                 }
                 delete objs[i].Readings;
@@ -1451,7 +1442,6 @@ function syncObjects(objects, cb) {
     fhemObjects[obj._id] = obj;
     const parts = obj._id.split('.');
     adapter.getForeignObject(obj._id, (e, oldObj) => {
-        //adapter.getObject(obj._id, (e, oldObj) => {   
         if (e)
             logError(fn, e);
         if (!oldObj) {
@@ -1461,7 +1451,6 @@ function syncObjects(objects, cb) {
                 logDebug(fn, obj._id, 'create object: ' + obj._id + ' (' + obj.type + ')', '');
             }
             adapter.setForeignObject(obj._id, obj, e => {
-                //adapter.setObject(obj._id, obj, e => {    
                 e && logError(fn, e);
                 setImmediate(syncObjects, objects, cb);
             });
@@ -1564,8 +1553,7 @@ function syncRoom(room, members, cb) {
             if (changed) {
                 adapter.log.debug('update "' + obj._id + '"');
                 adapter.setForeignObject(obj._id, obj, e => {
-                    e &&
-                            logError('[syncRoom] ', e);
+                    e && logError('[syncRoom] ', e);
                     cb();
                 });
             } else {
@@ -1667,22 +1655,10 @@ function setFunction(id, Funktion, name) {
         functions[fff[f]].push(id);
     }
 }
-/*
- function parseObjLog(mode, name, val, text, cb) {
- if (mode === 'debug') {
- adapter.log.debug('[parseObjects] ' + text + ' - ' + name + ' ' + val);
- debugNAME.indexOf(name) !== -1 && adapter.log.info('[' + name + '] ' + text);
- return cb;
- } else {
- return cb;
- }
- }
- */
 //STEP 10
 function unusedObjects(ff, check, cb) {
     let fn = ff + '[unusedObjects] ';
     logDebug(fn, '', 'start - ' + check, 'D');
-    //adapter.log.debug(fn + check);
     if (!deleteUnusedObjects) {
         logInfo(fn, '> delete unused objects (' + check + ') > no automatically delete - info.Configurations.deleteUnusedObjecs not true!');
         cb && cb();
@@ -1787,7 +1763,6 @@ function deleteState(name, cb) {
 }
 function deleteChannel(name, cb) {
     let fn = '[deleteChannel] ';
-    //adapter.log.debug(fn + name);
     delete fhemObjects[adapter.namespace + '.' + name];
     adapter.deleteChannel(name, e => {
         if (e && e !== 'Not exists') {
@@ -2004,7 +1979,6 @@ function writeValue(ff, id, val, cb) {
         }
         // bol0?
         if (fhemObjects[id].native.bol0) {
-            //convertBol0(val);
             if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true) {
                 val = '1';
             }
@@ -2279,7 +2253,7 @@ function parseEvent(ff, eventIN, cb) {
         eventNOK(fn, event, channel, 'included in ignoreReadings', 'debug', device, cb);
         cb && cb();
         return;
-    } else if (!fhemObjects[adapter.namespace + '.' + nameIob] && device !== 'global') {
+    } else if (!fhemObjects[channel] && device !== 'global') {    //global?
         eventNOK(fn, event, channel, 'not in fhemObjects and not global', 'debug', device, cb);
         cb && cb();
         return;
@@ -2293,7 +2267,7 @@ function parseEvent(ff, eventIN, cb) {
             const pos = event.indexOf(':');
             // state? (ohne : oder : hinten)
             if (pos === -1 || stelle.indexOf(':') !== 0) {
-                logDebug(fn, event, 'detect state (ohne :) ' + event, 'D');
+                logDebug(fn, event, 'detect state (ohne : oder : hinten) ' + event, 'D');
                 val = event.substring(parts[0].length + device.length + 2);
                 id = checkID(fn, device, 'state', channel);
                 if (fhemObjects[id]) {
@@ -2335,7 +2309,7 @@ function parseEvent(ff, eventIN, cb) {
                 logDebug(fn, event, 'check reading or state? (mit : vorne)' + event, 'D');
                 let typ;
                 let idTest = checkID(fn, device, 'state', channel);
-                adapter.getState(idTest, function (e, state) {
+                adapter.getState(idTest, (e, state) => {
                     e && logError(fn, 'rs? ' + e);
                     if (state !== null && typeof (state.val) !== "boolean" && state.val.substring(0, parts[2].length) === parts[2]) {
                         val = convertFhemValue(event.substring(parts[0].length + device.length + 2));
@@ -2347,10 +2321,16 @@ function parseEvent(ff, eventIN, cb) {
                         let partsR = name.split(' ');
                         val = convertFhemValue(event.substring(partsR[0].length + partsR[1].length + partsR[2].length + 4));
                         id = checkID(fn, partsR[1], partsR[2], channel);
-                        // rgb? insert # usw
-                        val = convertAttr(partsR[2], val);
-                        typ = 'reading';
-                        logDebug(fn, event, '(2) ' + event + ' typ = ' + typ + ' id = ' + id + ' val = ' + val, 'D');
+                        if (id === channel) {
+                            eventNOK(fn, event, id, 'id not found!', 'json', device, cb);
+                            cb && cb();
+                            return;
+                        } else {
+                            // rgb? insert # usw
+                            val = convertAttr(partsR[2], val);
+                            typ = 'reading';
+                            logDebug(fn, event, '(2) ' + event + ' typ = ' + typ + ' id = ' + id + ' val = ' + val, 'D');
+                        }
                     }
                     if (!fhemObjects[id]) {
                         eventNOK(fn, event, id, '!fhemObjects[id]', 'json', device, cb);
@@ -2468,7 +2448,7 @@ function doJsonlist(ff, device, cb) {
         lastNameTS = Date.now();
         return cb;
     } else {
-        adapter.log.warn('no jsonlist2 ' + device);
+        logDebug(fn, device, 'no jsonlist2 ' + device + ' = ' + lastNameQueue, 'D');
         return cb;
     }
 }
