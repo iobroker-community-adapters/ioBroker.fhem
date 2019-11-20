@@ -2084,6 +2084,7 @@ function parseEvent(ff, eventIN, cb) {
         return cb();
     }
     let parts = event.split(' ');
+    let type = parts[0];
     let device = parts[1];
     let nameIob = convertNameFHEM(fn, device);
     let channel = adapter.namespace + '.' + nameIob;
@@ -2256,7 +2257,7 @@ function parseEvent(ff, eventIN, cb) {
                     search = channel + '.state_switch';
                     if (fhemObjects[search])
                         eventOK(fn, event, search, convertFhemValue(parts[2]), ts, 'switch', device, channel, cb);
-                    const sensor = convertFhemSensor(fn, val, device, '');
+                    const sensor = convertFhemSensor(fn, val, device, type);
                     // state_media?
                     search = channel + '.state_media';
                     if (fhemObjects[search]) {
