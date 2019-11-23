@@ -30,7 +30,7 @@ let debug = false;
 let aktivQueue = false;
 let aktivSetState = false;
 let activeEvent = false;
-const buildDate = '20.11.19';
+const buildDate = '23.11.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let timer = null;
@@ -1563,7 +1563,6 @@ function syncRoom(room, members, cb) {
     });
 }
 function syncFunctions(functions, cb) {
-    //let fn = '[syncFunctions] ';
     for (const f in functions) {
         if (!functions.hasOwnProperty(f)) {
             continue;
@@ -2151,7 +2150,6 @@ function parseEvent(ff, eventIN, cb) {
             eventOK(fn, event, 'unusedObjects', nameIob + '.*', ts, 'global', device, channel, cb);
             return cb();
         } else {
-            adapter.log.warn('Bin ende');
             eventNOK(fn, event, channel, 'Global global not proccesed!', 'warn', device, channel, cb);
             return cb();
         }
