@@ -1,6 +1,6 @@
 ---
 title:       "FHEM-Adapter"
-lastChanged: "01.09.2019"
+lastChanged: "10.12.2019"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
 ---
 
@@ -335,7 +335,7 @@ Objekt                                                 | Zugriff | Bescheibung  
 :------------------------------------------------------|:-------:|:------------------------------------------------|:------:
 **[fhem.o](#objekte)**                                 |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**info**                                         |     | Information und mehr
-&emsp;&emsp;**[Commands](#info_commands)**             |     | Befehlszeile FHEM
+&emsp;&emsp;**[Commands](#info_commands)**             |     | Schnittstelle zu FHEM
 &emsp;&emsp;**[Configurations](#info_configurations)** |     | Einstellungen Funktionen und Synchro
 &emsp;&emsp;**[Debug](#info_debug)**                   |     | Debug Modus
 &emsp;&emsp;**[Info](#info_info)**                     |     | Info zur Synchro
@@ -358,7 +358,7 @@ Objekt                    | Zugriff | Bescheibung | Wert
 :-------------------------|:-------:|:------------|:----:
 **[fhem.o](#objekte)**            |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[info](#objekte_i)**      |     | Information und mehr
-&emsp;&emsp;**Commands**          |     | Befehlszeile FHEM
+&emsp;&emsp;**Commands**          |     | Schnittstelle zu FHEM
 &emsp;&emsp;&emsp;**createSwitch**|  RW | Erzeugt dummy NAME als Schalter im Raum room| NAME room
 &emsp;&emsp;&emsp;**lastCommand** |  R  | Letzer Befehl von ioBroker an FHEM | Zeichenkette
 &emsp;&emsp;&emsp;**resultFHEM**  |  R  | Liefert Ergebnis von sendFHEM | Zeichenkette
@@ -382,15 +382,16 @@ Objekt                                           | Zugriff | Bescheibung | Wert
 &emsp;&emsp;**[Commands](#info_commands)**        |     | Befehlszeile FHEM 
 &emsp;&emsp;**Configurations**                    |     | Configurations
 &emsp;&emsp;&emsp;**allowedAttributes**           |  RW | Sync Attributtes (default = `room,alias,comment`) | Attribut oder Attribut1,Attribut2 usw
-&emsp;&emsp;&emsp;**allowedIOBin**                |  RW | Erlaubte Objekte zum Übertrag nach FHEM. Es wird auf die Zeichenkette am Anfang des Objects geprüft zb "alexa2.x.History" überträgt alle Objekte die mit alexa2.x.History beginnen. Objekte werden werden nach einer Änderung state in FHEM im Raum ioB_IN als Modul dummy angelegt.  | Wert oder Wert1,Wert2 usw
+&emsp;&emsp;&emsp;**allowedIOBin**                |  RW | Erlaubte Objekte zum Übertrag nach FHEM. Es wird auf die Zeichenkette am Anfang des Objects geprüft zb "alexa2.x.History" überträgt alle Objekte die mit alexa2.x.History beginnen. Objekte werden werden nach einer Änderung state in FHEM im Raum ioB_IN als Device dummy angelegt.  | Wert oder Wert1,Wert2 usw
 &emsp;&emsp;&emsp;**allowedInternals**            |  RW | Sync Internals (default = `TYPE,NAME`) | Internals oder Internals1,Internals2 usw
 &emsp;&emsp;&emsp;**autoConfigFHEM**              |  RW | Erlaubt folgende Änderungen in FHEM 1.Für TYPE=SONOSPLAYER `attr xxx generateVolumeEvent 1` damit Lautstärke übertragen wird. 2. TYPE = HUEBridge 'attr xxx createGroupReadings 1' Readings für HUEGroup 3.Am Ende der Synchronisation `save` zum Speichern der Änderungen. (default=`false`) | true/false
 &emsp;&emsp;&emsp;**autoFunction**                |  RW | Funktionen werden bei Neustart abhängig von Version FHEM Adaper vergeben (default=`false`) Für Adapter `Material UI`wird `true`empfohlen. Bei `false` können Funktionen selber vergeben werden und es erfolgt keine Änderung durch den Adapter | true/false
 &emsp;&emsp;&emsp;**autoName**                |  RW | Bei Resync Name state-Objekt überschreiben (default=`false`)  | true/false
 &emsp;&emsp;&emsp;**autoRest**                |  RW | Bei Resync min,max,unit,read,write state-Objekt überschreiben (default=`false`)  | true/false
 &emsp;&emsp;&emsp;**autoRole**                    |  RW | Rollen werden bei Neustart abhängig von Version FHEM Adaper vergeben  (default=`false`) Für Adapter `Material UI` wird `true`empfohlen. Bei `false` können Rollen selber vergeben werden und es erfolgt keine Änderung durch den Adapter. | true/false
+&emsp;&emsp;&emsp;**autoRoom**                    |  RW | Räume aus FHEM werden automatisch dem zugehörigen Objekt im ioBroker zugeordnet (default=`true`) | true/false
 &emsp;&emsp;&emsp;**autoSamrtName**               |  RW | Bei Resync smartName überschreiben (default=`true`) Automatische Anlage Smart Geräte für Adapter Cloud. Nur Instanz fhem.0! | true/false
-&emsp;&emsp;&emsp;**autoStates**               |  RW | Bei Resync States state-Objekt überschreiben (default=`false`) | true/false
+&emsp;&emsp;&emsp;**autoStates**               |  RW | Bei Resync States state-Objekt überschreiben (default=`true`) | true/false
 &emsp;&emsp;&emsp;**autoType**               |  RW | Bei Resync Type state-Objekt überschreiben (default=`false`) | true/false
 &emsp;&emsp;&emsp;**deleteUnusedObjects**               |  RW | Bei Resync unbenutzte Objekte/States löschen (default=`true`) | true/false
 &emsp;&emsp;&emsp;**ignoreObjectsAttributesroom** |  RW | Kein Sync von Modulen mit Attributes:room | room oder room1,room2 usw
@@ -398,6 +399,7 @@ Objekt                                           | Zugriff | Bescheibung | Wert
 &emsp;&emsp;&emsp;**ignoreObjectsInternalsTYPE**  |  RW | Kein Sync von Modulen mit Internals:TYPE | TYPE oder TYPE1,TYPE2 usw
 &emsp;&emsp;&emsp;**ignorePossibleSets**          |  RW | Kein Sync von PossibleSets (default=`getConfig,etRegRaw,gBulk,regSet,deviceMsg,CommandAccepted`)
 &emsp;&emsp;&emsp;**ignoreReadings**              |  RW | Kein Sync von Readings (default=`currentTrackPositionSimulated, currentTrackPositionSimulatedSec`)
+&emsp;&emsp;&emsp;**logNoInfo**                    |  RW | Keine Info im Log bei Start Adapter (default=`false`) | true/false
 &emsp;&emsp;&emsp;**oldState**                    |  RW | state mit true/false (default=`false`) state als switch = state_switch| true/false
 &emsp;&emsp;&emsp;**onlySyncNAME**                |  RW | Sync nur Module mit Internals:NAME | NAME oder NAME1,NAME2 usw
 &emsp;&emsp;&emsp;**onlySyncRoom**                |  RW | Sync wenn Raum/Räume vorhanden nur Module aus Raum/Räume (default=`ioBroker,ioB_OUT`) | room oder room1,room2 usw
@@ -423,6 +425,7 @@ Objekt                    | Zugriff | Bescheibung | Wert
 &emsp;&emsp;**Debug**                                   |     | Debug Modus
 &emsp;&emsp;&emsp;**activate**                          |  RW | Name Device(s) aus FHEM durch Komma getrennt ->  Log [Devicename] im Admin Log | Text
 &emsp;&emsp;&emsp;**jsonlist2**                         |  RW | jsonlist2 Device aus FHEM -> Test Synchro Device mit jsonlist2 aus FHEM| json
+&emsp;&emsp;&emsp;**logDevelop**                        |  RW | Mehr Einträge bei Debug (default=`false`) | true/false
 &emsp;&emsp;&emsp;**meta**                              |  RW | Name Device aus FHEM -> Test Synchro Device mit Name| Text
 
 <a name="info_info"/>
@@ -446,6 +449,12 @@ Objekt                    | Zugriff | Bescheibung | Wert
 &emsp;&emsp;**Info**                                    |     | Info
 &emsp;&emsp;&emsp;**alive**                             |  R  | Verbindung FHEM > ioBroker | true/false
 &emsp;&emsp;&emsp;**buildDate**                         |  R  | Datum Version | 18.10.18
+&emsp;&emsp;&emsp;**lastError**                         |  R  | Letzer Eintrag Admin-Log (Error) | Text
+&emsp;&emsp;&emsp;**lastError**                         |  R  | Letzer Eintrag Admin-Log (Error) | Text
+&emsp;&emsp;&emsp;**lastIOBout**                        |  R  | Letzer Übertrag aus Definition von Configurations.allowedIOBin  Text
+&emsp;&emsp;&emsp;**lastInfo**                          |  R  | Letzer Eintrag Admin-Log (Info) | Text
+&emsp;&emsp;&emsp;**lastSend2ioB**                      |  R  | Letzer Übertrag von fhem.x.send2ioB aus FHEM| Text
+&emsp;&emsp;&emsp;**lastWarn**                          |  R  | Letzer Eintrag Admin-Log (Warn) | Text
 &emsp;&emsp;&emsp;**numberDevicesFHEM**                 |  R  | Anzahl Device(s) FHEM (jsonlist2) | Zahl
 &emsp;&emsp;&emsp;**numberDevicesFHEMsync**             |  R  | Anzahl Device(s) FHEM synchronisiert | Zahl
 &emsp;&emsp;&emsp;**numberObjectsIOBin**                |  R  | Anzahl Objekte aus FHEM | Zahl
