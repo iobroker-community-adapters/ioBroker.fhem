@@ -30,7 +30,7 @@ let debug = false;
 let aktivQueue = false;
 let aktivSetState = false;
 let activeEvent = false;
-const buildDate = '10.12.19';
+const buildDate = '12.12.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let timer = null;
@@ -2312,12 +2312,6 @@ function parseEvent(ff, eventIN, cb) {
                             typ = 'reading';
                             logDebug(fn, event, '(2) ' + event + ' typ = ' + typ + ' id = ' + id + ' val = ' + val, 'D');
                         }
-                        /* ??????????????
-                        // rgb? insert # usw
-                        val = convertAttr(partsR[2], val);
-                        typ = 'reading';
-                        logDebug(fn, event, '(2) ' + event + ' typ = ' + typ + ' id = ' + id + ' val = ' + val, 'D');
-                        */
                     }
                     if (!fhemObjects[id]) {
                         eventNOK(fn, event, id, '!fhemObjects[id]', 'json', device, cb);
@@ -2460,7 +2454,7 @@ function getUnit(name) {
 // convert
 function convertNameIob(ff, id) {
     let fn = ff + '[convertNameIob] ';
-    let idFHEM = id.replace(/[-#:]/g, '_');   //10.12.19
+    let idFHEM = id.replace(/[-#:]/g, '_');
     if (id !== idFHEM)
         logDebug(fn, id, 'convertNameIob: ' + id + ' --> ' + idFHEM, 'D');
     return idFHEM;
