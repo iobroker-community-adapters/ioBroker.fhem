@@ -30,7 +30,7 @@ let debug = false;
 let aktivQueue = false;
 let aktivSetState = false;
 let activeEvent = false;
-const buildDate = '12.12.19';
+const buildDate = '27.12.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let timer = null;
@@ -1978,6 +1978,13 @@ function writeValue(ff, id, val, cb) {
         if (attribute === 'rgb') {
             val = val.substring(1);
         }
+        // 27.12.19 auf ganze Zahl
+        //if (attribute === 'pct') {
+        if (fhemObjects[id].common.unit === '%')  {
+            //adapter.log.warn ('detect pct val(old)='+val);
+            val = Math.round(val);
+            //adapter.log.warn ('detect pct val(new)='+val);
+        }
         // bol0?
         if (fhemObjects[id].native.bol0) {    //benötigt??????
             if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true) {
@@ -2111,8 +2118,8 @@ function parseEvent(ff, eventIN, cb) {
         } else if (fhemIgnore[device]) {
             eventNOK(fn, event, channel, '"' + device + '" included in fhemIgnore', 'debug', device, cb);
             return cb();
-            // Global global DEFINED ?
-        } else if (parts[2] === 'DEFINED') {
+            // Global global DEFINED or MODIFIED?     15.12.19
+        } else if (parts[2] === 'DEFINED'|| parts[2] === 'MODIFIED') {
             logDebug(fn, channel, 'detect "Global global DEFINED" - ' + event, 'D');
             eventOK(ff, event, 'jsonlist2', device, ts, 'global', device, cb);
             return cb();
@@ -2385,6 +2392,7 @@ function eventNOK(ff, event, id, text, mode, device, cb) {
     let out = 'unhandled event FHEM: ' + alias + ' | ' + event + ' > no sync  - ' + text;
     if (mode === 'warn') {
         logWarn(fn, out);
+        return cb;
     } else if (mode === 'info') {
         if (debugNAME.indexOf(device) !== -1) {
             adapter.log.info(device + ' | ' + out);
@@ -2393,12 +2401,14 @@ function eventNOK(ff, event, id, text, mode, device, cb) {
         } else {
             adapter.log.debug(fn + t + out);
         }
+        return cb;
     } else if (mode === 'debug') {
         if (debugNAME.indexOf(device) !== -1) {
             logWarn(fn, device + ' | ' + out);
         } else {
             adapter.log.debug(fn + t + out);
         }
+        return cb;
     } else if (mode === 'json') {
         let more = ' >> jsonlist2 ' + device;
         if (debugNAME.indexOf(device) !== -1) {
@@ -2408,11 +2418,16 @@ function eventNOK(ff, event, id, text, mode, device, cb) {
         } else {
             adapter.log.debug(fn + t + out + more);
         }
-        doJsonlist(ff, device, cb);
+        doJsonlist(ff, device, () => {
+         return cb;   
+        });
+        //doJsonlist(ff, device, cb);
+        //return cb;
     } else {
         logError(fn, 'wrong mode: ' + mode + ' (allowed: info,warn,debug) - ' + out);
+        return cb;
     }
-    return cb;
+    //return cb; 15.12.19
 }
 function doJsonlist(ff, device, cb) {
     let fn = ff + '[doJsonlist] ';
