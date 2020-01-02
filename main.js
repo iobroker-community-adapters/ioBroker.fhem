@@ -30,7 +30,7 @@ let debug = false;
 let aktivQueue = false;
 let aktivSetState = false;
 let activeEvent = false;
-const buildDate = '27.12.19';
+const buildDate = '03.01.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let timer = null;
@@ -1978,12 +1978,8 @@ function writeValue(ff, id, val, cb) {
         if (attribute === 'rgb') {
             val = val.substring(1);
         }
-        // 27.12.19 auf ganze Zahl
-        //if (attribute === 'pct') {
         if (fhemObjects[id].common.unit === '%')  {
-            //adapter.log.warn ('detect pct val(old)='+val);
             val = Math.round(val);
-            //adapter.log.warn ('detect pct val(new)='+val);
         }
         // bol0?
         if (fhemObjects[id].native.bol0) {    //benötigt??????
@@ -2118,7 +2114,7 @@ function parseEvent(ff, eventIN, cb) {
         } else if (fhemIgnore[device]) {
             eventNOK(fn, event, channel, '"' + device + '" included in fhemIgnore', 'debug', device, cb);
             return cb();
-            // Global global DEFINED or MODIFIED?     15.12.19
+            // Global global DEFINED or MODIFIED?     
         } else if (parts[2] === 'DEFINED'|| parts[2] === 'MODIFIED') {
             logDebug(fn, channel, 'detect "Global global DEFINED" - ' + event, 'D');
             eventOK(ff, event, 'jsonlist2', device, ts, 'global', device, cb);
@@ -2421,13 +2417,10 @@ function eventNOK(ff, event, id, text, mode, device, cb) {
         doJsonlist(ff, device, () => {
          return cb;   
         });
-        //doJsonlist(ff, device, cb);
-        //return cb;
-    } else {
+        } else {
         logError(fn, 'wrong mode: ' + mode + ' (allowed: info,warn,debug) - ' + out);
         return cb;
     }
-    //return cb; 15.12.19
 }
 function doJsonlist(ff, device, cb) {
     let fn = ff + '[doJsonlist] ';
