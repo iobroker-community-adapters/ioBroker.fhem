@@ -30,7 +30,7 @@ let debug = false;
 let aktivQueue = false;
 let aktivSetState = false;
 let activeEvent = false;
-const buildDate = '03.01.19';
+const buildDate = '07.01.19';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let timer = null;
@@ -2074,7 +2074,10 @@ function processEvent(ff, cb) {
         return;
     }
     const command = eventQueue.shift();
-    logDebug(fn, command.event, '"' + command.event + '"  / todo: ' + eventQueue.length, 'D');
+    let dif = Math.round((Date.now() - command.ts));
+    logDebug(fn, command.event, '"' + command.event + '"  / todo: ' + eventQueue.length+' ('+(Date.now()-command.ts)+' ms processEvent)', 'D');
+    //Test
+    //adapter.log.warn (eventQueue.length+' '+dif+' '+command.event+' ');
     parseEvent(fn, command, () => setImmediate(processEvent, ff, cb));
 }
 function parseEvent(ff, eventIN, cb) {
@@ -2093,7 +2096,7 @@ function parseEvent(ff, eventIN, cb) {
     let id;
     // special
     if (parts[0] === 'TelegramBot' && parts[2] === '_msg') {
-        eventNOK(fn, event, channel, 'TelegramBot xxx _msg', 'info', parts[1], cb);
+        eventNOK(fn, event, channel, 'TelegramBot xxx _msg', 'info', parts[1]);
         return cb();
     }
     // Global global ?
@@ -2105,32 +2108,32 @@ function parseEvent(ff, eventIN, cb) {
             channel = adapter.namespace + '.' + nameIob;
         }
         if (parts[2] === 'SAVE' || parts[2] === 'UPDATE') {
-            eventNOK(fn, event, channel, 'SAVE or UPDATE', 'debug', parts[1], cb);
+            eventNOK(fn, event, channel, 'SAVE or UPDATE', 'debug', parts[1]);
             return cb();
         } else if (!parts[3]) {
-            eventNOK(fn, event, channel, 'no parts[3]', 'warn', 'unknown', cb);
+            eventNOK(fn, event, channel, 'no parts[3]', 'warn', 'unknown');
             return cb();
             // ignore FHEM Device?
         } else if (fhemIgnore[device]) {
-            eventNOK(fn, event, channel, '"' + device + '" included in fhemIgnore', 'debug', device, cb);
+            eventNOK(fn, event, channel, '"' + device + '" included in fhemIgnore', 'debug', device);
             return cb();
             // Global global DEFINED or MODIFIED?     
         } else if (parts[2] === 'DEFINED'|| parts[2] === 'MODIFIED') {
             logDebug(fn, channel, 'detect "Global global DEFINED" - ' + event, 'D');
-            eventOK(ff, event, 'jsonlist2', device, ts, 'global', device, cb);
+            eventOK(ff, event, 'jsonlist2', device, ts, 'global', device);
             return cb();
             // No channel for event and not room?
         } else if (!fhemObjects[adapter.namespace + '.' + nameIob] && parts[4] !== 'room') {
-            eventNOK(fn, event, channel, '"' + device + '" not in fhemObjects and ATTR <> room', 'debug', device, cb);
+            eventNOK(fn, event, channel, '"' + device + '" not in fhemObjects and ATTR <> room', 'debug', device);
             return cb();
             // Global global ATTR ?
         } else if (parts[2] === 'ATTR') {
             logDebug(fn, channel, 'detect "Global global ATTR" - ' + event, 'D');
             if (allowedAttributes.indexOf(parts[4]) !== -1) {
-                eventOK(ff, event, 'jsonlist2', device, ts, 'global', device, channel, cb);
+                eventOK(ff, event, 'jsonlist2', device, ts, 'global', device, channel);
                 return cb();
             } else {
-                eventNOK(fn, event, channel, 'attr "' + parts[4] + '" not in info.Configurations.allowedAttributes', 'info', device, cb);
+                eventNOK(fn, event, channel, 'attr "' + parts[4] + '" not in info.Configurations.allowedAttributes', 'info', device);
                 return cb();
             }
             // Global global DELETEATTR ?
@@ -2138,27 +2141,27 @@ function parseEvent(ff, eventIN, cb) {
             logDebug(fn, channel, 'detect "Global global DELETEATTR" - ' + event, 'D');
             if (allowedAttributes.indexOf(parts[4]) !== -1) {
                 if (parts[4] === 'room' && iobroker) {
-                    eventOK(fn, event, 'unusedObjects', nameIob + '.*', ts, 'global', device, channel, cb);
+                    eventOK(fn, event, 'unusedObjects', nameIob + '.*', ts, 'global', device, channel);
                     return cb();
                 } else {
-                    eventOK(fn, event, 'unusedObjects', nameIob + '.Attributes.' + parts[4], ts, 'global', device, channel, cb);
+                    eventOK(fn, event, 'unusedObjects', nameIob + '.Attributes.' + parts[4], ts, 'global', device, channel);
                     return cb();
                 }
                 if (parts[4] === 'alias') {
-                    eventOK(fn, event, 'jsonlist2', device, ts, 'global', device, channel, cb);
+                    eventOK(fn, event, 'jsonlist2', device, ts, 'global', device, channel);
                     return cb();
                 }
             } else {
-                eventNOK(fn, event, channel, 'DELETEATTR "' + parts[4] + '" not in info.Configurations.allowedAttributes', 'info', device, cb);
+                eventNOK(fn, event, channel, 'DELETEATTR "' + parts[4] + '" not in info.Configurations.allowedAttributes', 'info', device);
                 return cb();
             }
             // Global global DELETED ?
         } else if (parts[2] === 'DELETED') {
             logDebug(fn, channel, 'detect "Global global DELETED" - ' + event, 'D');
-            eventOK(fn, event, 'unusedObjects', nameIob + '.*', ts, 'global', device, channel, cb);
+            eventOK(fn, event, 'unusedObjects', nameIob + '.*', ts, 'global', device, channel);
             return cb();
         } else {
-            eventNOK(fn, event, channel, 'Global global not proccesed!', 'warn', device, channel, cb);
+            eventNOK(fn, event, channel, 'Global global not proccesed!', 'warn', device, channel);
             return cb();
         }
     } else if (parts[0] === 'readingsGroup') {
@@ -2188,14 +2191,14 @@ function parseEvent(ff, eventIN, cb) {
                 ts: Date.now(),
                 ack: true
             };
-            eventOK(fn, event, name, parts[3], ts, 'state', nameIob, channel, cb);
+            eventOK(fn, event, name, parts[3], ts, 'state', nameIob, channel);
             syncObjects([RG], () => {
                 syncStates([stateRG], () => {
                 });
             });
             return cb();
         } else {
-            eventNOK(fn, event, channel, 'redingsGroup "' + nameIob + '" not im fhemObjects', 'debug', nameIob, cb);
+            eventNOK(fn, event, channel, 'redingsGroup "' + nameIob + '" not im fhemObjects', 'debug', nameIob);
             return cb();
         }
         //ignored
@@ -2203,7 +2206,7 @@ function parseEvent(ff, eventIN, cb) {
         logDebug(fn, event, 'detect fhemIgnore - ' + event, 'D');
         if (device === adapter.namespace + '.alive') {
             logDebug(fn, event, 'detect alive', 'D');
-            eventOK(ff, event, adapter.namespace + '.info.Info.alive (getAlive)', '', ts, 'state', device, 'no', cb);
+            eventOK(ff, event, adapter.namespace + '.info.Info.alive (getAlive)', '', ts, 'state', device, 'no');
             getAlive(fn);
             return cb();
         } else if (device === adapter.namespace + '.send2ioB') {
@@ -2214,35 +2217,35 @@ function parseEvent(ff, eventIN, cb) {
                 if (e) {
                     logError(fn, e);
                 } else if (!obj) {
-                    eventNOK(fn, event, channel, 'object "' + parts[2] + '" not detected!', 'warn', 'unknown', cb);
+                    eventNOK(fn, event, channel, 'object "' + parts[2] + '" not detected!', 'warn', 'unknown');
                 } else if (obj && !obj.common.write) {
-                    eventNOK(fn, event, channel, 'object "' + parts[2] + '" common.write not true', 'warn', 'unknown', cb);
+                    eventNOK(fn, event, channel, 'object "' + parts[2] + '" common.write not true', 'warn', 'unknown');
                 } else if (obj && obj.common.write) {
                     let setState = event.substr(parts[0].length + device.length + parts[2].length + 3);
                     if (obj.common.type === 'number')
                         setState = parseInt(setState);
                     if (obj.common.type === 'boolean')
                         setState = JSON.parse(setState);
-                    eventOK(fn, event, parts[2], setState, ts, 'state', device, 'no', cb);
+                    eventOK(fn, event, parts[2], setState, ts, 'state', device, 'no');
                     adapter.setForeignState(parts[2], setState, false);
                 }
             });
             return cb();
         } else {
-            eventNOK(fn, event, channel, 'included in fhemIgnore', 'debug', device, cb);
+            eventNOK(fn, event, channel, 'included in fhemIgnore', 'debug', device);
             return cb();
         }
     } else if (!device) {
-        eventNOK(fn, event, channel, 'only parts[0]', 'warn', 'unknown', cb);
+        eventNOK(fn, event, channel, 'only parts[0]', 'warn', 'unknown');
         return cb();
     } else if (fhemIN[nameIob]) {
-        eventNOK(fn, event, channel, 'included in fhemIN', 'warn', 'unknown', cb);
+        eventNOK(fn, event, channel, 'included in fhemIN', 'warn', 'unknown');
         return cb();
     } else if (parts[2] && parts[2].substr(parts[2].length - 1) === ':' && ignoreReadings.indexOf(parts[2].substr(0, parts[2].length - 1)) !== -1) {
-        eventNOK(fn, event, channel, 'included in ignoreReadings', 'debug', device, cb);
+        eventNOK(fn, event, channel, 'included in ignoreReadings', 'debug', device);
         return cb();
     } else if (!fhemObjects[channel] && device !== 'global') {    //global?
-        eventNOK(fn, event, channel, 'not in fhemObjects and not global', 'debug', device, cb);
+        eventNOK(fn, event, channel, 'not in fhemObjects and not global', 'debug', device);
         return cb();
     } else {
         try {
@@ -2258,27 +2261,27 @@ function parseEvent(ff, eventIN, cb) {
                 val = event.substring(parts[0].length + device.length + 2);
                 id = checkID(fn, device, 'state', channel);
                 if (fhemObjects[id] && id !== channel) {
-                    eventOK(fn, event, id, val, ts, 'state', device, channel, cb);
+                    eventOK(fn, event, id, val, ts, 'state', device, channel);
                     // state_switch?
                     search = channel + '.state_switch';
                     if (fhemObjects[search])
-                        eventOK(fn, event, search, convertFhemValue(parts[2]), ts, 'switch', device, channel, cb);
+                        eventOK(fn, event, search, convertFhemValue(parts[2]), ts, 'switch', device, channel);
                     const sensor = convertFhemSensor(fn, val, device, type);
                     // state_media?
                     search = channel + '.state_media';
                     if (fhemObjects[search]) {
                         val = (parts[2] === 'PLAYING');
-                        eventOK(fn, event, search, val, ts, 'media', device, channel, cb);
+                        eventOK(fn, event, search, val, ts, 'media', device, channel);
                         return cb();
                     }
                     // state_boolean?
                     search = channel + '.state_boolean';
                     if (fhemObjects[search] || typeof (sensor[0]) === "boolean")
-                        eventOK(fn, event, channel + '.state_boolean', sensor[0], ts, 'boolean', device, channel, cb);
+                        eventOK(fn, event, channel + '.state_boolean', sensor[0], ts, 'boolean', device, channel);
                     search = channel + '.state_value';
                     // state_value?
                     if (fhemObjects[search] || typeof (sensor[3]) === "number")
-                        eventOK(fn, event, channel + '.state_value', sensor[3], ts, 'value', device, channel, cb);
+                        eventOK(fn, event, channel + '.state_value', sensor[3], ts, 'value', device, channel);
                     // special for ZWave dim
                     if (parts[0] === 'ZWave' && parts[2] === 'dim') {
                         let zwave = parts[0] + ' ' + device + ' ' + parts[2] + ': ' + parts[3];
@@ -2286,7 +2289,7 @@ function parseEvent(ff, eventIN, cb) {
                         eventFHEM(fn, zwave);
                     }
                 } else {
-                    eventNOK(fn, event, id, 'no object(state)', 'json', device, cb);
+                    eventNOK(fn, event, id, 'no object(state)', 'json', device);
                 }
                 return cb();
                 // reading or state? (mit : vorne)
@@ -2298,16 +2301,16 @@ function parseEvent(ff, eventIN, cb) {
                     e && logError(fn, 'rs? ' + e);
                     if (state !== null && typeof (state.val) !== "boolean" && state.val.substring(0, parts[2].length) === parts[2]) {
                         val = convertFhemValue(event.substring(parts[0].length + device.length + 2));
-                        id = checkID(fn, device, 'state', channel);
+                        //id = checkID(fn, device, 'state', channel);
                         typ = 'state';
-                        logDebug(fn, event, '(1) ' + event + ' typ = ' + typ + ' id = ' + id + ' val = ' + val, 'D');
+                        logDebug(fn, event, '(1) ' + event + ' typ = ' + typ + ' id = ' + idTest + ' val = ' + val, 'D');
                     } else {
                         name = event.substring(0, pos);
                         let partsR = name.split(' ');
                         val = convertFhemValue(event.substring(partsR[0].length + partsR[1].length + partsR[2].length + 4));
                         id = checkID(fn, partsR[1], partsR[2], channel);
                         if (id === channel) {
-                            eventNOK(fn, event, id, 'id not found!', 'json', device, cb);
+                            eventNOK(fn, event, id, 'id not found!', 'json', device);
                             return cb();
                         } else {
                             // rgb? insert # usw
@@ -2317,9 +2320,9 @@ function parseEvent(ff, eventIN, cb) {
                         }
                     }
                     if (!fhemObjects[id]) {
-                        eventNOK(fn, event, id, '!fhemObjects[id]', 'json', device, cb);
+                        eventNOK(fn, event, id, '!fhemObjects[id]', 'json', device);
                     } else {
-                        eventOK(fn, event, id, val, ts, typ, device, channel, cb);
+                        eventOK(fn, event, id, val, ts, typ, device, channel);
                         return cb();
                     }
                     return cb();
@@ -2333,13 +2336,16 @@ function parseEvent(ff, eventIN, cb) {
 }
 // more
 function checkID(ff, name, attr, id) {
+    /*
     for (const f in fhemObjects) {
         if (fhemObjects.hasOwnProperty(f) && fhemObjects[f].native.Name === name && fhemObjects[f].native.Attribute === attr) {
             id = fhemObjects[f]._id;
             logDebug(ff + ' [checkID] ', id, 'checkID: ' + name + ' (' + attr + ') > ' + id, 'D');
         }
     }
-    return id;
+    */
+   id=id+'.'+attr;
+   return id;
 }
 function eventOK(ff, event, id, val, ts, info, device, channel, cb) {
     let fn = ff + '[eventOK] ';
@@ -2370,13 +2376,13 @@ function eventOK(ff, event, id, val, ts, info, device, channel, cb) {
     }
     if (id === 'jsonlist2') {
         doJsonlist(fn, val, cb);
-        return cb;
+        cb && cb();
     } else if (id === 'unusedObjects') {
         unusedObjects(fn, val);
-        return cb;
+        cb && cb();
     } else {
         setState(fn, id, val, true, ts);
-        return cb;
+        cb && cb();
     }
 }
 function eventNOK(ff, event, id, text, mode, device, cb) {
@@ -2388,7 +2394,7 @@ function eventNOK(ff, event, id, text, mode, device, cb) {
     let out = 'unhandled event FHEM: ' + alias + ' | ' + event + ' > no sync  - ' + text;
     if (mode === 'warn') {
         logWarn(fn, out);
-        return cb;
+        cb && cb();
     } else if (mode === 'info') {
         if (debugNAME.indexOf(device) !== -1) {
             adapter.log.info(device + ' | ' + out);
@@ -2397,14 +2403,14 @@ function eventNOK(ff, event, id, text, mode, device, cb) {
         } else {
             adapter.log.debug(fn + t + out);
         }
-        return cb;
+        cb && cb();
     } else if (mode === 'debug') {
         if (debugNAME.indexOf(device) !== -1) {
             logWarn(fn, device + ' | ' + out);
         } else {
             adapter.log.debug(fn + t + out);
         }
-        return cb;
+        cb && cb();
     } else if (mode === 'json') {
         let more = ' >> jsonlist2 ' + device;
         if (debugNAME.indexOf(device) !== -1) {
@@ -2415,11 +2421,11 @@ function eventNOK(ff, event, id, text, mode, device, cb) {
             adapter.log.debug(fn + t + out + more);
         }
         doJsonlist(ff, device, () => {
-         return cb;   
+         cb && cb();  
         });
         } else {
         logError(fn, 'wrong mode: ' + mode + ' (allowed: info,warn,debug) - ' + out);
-        return cb;
+        cb && cb();
     }
 }
 function doJsonlist(ff, device, cb) {
