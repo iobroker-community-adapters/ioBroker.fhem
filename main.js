@@ -30,10 +30,9 @@ let debug = false;
 let aktivQueue = false;
 let aktivSetState = false;
 let activeEvent = false;
-const buildDate = '09.01.20';
+const buildDate = '10.01.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
-let timer = null;
 let t = '> ';
 // info.Debug
 let debugNAME = [];
@@ -97,6 +96,12 @@ function startAdapter(options) {
     // is called when adapter shuts down - callback has to be called under any circumstances!
     adapter.on('unload', callback => {
         try {
+            // stop all timers
+            Object.keys(adapter.__timeouts).forEach(name => {
+                adapter.__timeouts[name] && clearTimeout(adapter.__timeouts[name]);
+                adapter.__timeouts[name] = null;
+            });
+
             adapter.setState('info.connection', false, true);
             adapter.setState('info.Info.alive', false, true);
             if (telnetOut) {
@@ -190,6 +195,7 @@ function startAdapter(options) {
 // is called when databases are connected and adapter received configuration.
     // start here!
     adapter.on('ready', main);
+    adapter.__timeouts = {};
     return adapter;
 }
 //========================================================================================================================================== start
@@ -1776,20 +1782,20 @@ function setAlive() {
     let fn = '[setAlive] ';
     logDebug(fn, '', 'start setAlive 300 sec', '');
     sendFHEM(fn, 'set ' + adapter.namespace + '.alive on-for-timer 360');
-    setTimeout(setAlive, 5 * 60000);
+    adapter.__timeouts.setAlive = setTimeout(setAlive, 5 * 60000);
 }
 //STEP 13
 function checkQueue(ff) {
     let fn = ff + '[checkQueue] ';
     if (!synchro && !aktivQueue) {
         logDebug(fn, '', 'checkQueue: start', 'D');
-        proccessQueue(fn);
+        processQueue(fn);
     } else {
         logDebug(fn, '', 'checkQueue: end - aktivQueue = ' + aktivQueue, 'D');
     }
 }
-function proccessQueue(ff, cb) {
-    let fn = ff + '[proccessQueue] ';
+function processQueue(ff, cb) {
+    let fn = ff + '[processQueue] ';
     aktivQueue = true;
     if (!eventIOB.length) {
         logDebug(fn, '', 'checkQueue: end - !eventIOB.length', 'D');
@@ -1812,18 +1818,21 @@ function proccessQueue(ff, cb) {
     const command = eventIOB.shift();
     if (command.command === 'resync') {
         adapter.log.debug(fn + 'detected Resync FHEM');
-        setTimeout(resyncFHEM, 5000);
+        adapter.__timeouts.resyncFHEM = setTimeout(() => {
+            adapter.__timeouts.resyncFHEM = null;
+            resyncFHEM();
+        }, 5000);
     } else if (command.command === 'read') {
-        readValue(fn, command.id, () => setImmediate(proccessQueue, ff, cb));
+        readValue(fn, command.id, () => setImmediate(processQueue, ff, cb));
     } else if (command.command === 'write') {
         logDebug(fn, command.id, command.command + ' > ' + command.id + ' ' + command.val + ' / todo: ' + eventIOB.length, 'D');
-        writeValue(fn, command.id, command.val, () => setImmediate(proccessQueue, ff, cb));
+        writeValue(fn, command.id, command.val, () => setImmediate(processQueue, ff, cb));
     } else if (command.command === 'meta') {
         logDebug(fn, command.name, command.command + ' > ' + command.name + ' / todo: ' + eventIOB.length, 'D');
-        requestMeta(fn, command.name, () => setImmediate(proccessQueue, ff, cb));
+        requestMeta(fn, command.name, () => setImmediate(processQueue, ff, cb));
     } else {
         logError(fn, 'Unknown task: ' + command.command);
-        setImmediate(proccessQueue, ff, cb);
+        setImmediate(processQueue, ff, cb);
     }
 }
 //
@@ -1833,8 +1842,8 @@ function resyncFHEM() {
     setState(fn, 'info.Info.alive', false, true);
     adapter.restart();
 }
-function readValue(cb) {
-//not in use
+function readValue(ff, id, cb) {
+    //not in use
     cb && cb();
 }
 function writeValue(ff, id, val, cb) {
@@ -2123,7 +2132,7 @@ function parseEvent(ff, eventIN, cb) {
             eventNOK(fn, event, channel, '"' + device + '" included in fhemIgnore', 'debug', device);
             cb && cb();
             return;
-            // Global global DEFINED or MODIFIED?     
+            // Global global DEFINED or MODIFIED?
         } else if (parts[2] === 'DEFINED' || parts[2] === 'MODIFIED') {
             logDebug(fn, channel, 'detect "Global global DEFINED" - ' + event, 'D');
             eventOK(ff, event, 'jsonlist2', device, ts, 'global', device);
@@ -2617,11 +2626,12 @@ function getAlive(ff) {
     let fn = ff + '[getAlive] ';
     adapter.log.debug(fn + 'alive true - start');
     setState(fn, 'info.Info.alive', true, true);
-    if (timer) {
-        clearTimeout(timer);
+    if (adapter.__timeouts.getAlive) {
+        clearTimeout(adapter.__timeouts.getAlive);
         adapter.log.debug(ff + fn + 'alive reset timer');
     }
-    timer = setTimeout(function () {
+    adapter.__timeouts.getAlive = setTimeout(function () {
+        adapter.__timeouts.getAlive = null;
         logError(fn, 'lost Connection FHEM --> ioBroker');
         adapter.log.debug(ff + fn + 'alive false');
         setState(fn, 'info.Info.alive', false, true);
@@ -2843,7 +2853,7 @@ function main() {
                                                 sendFHEM(fn, 'save');
                                                 logInfo(fn, 'STEP 13 ==== processed saved stateChange(s) of ioBroker');
                                                 logInfo(fn, '> processed ' + eventIOB.length + ' stateChange(s) of ioBroker saved during synchro');
-                                                proccessQueue(fn, () => {
+                                                processQueue(fn, () => {
                                                     logInfo(fn, 'STEP 14 ==== processed saved event(s) of FHEM ');
                                                     logInfo(fn, '> processed ' + eventQueue.length + ' event(s) of FHEM saved during synchro');
                                                     processEvent(fn, () => {
@@ -2898,7 +2908,10 @@ function main() {
             connected = false;
             adapter.setState('info.connection', false, true);
             logError(fn, 'Disconnected telnet ' + adapter.config.host + ':' + adapter.config.port + ' FHEM  > Auto Restart Adapter!');
-            setTimeout(() => adapter.restart(), 1000);
+            adapter.__timeouts.restart = setTimeout(() => {
+                adapter.__timeouts.restart = null;
+                adapter.restart();
+            }, 1000);
         }
     });
     telnetOut.on('close', () => {

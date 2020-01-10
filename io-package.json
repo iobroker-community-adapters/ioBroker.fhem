@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "fhem",
-    "version": "1.4.1",
+    "version": "1.4.2",
     "title": "FHEM connection",
     "desc": {
       "en": "FHEM",
@@ -9,6 +9,18 @@
       "ru": "FHEM"
     },
     "news": {
+      "1.4.2": {
+        "en": "Running timers will be stopped by unload",
+        "de": "Laufende Timer werden durch Entladen gestoppt",
+        "ru": "Таймеры запуска будут остановлены при выгрузке",
+        "pt": "Os temporizadores em execução serão interrompidos por descarregamento",
+        "nl": "Lopende timers worden gestopt door lossen",
+        "fr": "Les minuteries en cours d'exécution seront arrêtées par déchargement",
+        "it": "I timer in esecuzione verranno arrestati allo scaricamento",
+        "es": "Los temporizadores en ejecución se detendrán al descargar",
+        "pl": "Uruchomione stopery zostaną zatrzymane przez rozładowanie",
+        "zh-cn": "正在运行的计时器将通过卸载停止"
+      },
       "1.4.1": {
         "en": "Several fixes and changes",
         "de": "Mehrere Korrekturen und Änderungen",
