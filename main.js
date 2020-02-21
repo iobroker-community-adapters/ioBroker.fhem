@@ -18,6 +18,7 @@ const setStateQueue = [];
 let fhemIN = {};
 let fhemINs = {};
 let fhemIgnore = {};
+let fhemIgnoreConfig = {};
 let infoObjects = {};
 const fhemObjects = {};
 const functions = {};
@@ -30,7 +31,7 @@ let debug = false;
 let aktivQueue = false;
 let aktivSetState = false;
 let activeEvent = false;
-const buildDate = '10.01.20';
+const buildDate = '21.02.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -669,19 +670,19 @@ function parseObjects(ff, objs, cb) {
                     continue;
                 }
                 if (fhemINs[device] && objs[i].Attributes.room.indexOf('ioB_IN') !== -1) {
-                    logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
                     fhemIN[device] = {id: device};
                     fhemIgnore[device] = {id: device};
+                    logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
                     continue;
                 }
                 if (device.indexOf('alive') !== -1) {
-                    logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
                     fhemIgnore[device] = {id: device};
+                    logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
                     continue;
                 }
                 if (device.indexOf('send2ioB') !== -1) {
-                    logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
                     fhemIgnore[device] = {id: device};
+                    logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
                     continue;
                 }
             }
@@ -1429,6 +1430,9 @@ function parseObjects(ff, objs, cb) {
 //
 function logIgnoreConfig(ff, name, text, nr, from) {
     let fn = ff + '[logIgnoreConfig] ';
+    if (!fhemIgnore[name]) {
+        fhemIgnoreConfig[name] = {id: name};
+    }
     text = 'ignored FHEM device "' + name + '" > no sync - ' + text + ' | ' + ' ' + (nr + 1) + '/' + from;
     if (logIgnoreConfigurations && debugNAME.indexOf(name) === -1) {
         adapter.log.info(text);
@@ -2047,6 +2051,7 @@ function requestMeta(ff, name, cb) {
 // STEP 14
 function eventFHEM(ff, event) {
     let fn = ff + '[eventFHEM] ';
+    let ts = Date.now();
     if (!event) {
         adapter.log.warn(fn + 'no event - return ' + ff);
         return;
@@ -2055,12 +2060,18 @@ function eventFHEM(ff, event) {
     if (event.indexOf('display_covertitle') !== -1) {
         return;
     }
-    let ts = Date.now();
+    //14.01.20
+    let parts = event.split(' ');
+    if (fhemIgnoreConfig[parts[1]]) {
+        //eventNOK(fn, event, channel, 'fhemIgnoreConfig', 'debug', device);
+        return;
+    }
     if (event[4] === '-' && event[7] === '-') {
         ts = new Date(event.substring(0, 19)).getTime();
         event = event.substring(20);
     }
     eventQueue.push({
+        parts: parts,
         event: event,
         ts: ts
     });
@@ -2083,11 +2094,13 @@ function processEvent(ff, cb) {
         return;
     }
     const command = eventQueue.shift();
-    let dif = Math.round((Date.now() - command.ts));
     logDebug(fn, command.event, '"' + command.event + '"  / todo: ' + eventQueue.length + ' (' + (Date.now() - command.ts) + ' ms processEvent)', 'D');
     //Test
-    //if (dif > 200)
-    //    adapter.log.warn(eventQueue.length + ' ' + dif + ' ' + command.event + ' ');
+    if (logDevelop) {
+        let dif = Math.round((Date.now() - command.ts));
+        if (dif > 100)
+            adapter.log.warn(eventQueue.length + ' ' + dif + ' ' + command.event + ' ');
+    }
     parseEvent(fn, command, () => setImmediate(processEvent, ff, cb));
 }
 function parseEvent(ff, eventIN, cb) {
@@ -2099,7 +2112,7 @@ function parseEvent(ff, eventIN, cb) {
         cb && cb();
         return;
     }
-    let parts = event.split(' ');
+    let parts = eventIN.parts;
     let type = parts[0];
     let device = parts[1];
     let nameIob = convertNameFHEM(fn, device);
@@ -2233,7 +2246,7 @@ function parseEvent(ff, eventIN, cb) {
         logDebug(fn, event, 'detect fhemIgnore - ' + event, 'D');
         if (device === adapter.namespace + '.alive') {
             logDebug(fn, event, 'detect alive', 'D');
-            eventOK(ff, event, adapter.namespace + '.info.Info.alive (getAlive)', '', ts, 'state', device, 'no');
+            eventOK(ff, event, adapter.namespace + '.alive (getAlive)', '', ts, 'state', device, 'no');
             getAlive(fn);
             cb && cb();
             return;
@@ -2355,6 +2368,16 @@ function parseEvent(ff, eventIN, cb) {
 // more
 function eventOK(ff, event, id, val, ts, info, device, channel, cb) {
     let fn = ff + '[eventOK] ';
+    if (id === 'jsonlist2') {
+        doJsonlist(fn, val, cb);
+        //cb && cb();
+    } else if (id === 'unusedObjects') {
+        unusedObjects(fn, val);
+        //cb && cb();
+    } else {
+        setState(fn, id, val, true, ts);
+        //cb && cb();
+    }
     let alias = '----';
     if (fhemObjects[channel]) {
         alias = fhemObjects[channel].native.Attributes.alias;
@@ -2380,16 +2403,7 @@ function eventOK(ff, event, id, val, ts, info, device, channel, cb) {
             adapter.log.debug(fn + tE + out);
         }
     }
-    if (id === 'jsonlist2') {
-        doJsonlist(fn, val, cb);
-        cb && cb();
-    } else if (id === 'unusedObjects') {
-        unusedObjects(fn, val);
-        cb && cb();
-    } else {
-        setState(fn, id, val, true, ts);
-        cb && cb();
-    }
+
 }
 function eventNOK(ff, event, id, text, mode, device, cb) {
     let fn = ff + '[eventNOK] ';
@@ -2445,10 +2459,10 @@ function doJsonlist(ff, device, cb) {
         checkQueue(fn);
         lastNameQueue = device;
         lastNameTS = Date.now();
-        return cb;
+        cb && cb();
     } else {
         logDebug(fn, device, 'no jsonlist2 ' + device + ' = ' + lastNameQueue, 'D');
-        return cb;
+        cb && cb();
     }
 }
 // get
@@ -2669,11 +2683,7 @@ function processSetState(ff, cb) {
         cb && cb();
         return;
     }
-    let dif = Math.round((Date.now() - command.ts));
-    logDebug(fn, command.id, command.id + ' ' + command.val + ' / todo: ' + setStateQueue.length + ' (' + dif + ')', 'D');
-    //TEST
-    //if (dif > 1000)
-    //    adapter.log.warn(setStateQueue.length + ' (' + dif + ') setStateDo: ' + command.id + ' ' + command.val);
+    logDebug(fn, command.id, command.id + ' ' + command.val + ' / todo: ' + setStateQueue.length + ' (' + (Date.now() - command.ts) + ')', 'D');
     setStateDo(fn, command, () => setImmediate(processSetState, ff, cb));
 }
 function setStateDo(ff, command, cb) {
@@ -2681,6 +2691,11 @@ function setStateDo(ff, command, cb) {
     adapter.setState(command.id, command.val, command.ack, command.ts, e => {
         e && logError(fn, command.id + ' ' + e);
         let dif = Math.round((Date.now() - command.ts));
+        //TEST
+        if (logDevelop) {
+            if (dif > 2000)
+                adapter.log.warn(setStateQueue.length + ' (' + dif + ') setStateDo: ' + command.id + ' ' + command.val);
+        }
         logDebug(fn, command.id, command.id + ' ' + command.val + ' (' + dif + ' ms)', 'D');
         cb && cb();
     });
@@ -2722,7 +2737,7 @@ function logStateChange(fn, id, val, text, typ) {
         text = 'unhandled stateChange: ' + id + ' | ' + val + ' > ' + text;
         logWarn(fn, text);
     } else {
-        logWarn(fn, 'typ of logStateChange wrong!');
+        logWarn(fn, 'wrong typ of logStateChange!');
     }
 }
 function logDebug(func, id, text, typ, cb) {
@@ -2791,6 +2806,7 @@ function main() {
         readOnly: true,
         prompt: adapter.config.prompt
     });
+          
     telnetIn.on('data', data => eventFHEM(fn, data));
     telnetOut = new Telnet({
         host: adapter.config.host,
@@ -2799,6 +2815,7 @@ function main() {
         reconnectTimeout: adapter.config.reconnectTimeout,
         prompt: adapter.config.prompt
     });
+    
     telnetOut.on('ready', () => {
         adapter.log.debug(fn + 'telnetOut.on ready');
         if (!connected) {
@@ -2862,6 +2879,7 @@ function main() {
                                                         setState(fn, 'info.Info.TEST', JSON.stringify(fhemIgnore), true);
                                                         adapter.log.debug('fhemIN = ' + JSON.stringify(fhemIN));
                                                         adapter.log.debug('fhemINs = ' + JSON.stringify(fhemINs));
+                                                        adapter.log.debug('fhemIgnoreConfig = ' + JSON.stringify(fhemIgnoreConfig));
                                                         adapter.getStates('info.Info.*', (e, obj) => {
                                                             e && logError(fn, e);
                                                             if (obj) {
@@ -2901,6 +2919,7 @@ function main() {
             });
         }
     });
+        
     telnetOut.on('end', () => {
         adapter.log.debug('[main] telnetOut.on end');
         if (connected) {
