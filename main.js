@@ -31,7 +31,7 @@ let debug = false;
 let aktivQueue = false;
 let aktivSetState = false;
 let activeEvent = false;
-const buildDate = '21.02.20';
+const buildDate = '03.03.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -2798,6 +2798,7 @@ function main() {
     }
 // in this template all states changes inside the adapters namespace are subscribed
     adapter.subscribeStates('*');
+
     telnetIn = new Telnet({
         host: adapter.config.host,
         port: adapter.config.port,
@@ -2806,8 +2807,36 @@ function main() {
         readOnly: true,
         prompt: adapter.config.prompt
     });
-          
     telnetIn.on('data', data => eventFHEM(fn, data));
+    telnetIn.on('end', () => {
+        adapter.log.debug('[main] telnetIn.on end');
+        if (connected) {
+            adapter.log.debug('Disconnected');
+            connected = false;
+            adapter.setState('info.connection', false, true);
+            logError(fn, 'IN Disconnected telnet ' + adapter.config.host + ':' + adapter.config.port + ' FHEM  > Auto Restart Adapter!');
+            /*
+             adapter.__timeouts.restartIn = setTimeout(() => {
+             adapter.__timeouts.restartIn = null;
+             adapter.restart();
+             }, 1000);
+             */
+            adapter.restart();
+        }
+    });
+    telnetIn.on('close', () => {
+        adapter.log.debug('[main] telnetIn.on close');
+        if (connected) {
+            adapter.log.debug('Disconnected');
+            connected = false;
+            adapter.setState('info.connection', false, true);
+        }
+    });
+    telnetIn.on('error', err => {
+        adapter.log.error(err + ' (telnetIn)');
+        //adapter.terminate ? adapter.terminate() : process.exit();
+    });
+
     telnetOut = new Telnet({
         host: adapter.config.host,
         port: adapter.config.port,
@@ -2815,7 +2844,6 @@ function main() {
         reconnectTimeout: adapter.config.reconnectTimeout,
         prompt: adapter.config.prompt
     });
-    
     telnetOut.on('ready', () => {
         adapter.log.debug(fn + 'telnetOut.on ready');
         if (!connected) {
@@ -2919,7 +2947,6 @@ function main() {
             });
         }
     });
-        
     telnetOut.on('end', () => {
         adapter.log.debug('[main] telnetOut.on end');
         if (connected) {
@@ -2927,10 +2954,14 @@ function main() {
             connected = false;
             adapter.setState('info.connection', false, true);
             logError(fn, 'Disconnected telnet ' + adapter.config.host + ':' + adapter.config.port + ' FHEM  > Auto Restart Adapter!');
-            adapter.__timeouts.restart = setTimeout(() => {
-                adapter.__timeouts.restart = null;
-                adapter.restart();
-            }, 1000);
+            /*
+             adapter.__timeouts.restartOut = setTimeout(() => {
+             adapter.__timeouts.restartOut = null;
+             adapter.restart();
+             }, 1000);
+             */
+            adapter.restart();
+
         }
     });
     telnetOut.on('close', () => {
@@ -2941,7 +2972,14 @@ function main() {
             adapter.setState('info.connection', false, true);
         }
     });
+    telnetOut.on('error', err => {
+        adapter.log.error(err + ' (telnetOut)');
+        //adapter.terminate ? adapter.terminate() : process.exit();
+    });
+
 }
+
+process.on('uncaughtException', err => adapter.log.warn('Exception: ' + err));
 
 // If started as allInOne mode => return function to create instance
 // @ts-ignore
