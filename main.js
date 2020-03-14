@@ -545,15 +545,20 @@ function checkSubscribe(ff, cb) {
                     }
                     let idFHEM = convertNameIob(fn, id);
                     //adapter.log.warn('out: ' + id + ' ' + states[id].val);
+                    let val;
                     if (states[id].val) {
-                        logDebug(fn, id, 'send FHEM - define ' + idFHEM + ' dummy - ' + id, '');
-                        sendFHEM(fn, 'define ' + idFHEM + ' dummy');
-                        sendFHEM(fn, 'attr ' + idFHEM + ' alias ' + idFHEM);
-                        sendFHEM(fn, 'attr ' + idFHEM + ' room ioB_IN');
-                        sendFHEM(fn, 'attr ' + idFHEM + ' comment Auto-created by ioBroker ' + adapter.namespace);
-                        sendFHEM(fn, 'set ' + idFHEM + ' ' + states[id].val);
-                        fhemIN[idFHEM] = {id: idFHEM};
+                        val = states[id].val;
+                    } else {
+                        val = 'no value';
                     }
+                    logDebug(fn, id, 'send FHEM - define ' + idFHEM + ' dummy - ' + id, '');
+                    sendFHEM(fn, 'define ' + idFHEM + ' dummy');
+                    sendFHEM(fn, 'attr ' + idFHEM + ' alias ' + idFHEM);
+                    sendFHEM(fn, 'attr ' + idFHEM + ' room ioB_IN');
+                    sendFHEM(fn, 'attr ' + idFHEM + ' comment Auto-created by ioBroker ' + adapter.namespace);
+                    sendFHEM(fn, 'set ' + idFHEM + ' ' + val);
+                    fhemIN[idFHEM] = {id: idFHEM};
+
                     adapter.subscribeForeignStates(id);
                     fhemINs[idFHEM] = {id: idFHEM};
                     fhemIgnore[idFHEM] = {id: idFHEM};
