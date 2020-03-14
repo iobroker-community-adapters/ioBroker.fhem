@@ -31,7 +31,7 @@ let debug = false;
 let aktivQueue = false;
 let aktivSetState = false;
 let activeEvent = false;
-const buildDate = '14.03.20';
+const buildDate = '15.03.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -545,15 +545,17 @@ function checkSubscribe(ff, cb) {
                     }
                     let idFHEM = convertNameIob(fn, id);
                     //adapter.log.warn('out: ' + id + ' ' + states[id].val);
-                    logDebug(fn, id, 'send FHEM - define ' + idFHEM + ' dummy - ' + id, '');
-                    sendFHEM(fn, 'define ' + idFHEM + ' dummy');
-                    sendFHEM(fn, 'attr ' + idFHEM + ' alias ' + idFHEM);
-                    sendFHEM(fn, 'attr ' + idFHEM + ' room ioB_IN');
-                    sendFHEM(fn, 'attr ' + idFHEM + ' comment Auto-created by ioBroker ' + adapter.namespace);
-                    sendFHEM(fn, 'set ' + idFHEM + ' ' + states[id].val);
+                    if (states[id].val) {
+                        logDebug(fn, id, 'send FHEM - define ' + idFHEM + ' dummy - ' + id, '');
+                        sendFHEM(fn, 'define ' + idFHEM + ' dummy');
+                        sendFHEM(fn, 'attr ' + idFHEM + ' alias ' + idFHEM);
+                        sendFHEM(fn, 'attr ' + idFHEM + ' room ioB_IN');
+                        sendFHEM(fn, 'attr ' + idFHEM + ' comment Auto-created by ioBroker ' + adapter.namespace);
+                        sendFHEM(fn, 'set ' + idFHEM + ' ' + states[id].val);
+                        fhemIN[idFHEM] = {id: idFHEM};
+                    }
                     adapter.subscribeForeignStates(id);
                     fhemINs[idFHEM] = {id: idFHEM};
-                    fhemIN[idFHEM] = {id: idFHEM};
                     fhemIgnore[idFHEM] = {id: idFHEM};
                     adapter.log.debug(fn + 'id = ' + id + ' / idFHEM = ' + idFHEM);
                 }
