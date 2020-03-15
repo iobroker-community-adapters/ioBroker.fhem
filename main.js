@@ -544,7 +544,7 @@ function checkSubscribe(ff, cb) {
                         continue;
                     }
                     let idFHEM = convertNameIob(fn, id);
-                    //adapter.log.warn('out: ' + id + ' ' + states[id].val);
+                    adapter.log.warn('out: ' + id + ' ' + states[id].val);
                     let val;
                     if (states[id].val) {
                         val = states[id].val;
