@@ -551,6 +551,7 @@ function checkSubscribe(ff, cb) {
                         adapter.log.warn(id + ' - ' + e);
                         fhemINs[idFHEM] = {id: idFHEM};
                         fhemIgnore[idFHEM] = {id: idFHEM};
+                        adapter.subscribeForeignStates(id);
                         continue;
                     }
                     logDebug(fn, id, 'send FHEM - define ' + idFHEM + ' dummy - ' + id, '');
