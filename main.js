@@ -548,7 +548,7 @@ function checkSubscribe(ff, cb) {
                     try {
                         val = states[id].val;
                     } catch (e) {
-                        adapter.log.error(id + ' - ' + e);
+                        adapter.log.warn(id + ' - ' + e);
                         fhemINs[idFHEM] = {id: idFHEM};
                         fhemIgnore[idFHEM] = {id: idFHEM};
                         continue;
