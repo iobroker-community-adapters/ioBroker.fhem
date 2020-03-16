@@ -31,7 +31,7 @@ let debug = false;
 let aktivQueue = false;
 let aktivSetState = false;
 let activeEvent = false;
-const buildDate = '15.03.20';
+const buildDate = '16.03.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -543,13 +543,15 @@ function checkSubscribe(ff, cb) {
                     if (!states.hasOwnProperty(id)) {
                         continue;
                     }
-                    let idFHEM = convertNameIob(fn, id);
-                    adapter.log.warn('out: ' + id + ' ' + states[id].val);
                     let val;
-                    if (states[id].val) {
+                    let idFHEM = convertNameIob(fn, id);
+                    try {
                         val = states[id].val;
-                    } else {
-                        val = 'no value';
+                    } catch (e) {
+                        adapter.log.error(id + ' - ' + e);
+                        fhemINs[idFHEM] = {id: idFHEM};
+                        fhemIgnore[idFHEM] = {id: idFHEM};
+                        continue;
                     }
                     logDebug(fn, id, 'send FHEM - define ' + idFHEM + ' dummy - ' + id, '');
                     sendFHEM(fn, 'define ' + idFHEM + ' dummy');
@@ -558,7 +560,6 @@ function checkSubscribe(ff, cb) {
                     sendFHEM(fn, 'attr ' + idFHEM + ' comment Auto-created by ioBroker ' + adapter.namespace);
                     sendFHEM(fn, 'set ' + idFHEM + ' ' + val);
                     fhemIN[idFHEM] = {id: idFHEM};
-
                     adapter.subscribeForeignStates(id);
                     fhemINs[idFHEM] = {id: idFHEM};
                     fhemIgnore[idFHEM] = {id: idFHEM};
