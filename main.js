@@ -31,7 +31,7 @@ let debug = false;
 let aktivQueue = false;
 let aktivSetState = false;
 let activeEvent = false;
-const buildDate = '20.03.20';
+const buildDate = '20.03.20PR';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -97,12 +97,13 @@ function startAdapter(options) {
     // is called when adapter shuts down - callback has to be called under any circumstances!
     adapter.on('unload', callback => {
         try {
+            connected = false;
             // stop all timers
             Object.keys(adapter.__timeouts).forEach(name => {
                 adapter.__timeouts[name] && clearTimeout(adapter.__timeouts[name]);
                 adapter.__timeouts[name] = null;
+                adapter.log.debug('adapter.on.unload: clearTimeout ' + name);
             });
-
             adapter.setState('info.connection', false, true);
             adapter.setState('info.Info.alive', false, true);
             if (telnetOut) {
@@ -182,6 +183,7 @@ function startAdapter(options) {
     // start here!
     adapter.on('ready', main);
     adapter.__timeouts = {};
+    //adapter.__immediates = {};
     return adapter;
 }
 //========================================================================================================================================== start
@@ -554,13 +556,12 @@ function syncFHEM(ff, cb) {
     }
     if (!connected) {
         logInfo(fn, '> Connected FHEM telnet ' + adapter.config.host + ':' + adapter.config.port + ' - send telnet "' + send + '"');
+        connected = true;
+        adapter.setState('info.connection', true, true);
     }
     telnetOut.send(send, (e, result) => {
         e && logError(fn, 'telnetOut.send: ' + e);
-        if (!connected) {
-            connected = true;
-            setState(fn, 'info.connection', true, true);
-        }
+
         if (result) {
             logInfo(fn, '> result of jsonlist2 OK');
             let objects = null;
@@ -577,15 +578,19 @@ function syncFHEM(ff, cb) {
                 } else {
                     logError(fn, 'Cannot parse answer for jsonlist2: ' + e);
                 }
-                if (firstRun)
+                if (firstRun)   //??
                     adapter.setForeignState('system.adapter.fhem.1.alive', false, false);
             }
             if (objects) {
                 logInfo(fn, '> get ' + objects.Results.length + ' Device(s) of FHEM');
-                parseObjects(fn, objects.Results, () => {
-                    logDebug(fn, '', fn + 'end', 'D');
+                if (connected) {
+                    parseObjects(fn, objects.Results, () => {
+                        logDebug(fn, '', fn + 'end', 'D');
+                        cb && cb();
+                    });
+                } else {
                     cb && cb();
-                });
+                }
             } else {
                 logDebug(fn, '', fn + 'no objects - end', 'D');
                 cb && cb();
@@ -639,6 +644,10 @@ function parseObjects(ff, objs, cb) {
     for (let i = 0; i < objs.length; i++) {
         const device = objs[i].Name;
         const debugN = device + ' | ';
+        if (!connected) {
+            (cb);
+            return;
+        }
         try {
             // Auto-created by ioBroker ?
             if (objs[i].Attributes.comment && objs[i].Attributes.comment.indexOf('Auto-created by ioBroker fhem') !== -1) {
@@ -1364,6 +1373,10 @@ function parseObjects(ff, objs, cb) {
             (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' check channel ' + channel + ' finished!');
         } catch (e) {
             logError(fn, 'Cannot process object: ' + JSON.stringify(objs[i]) + ' ' + e);
+
+            (cb);
+            return;
+
         }
     }
     let channel = 0;
@@ -1379,7 +1392,7 @@ function parseObjects(ff, objs, cb) {
     setState(fn, 'info.Info.numberDevicesFHEMignored', Object.keys(fhemIgnore).length, true);
     if (firstRun) {
         setState(fn, 'info.Info.numberObjectsIOBout', Object.keys(fhemIN).length, true);
-        logInfo(fn, '> ' + Object.keys(fhemIN).length + ' objects to send FHEM detected (ioBout)');
+        logInfo(fn, '> detected ' + Object.keys(fhemIN).length + ' objects to send FHEM (ioBout)');
         setState(fn, 'info.Info.numberDevicesFHEMsync', channel, true);
         logInfo(fn, '> check channel - ' + channel + ' Device(s) of FHEM synchronized');
         logInfo(fn, 'STEP 09 ===== Synchro objects, rooms, functions, states');
@@ -1404,7 +1417,7 @@ function parseObjects(ff, objs, cb) {
                 if (state !== states.length)
                     logWarn(fn, 'object state(s) <> state(s) to sync');
                 syncStates(states, () => {
-                    debug = false;
+                    debug = false;     // hier syncIOBin dazu
                     cb();
                 });
             });
@@ -1425,87 +1438,104 @@ function logIgnoreConfig(ff, name, text, nr, from) {
     }
 }
 function syncObjects(objects, cb) {
-    let fn = '[syncObjects] ';
-    if (!objects || !objects.length) {
-        logDebug(fn, '', fn + 'end', 'D');
-        setState(fn, 'info.Info.numberObjectsIOBin', Object.keys(fhemObjects).length, true);
+    try {
+        let fn = '[syncObjects] ';
+        if (!objects || !objects.length) {
+            logDebug(fn, '', fn + 'end', 'D');
+            setState(fn, 'info.Info.numberObjectsIOBin', Object.keys(fhemObjects).length, true);
+            cb();
+            return;
+        }
+        if (!connected) {
+            cb();
+            return;
+        }
+        const obj = objects.shift();
+        fhemObjects[obj._id] = obj;
+        const parts = obj._id.split('.');
+        adapter.getForeignObject(obj._id, (e, oldObj) => {
+            if (e) {
+                adapter.log.warn('syncObjects (getF) ' + e);
+                cb();
+                return;
+            }
+            if (!oldObj) {
+                if (obj.type === 'channel' && logCreateChannel) {
+                    logInfo(fn, 'Create channel: ' + obj.common.name + ' | ' + obj._id);
+                } else {
+                    logDebug(fn, obj._id, 'create object: ' + obj._id + ' (' + obj.type + ')', '');
+                }
+                adapter.setForeignObject(obj._id, obj, e => {
+                    e && logError(fn, e);
+                    setImmediate(syncObjects, objects, cb);
+                });
+            } else {
+                if (JSON.stringify(obj.native) === JSON.stringify(oldObj.native) && JSON.stringify(obj.common) === JSON.stringify(oldObj.common)) {
+                    logDebug(fn, obj._id, 'check object: ' + obj._id + ' (' + obj.type + ') OK 1', 'D');
+                    setImmediate(syncObjects, objects, cb);
+                } else {
+                    let newObj = JSON.parse(JSON.stringify(oldObj));
+                    let updateText = '';
+                    if (JSON.stringify(obj.native) !== JSON.stringify(oldObj.native)) {
+                        newObj.native = obj.native;
+                        updateText = updateText + ' native';
+                    }
+                    if (JSON.stringify(obj.common) !== JSON.stringify(oldObj.common)) {
+                        updateText = updateText + ' common';
+                        if (autoSmartName) {
+                            newObj.common.smartName = obj.common.smartName;
+                        }
+                        if (autoRole) {
+                            newObj.common.role = obj.common.role;
+                        }
+                        if (autoName || newObj.type === 'channel') {
+                            newObj.common.name = obj.common.name;
+                        }
+                        if (autoType) {
+                            newObj.common.type = obj.common.type;
+                        }
+                        if (autoStates) {
+                            newObj.common.states = obj.common.states;
+                        }
+                        if (autoRest) {
+                            newObj.common.min = obj.common.min;
+                            newObj.common.max = obj.common.max;
+                            newObj.common.unit = obj.common.unit;
+                            newObj.common.read = obj.common.read;
+                            newObj.common.write = obj.common.write;
+                        }
+                    }
+                    if (JSON.stringify(newObj) !== JSON.stringify(oldObj)) {
+                        if (obj.type === 'channel' && logUpdateChannel) {
+                            logInfo(fn, 'Update channel: ' + obj.common.name + ' | ' + obj._id + ' - ' + updateText);
+                        } else {
+                            logDebug(fn, obj._id, 'update object: ' + obj._id + ' (' + obj.type + ') - ' + updateText, '');
+                        }
+                        adapter.extendObject(obj._id, newObj, e => {
+                            e && logError(fn, e);
+                            setImmediate(syncObjects, objects, cb);
+                        });
+                    } else {
+                        logDebug(fn, obj._id, 'check object: ' + obj._id + ' (' + obj.type + ') OK 2 ', 'D');
+                        setImmediate(syncObjects, objects, cb);
+                    }
+                }
+            }
+        });
+    } catch (e) {
+        adapter.log.warn('syncObjects (catch) ' + e);
         cb();
         return;
     }
-    const obj = objects.shift();
-    fhemObjects[obj._id] = obj;
-    const parts = obj._id.split('.');
-    adapter.getForeignObject(obj._id, (e, oldObj) => {
-        if (e)
-            logError(fn, e);
-        if (!oldObj) {
-            if (obj.type === 'channel' && logCreateChannel) {
-                logInfo(fn, 'Create channel: ' + obj.common.name + ' | ' + obj._id);
-            } else {
-                logDebug(fn, obj._id, 'create object: ' + obj._id + ' (' + obj.type + ')', '');
-            }
-            adapter.setForeignObject(obj._id, obj, e => {
-                e && logError(fn, e);
-                setImmediate(syncObjects, objects, cb);
-            });
-        } else {
-            if (JSON.stringify(obj.native) === JSON.stringify(oldObj.native) && JSON.stringify(obj.common) === JSON.stringify(oldObj.common)) {
-                logDebug(fn, obj._id, 'check object: ' + obj._id + ' (' + obj.type + ') OK 1', 'D');
-                setImmediate(syncObjects, objects, cb);
-            } else {
-                let newObj = JSON.parse(JSON.stringify(oldObj));
-                let updateText = '';
-                if (JSON.stringify(obj.native) !== JSON.stringify(oldObj.native)) {
-                    newObj.native = obj.native;
-                    updateText = updateText + ' native';
-                }
-                if (JSON.stringify(obj.common) !== JSON.stringify(oldObj.common)) {
-                    updateText = updateText + ' common';
-                    if (autoSmartName) {
-                        newObj.common.smartName = obj.common.smartName;
-                    }
-                    if (autoRole) {
-                        newObj.common.role = obj.common.role;
-                    }
-                    if (autoName || newObj.type === 'channel') {
-                        newObj.common.name = obj.common.name;
-                    }
-                    if (autoType) {
-                        newObj.common.type = obj.common.type;
-                    }
-                    if (autoStates) {
-                        newObj.common.states = obj.common.states;
-                    }
-                    if (autoRest) {
-                        newObj.common.min = obj.common.min;
-                        newObj.common.max = obj.common.max;
-                        newObj.common.unit = obj.common.unit;
-                        newObj.common.read = obj.common.read;
-                        newObj.common.write = obj.common.write;
-                    }
-                }
-                if (JSON.stringify(newObj) !== JSON.stringify(oldObj)) {
-                    if (obj.type === 'channel' && logUpdateChannel) {
-                        logInfo(fn, 'Update channel: ' + obj.common.name + ' | ' + obj._id + ' - ' + updateText);
-                    } else {
-                        logDebug(fn, obj._id, 'update object: ' + obj._id + ' (' + obj.type + ') - ' + updateText, '');
-                    }
-                    adapter.extendObject(obj._id, newObj, e => {
-                        e && logError(fn, e);
-                        setImmediate(syncObjects, objects, cb);
-                    });
-                } else {
-                    logDebug(fn, obj._id, 'check object: ' + obj._id + ' (' + obj.type + ') OK 2 ', 'D');
-                    setImmediate(syncObjects, objects, cb);
-                }
-            }
-        }
-    });
 }
 function syncRooms(rooms, cb) {
     for (const r in rooms) {
         if (!rooms.hasOwnProperty(r)) {
             continue;
+        }
+        if (!connected) {
+            cb();
+            return;
         }
         if (rooms[r]) {
             syncRoom(r, rooms[r], () => setImmediate(syncRooms, rooms, cb));
@@ -1518,7 +1548,11 @@ function syncRooms(rooms, cb) {
 function syncRoom(room, members, cb) {
     adapter.log.debug('[syncRoom] (' + room + ') ' + members);
     adapter.getForeignObject('enum.rooms.' + room, (e, obj) => {
-        e && logError('[syncRoom] ', e);
+        if (e) {
+            logError('[syncRoom] ', e);
+            cb();
+            return;
+        }
         if (!obj) {
             obj = {
                 _id: 'enum.rooms.' + room,
@@ -1560,6 +1594,10 @@ function syncFunctions(functions, cb) {
     for (const f in functions) {
         if (!functions.hasOwnProperty(f)) {
             continue;
+        }
+        if (!connected) {
+            cb();
+            return;
         }
         if (functions[f]) {
             syncFunction(f, functions[f], () => setImmediate(syncFunctions, functions, cb));
@@ -1619,11 +1657,19 @@ function syncStates(states, cb) {
         cb();
         return;
     }
+    if (!connected) {
+        cb();
+        return;
+    }
     const state = states.shift();
     const id = state.id;
     delete state.id;
     adapter.getState(id, (e, stateG) => {
-        e && logError(fn, 'rs? ' + e);
+        if (e) {
+            logError(fn, 'rs? ' + e);
+            cb();
+            return;
+        }
         if (!stateG || stateG.val !== state.val) {
             if (!stateG) {
                 logDebug(fn, id, 'create state: ' + id + ' = ' + state.val, '');
@@ -1822,44 +1868,48 @@ function checkQueue(ff) {
     }
 }
 function processQueue(ff, cb) {
-    let fn = ff + '[processQueue] ';
-    aktivQueue = true;
-    if (!eventIOB.length) {
-        logDebug(fn, '', 'checkQueue: end - !eventIOB.length', 'D');
-        cb && cb();
-        aktivQueue = false;
-        return;
-    }
-    if (telnetOut.isCommandRunning()) {
-        adapter.log.warn(fn + 'end - commandRunning events: ' + eventIOB.length);
-        cb && cb();
-        aktivQueue = false;
-        return;
-    }
-    if (!connected) {
-        adapter.log.warn(fn + 'end - Cannot process stateChange, because not connected');
-        cb && cb();
-        aktivQueue = false;
-        return;
-    }
-    const command = eventIOB.shift();
-    if (command.command === 'resync') {
-        adapter.log.debug(fn + 'detected Resync FHEM');
-        adapter.__timeouts.resyncFHEM = setTimeout(() => {
-            adapter.__timeouts.resyncFHEM = null;
-            resyncFHEM();
-        }, 5000);
-    } else if (command.command === 'read') {
-        readValue(fn, command.id, () => setImmediate(processQueue, ff, cb));
-    } else if (command.command === 'write') {
-        logDebug(fn, command.id, command.command + ' > ' + command.id + ' ' + command.val + ' / todo: ' + eventIOB.length, 'D');
-        writeValue(fn, command.id, command.val, () => setImmediate(processQueue, ff, cb));
-    } else if (command.command === 'meta') {
-        logDebug(fn, command.name, command.command + ' > ' + command.name + ' / todo: ' + eventIOB.length, 'D');
-        requestMeta(fn, command.name, () => setImmediate(processQueue, ff, cb));
-    } else {
-        logError(fn, 'Unknown task: ' + command.command);
-        setImmediate(processQueue, ff, cb);
+    try {
+        let fn = ff + '[processQueue] ';
+        aktivQueue = true;
+        if (!eventIOB.length) {
+            logDebug(fn, '', 'checkQueue: end - !eventIOB.length', 'D');
+            cb && cb();
+            aktivQueue = false;
+            return;
+        }
+        if (telnetOut.isCommandRunning()) {
+            adapter.log.warn(fn + 'end - commandRunning events: ' + eventIOB.length);
+            cb && cb();
+            aktivQueue = false;
+            return;
+        }
+        if (!connected) {
+            adapter.log.warn(fn + 'end - Cannot process stateChange, because not connected');
+            cb && cb();
+            aktivQueue = false;
+            return;
+        }
+        const command = eventIOB.shift();
+        if (command.command === 'resync') {
+            adapter.log.debug(fn + 'detected Resync FHEM');
+            adapter.__timeouts.resyncFHEM = setTimeout(() => {
+                adapter.__timeouts.resyncFHEM = null;
+                resyncFHEM();
+            }, 5000);
+        } else if (command.command === 'read') {
+            readValue(fn, command.id, () => setImmediate(processQueue, ff, cb));
+        } else if (command.command === 'write') {
+            logDebug(fn, command.id, command.command + ' > ' + command.id + ' ' + command.val + ' / todo: ' + eventIOB.length, 'D');
+            writeValue(fn, command.id, command.val, () => setImmediate(processQueue, ff, cb));
+        } else if (command.command === 'meta') {
+            logDebug(fn, command.name, command.command + ' > ' + command.name + ' / todo: ' + eventIOB.length, 'D');
+            requestMeta(fn, command.name, () => setImmediate(processQueue, ff, cb));
+        } else {
+            logError(fn, 'Unknown task: ' + command.command);
+            setImmediate(processQueue, ff, cb);
+        }
+    } catch (e) {
+        adapter.log.warn('processQueue ' + e);
     }
 }
 //
@@ -2393,13 +2443,10 @@ function eventOK(ff, event, id, val, ts, info, device, channel, cb) {
     let fn = ff + '[eventOK] ';
     if (id === 'jsonlist2') {
         doJsonlist(fn, val, cb);
-        //cb && cb();
     } else if (id === 'unusedObjects') {
         unusedObjects(fn, val);
-        //cb && cb();
     } else {
         setState(fn, id, val, true, ts);
-        //cb && cb();
     }
     let alias = '----';
     if (fhemObjects[channel]) {
@@ -2678,6 +2725,7 @@ function setState(ff, id, val, ack, ts, cb) {
     let fn = ff + '[setState] ';
     if (!id) {
         adapter.log.warn(fn + 'no id - return');
+        cb && cb();
         return;
     }
     setStateQueue.push({
@@ -2699,6 +2747,11 @@ function processSetState(ff, cb) {
         cb && cb();
         return;
     }
+    if (!connected) {
+        aktivSetState = false;
+        cb && cb();
+        return;
+    }
     const command = setStateQueue.shift();
     // noch prüfen !!
     if (command === undefined) {
@@ -2712,7 +2765,11 @@ function processSetState(ff, cb) {
 function setStateDo(ff, command, cb) {
     let fn = ff + ' ' + '[setStateDo] ';
     adapter.setState(command.id, command.val, command.ack, command.ts, e => {
-        e && logError(fn, command.id + ' ' + e);
+        if (e) {
+            adapter.log.error(ff + ' ' + command.id + ' ' + e);
+            cb && cb();
+            return;
+        }
         let dif = Math.round((Date.now() - command.ts));
         //TEST
         if (logDevelop) {
@@ -2837,13 +2894,7 @@ function main() {
             adapter.log.debug('Disconnected');
             connected = false;
             adapter.setState('info.connection', false, true);
-            logError(fn, 'IN Disconnected telnet ' + adapter.config.host + ':' + adapter.config.port + ' FHEM  > Auto Restart Adapter!');
-            /*
-             adapter.__timeouts.restartIn = setTimeout(() => {
-             adapter.__timeouts.restartIn = null;
-             adapter.restart();
-             }, 1000);
-             */
+            adapter.log.error('Disconnected telnet FHEM ' + adapter.config.host + ':' + adapter.config.port + ' (telnetIn) > adapter restart!');
             adapter.restart();
         }
     });
@@ -2857,7 +2908,6 @@ function main() {
     });
     telnetIn.on('error', err => {
         adapter.log.error(err + ' (telnetIn)');
-        //adapter.terminate ? adapter.terminate() : process.exit();
     });
 
     telnetOut = new Telnet({
@@ -2870,6 +2920,7 @@ function main() {
     telnetOut.on('ready', () => {
         adapter.log.debug(fn + 'telnetOut.on ready');
         if (!connected) {
+            firstRun = true;
             firstCheck(fn, () => {
                 logInfo(fn, 'STEP 01 ===== buildDate ' + buildDate + ' - check objects ' + adapter.namespace + '.info');
                 myObjects(fn, () => {
@@ -2885,8 +2936,12 @@ function main() {
                                     checkSubscribe(fn, () => {
                                         logInfo(fn, 'STEP 07 ===== connect FHEM telnet');
                                         syncFHEM(fn, () => {
+                                            if (!connected)
+                                                return;
                                             logInfo(fn, 'STEP 10 ===== check delete unused objects');
                                             unusedObjects(fn, '*', () => {
+                                                if (!connected)
+                                                    return;
                                                 logInfo(fn, 'STEP 11 ==== check/create FHEM dummy Devices in room ioB_IN/ioB_System');
                                                 syncStatesIOB(() => {
                                                     setState(fn, 'info.Info.alive', false, true);
@@ -2985,15 +3040,8 @@ function main() {
             adapter.log.debug('Disconnected');
             connected = false;
             adapter.setState('info.connection', false, true);
-            logError(fn, 'Disconnected telnet ' + adapter.config.host + ':' + adapter.config.port + ' FHEM  > Auto Restart Adapter!');
-            /*
-             adapter.__timeouts.restartOut = setTimeout(() => {
-             adapter.__timeouts.restartOut = null;
-             adapter.restart();
-             }, 1000);
-             */
+            adapter.log.error('Disconnected telnet FHEM ' + adapter.config.host + ':' + adapter.config.port + ' (telnetOut) > adapter restart!');
             adapter.restart();
-
         }
     });
     telnetOut.on('close', () => {
@@ -3006,12 +3054,15 @@ function main() {
     });
     telnetOut.on('error', err => {
         adapter.log.error(err + ' (telnetOut)');
-        //adapter.terminate ? adapter.terminate() : process.exit();
     });
 
 }
 
-process.on('uncaughtException', err => adapter.log.warn('Exception: ' + err));
+process.on('uncaughtException', err => {
+    adapter.log.warn('Exception: ' + err);
+    telnetOut.stop();
+    telnetIn.stop();
+});
 
 // If started as allInOne mode => return function to create instance
 // @ts-ignore
