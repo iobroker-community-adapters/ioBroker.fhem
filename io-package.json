@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "fhem",
-    "version": "1.4.2",
+    "version": "1.4.3",
     "title": "FHEM connection",
     "desc": {
       "en": "FHEM",
@@ -9,6 +9,18 @@
       "ru": "FHEM"
     },
     "news": {
+      "1.4.3":  {
+        "en": "fix compact mode",
+        "de": "Kompaktmodus korrigieren",
+        "ru": "исправить компактный режим",
+        "pt": "corrigir modo compacto",
+        "nl": "fix compacte modus",
+        "fr": "correction du mode compact",
+        "it": "correzione della modalità compatta",
+        "es": "arreglar el modo compacto",
+        "pl": "napraw tryb kompaktowy",
+        "zh-cn": "修正压缩模式"
+      },
       "1.4.2": {
         "en": "Running timers will be stopped by unload",
         "de": "Laufende Timer werden durch Entladen gestoppt",
