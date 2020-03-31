@@ -1,6 +1,6 @@
 ---
 title:       "FHEM-Adapter"
-lastChanged: "10.12.2019"
+lastChanged: "31.03.2020"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
 ---
 
@@ -375,14 +375,14 @@ Objekt                    | Zugriff | Bescheibung | Wert
 
 > Die angelegten Objekte und ihre Bedeutungen sind wie folgt definiert:
 
-Objekt                                           | Zugriff | Bescheibung | Wert
-:-------------------------------------------------|:---:|:-----------|:-------:
+Objekt                    | Zugriff | Bescheibung | Wert 
+:-------------------------|:-------:|:------------|:----:
 **[fhem.o](#objekte)**                            |     | Name der ersten *Instanz* des FHEM Adapters
 &emsp;**[info](#objekte_i)**                      |     | Information und mehr
 &emsp;&emsp;**[Commands](#info_commands)**        |     | Befehlszeile FHEM 
 &emsp;&emsp;**Configurations**                    |     | Configurations
 &emsp;&emsp;&emsp;**allowedAttributes**           |  RW | Sync Attributtes (default = `room,alias,comment`) | Attribut oder Attribut1,Attribut2 usw
-&emsp;&emsp;&emsp;**allowedIOBin**                |  RW | Erlaubte Objekte zum Übertrag nach FHEM. Es wird auf die Zeichenkette am Anfang des Objects geprüft zb "alexa2.x.History" überträgt alle Objekte die mit alexa2.x.History beginnen. Objekte werden werden nach einer Änderung state in FHEM im Raum ioB_IN als Device dummy angelegt.  | Wert oder Wert1,Wert2 usw
+&emsp;&emsp;&emsp;**allowedIOBin**                |  RW | Erlaubte Objekte zum Übertrag nach FHEM. Es wird auf die Zeichenkette am Anfang des Objects geprüft zb "alexa2.x.History" überträgt alle Objekte die mit alexa2.x.History beginnen. Objekte werden bei Neustart Adapter oder nach einer Änderung in FHEM im Raum ioB_IN als Device dummy angelegt.  | Wert oder Wert1,Wert2 usw
 &emsp;&emsp;&emsp;**allowedInternals**            |  RW | Sync Internals (default = `TYPE,NAME`) | Internals oder Internals1,Internals2 usw
 &emsp;&emsp;&emsp;**autoConfigFHEM**              |  RW | Erlaubt folgende Änderungen in FHEM 1.Für TYPE=SONOSPLAYER `attr xxx generateVolumeEvent 1` damit Lautstärke übertragen wird. 2. TYPE = HUEBridge 'attr xxx createGroupReadings 1' Readings für HUEGroup 3.Am Ende der Synchronisation `save` zum Speichern der Änderungen. (default=`false`) | true/false
 &emsp;&emsp;&emsp;**autoFunction**                |  RW | Funktionen werden bei Neustart abhängig von Version FHEM Adaper vergeben (default=`false`) Für Adapter `Material UI`wird `true`empfohlen. Bei `false` können Funktionen selber vergeben werden und es erfolgt keine Änderung durch den Adapter | true/false
