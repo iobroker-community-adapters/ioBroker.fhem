@@ -31,7 +31,7 @@ let debug = false;
 let aktivQueue = false;
 let aktivSetState = false;
 let activeEvent = false;
-const buildDate = '20.03.20PR';
+const buildDate = '15.04.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -1816,38 +1816,56 @@ function syncStatesIOB(cb) {
     let fn = '[syncStatesIOB] ';
     logDebug(fn, '', 'start - ' + Object.keys(fhemINs).length + ' objects of fhemINs', 'D');
     let end = 0;
-    for (const idFHEM in fhemINs) {
-        let id = fhemINs[idFHEM].id;
-        adapter.getForeignObject(id, (e, Obj) => {
-            let alias = Obj.common.name;
-            let val;
-            adapter.getForeignState(id, (e, state) => {
+    if (Object.keys(fhemINs).length) {
+        for (const idFHEM in fhemINs) {
+            let id = fhemINs[idFHEM].id;
+            adapter.getForeignObject(id, (e, Obj) => {
                 if (e) {
                     logError(fn, 'error: ' + e);
+                }
+                if (Obj && Obj.common.name) {
+                    let alias = Obj.common.name;
+                    let val;
+                    adapter.getForeignState(id, (e, state) => {
+                        if (e) {
+                            logError(fn, 'error: ' + e);
+                        } else {
+                            adapter.subscribeForeignStates(id);
+                            try {
+                                val = state.val;
+                            } catch (e) {
+                                val = '???';
+                            }
+
+                            if (fhemIN[idFHEM]) {
+                                sendFHEM(fn, 'set ' + idFHEM + ' ' + val);
+                                logDebug(fn, '', 'detected ' + idFHEM + ' > set ' + idFHEM + ' ' + val, '');
+                                //adapter.log.warn('detected ' + idFHEM + ' > set ' + idFHEM + ' ' + val);
+                            } else {
+                                fhemIN[idFHEM] = {id: id};
+                                let group = id.substring(0, id.lastIndexOf('.'));
+                                sendFHEM(fn, 'define ' + idFHEM + ' dummy' + ';' + 'attr ' + idFHEM + ' group ' + group + ';' + 'attr ' + idFHEM + ' alias ' + alias + ';' + 'attr ' + idFHEM + ' room ioB_IN' + ';' + 'attr ' + idFHEM + ' comment Auto-created by ioBroker ' + adapter.namespace + ';' + 'set ' + idFHEM + ' ' + val);
+                                logInfo(fn, '> create dummy ' + idFHEM + ' / ' + alias);
+                            }
+                        }
+                        end++;
+                        if (end === Object.keys(fhemINs).length) {
+                            logDebug(fn, '', 'end', 'D');
+                            cb();
+                        }
+                    });
                 } else {
-                    adapter.subscribeForeignStates(id);
-                    try {
-                        val = state.val;
-                    } catch (e) {
-                        val = '???';
+                    end++;
+                    if (end === Object.keys(fhemINs).length) {
+                        logDebug(fn, '', 'end', 'D');
+                        cb();
                     }
                 }
-                if (fhemIN[idFHEM]) {
-                    sendFHEM(fn, 'set ' + idFHEM + ' ' + val);
-                    logDebug(fn, '', 'detected ' + idFHEM + ' > set ' + idFHEM + ' ' + val, '');
-                } else {
-                    fhemIN[idFHEM] = {id: id};
-                    let group = id.substring(0, id.lastIndexOf('.'));
-                    sendFHEM(fn, 'define ' + idFHEM + ' dummy' + ';' + 'attr ' + idFHEM + ' group ' + group + ';' + 'attr ' + idFHEM + ' alias ' + alias + ';' + 'attr ' + idFHEM + ' room ioB_IN' + ';' + 'attr ' + idFHEM + ' comment Auto-created by ioBroker ' + adapter.namespace + ';' + 'set ' + idFHEM + ' ' + val);
-                    logInfo(fn, '> create dummy ' + idFHEM + ' / ' + alias);
-                }
-                end++;
-                if (end === Object.keys(fhemINs).length) {
-                    logDebug(fn, '', 'end', 'D');
-                    cb();
-                }
             });
-        });
+        }
+    } else {
+        logInfo(fn, '> room ioB_IN: nothing to do.....');
+        cb();
     }
 }
 //STEP 12
@@ -2059,8 +2077,8 @@ function writeValue(ff, id, val, cb) {
             });
             return;
         }
-        // rgb?
         logDebug(fn, device, 'detect fhem', 'D');
+        // rgb?
         if (attribute === 'rgb') {
             val = val.substring(1);
         }
