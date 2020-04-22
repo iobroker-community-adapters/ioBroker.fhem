@@ -31,7 +31,7 @@ let debug = false;
 let aktivQueue = false;
 let aktivSetState = false;
 let activeEvent = false;
-const buildDate = '15.04.20';
+const buildDate = '22.04.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -2144,7 +2144,7 @@ function eventFHEM(ff, event) {
     let fn = ff + '[eventFHEM] ';
     let ts = Date.now();
     if (!event) {
-        adapter.log.warn(fn + 'no event - return ' + ff);
+        adapter.log.debug(fn + 'no event - return ' + ff);
         return;
     }
     // Sonos special
