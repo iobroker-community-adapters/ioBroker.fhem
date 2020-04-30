@@ -1246,7 +1246,7 @@ function parseObjects(ff, objs, cb) {
                                     sensor[1] = 'sensor.motion';
                                 }
                                 if (sensor[1] === 'sensor')
-                                    logWarn(fn, 'detect sensor "' + device + '" - for full function of sensor use door,window,Tür,Tuer,Fenster in alias of device');
+                                    firstRun && logWarn(fn, 'detect sensor "' + device + '" - for full function of sensor use door,window,Tür,Tuer,Fenster in alias of device');
                                 obj.native.StateBoolean = true;
                                 let obj_sensor = {
                                     _id: channel + '.state_boolean',
@@ -1408,7 +1408,7 @@ function parseObjects(ff, objs, cb) {
         syncRooms(rooms, () => {
             text = adapter.namespace + '.info.Configurations.autoFunction (' + autoFunction + ')';
             if (!autoFunction) {
-                logInfo(fn, '> no auto create of function(s) - ' + text);
+                firstRun && logInfo(fn, '> no auto create of function(s) - ' + text);
             } else {
                 firstRun && logInfo(fn, '> check update/create ' + Object.keys(functions).length + ' function(s) - ' + text);
             }
