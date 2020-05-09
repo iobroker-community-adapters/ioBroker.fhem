@@ -24,11 +24,11 @@
     "url": "https://github.com/iobroker-community-adapters/ioBroker.fhem"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^1.0.3"
+    "@iobroker/adapter-core": "^2.4.0"
   },
   "devDependencies": {
     "gulp": "^4.0.2",
-    "mocha": "^6.1.4",
+    "mocha": "^7.1.2",
     "chai": "^4.2.0"
   },
   "main": "main.js",

@@ -9,3 +9,4 @@ test
 .travis.yml
 appveyor.yml
 backitup.sh.lastrun
+package-lock.json
