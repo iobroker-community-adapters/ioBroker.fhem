@@ -29,16 +29,21 @@ let firstRun = true;
 let synchro = true;
 let debug = false;
 let aktivQueue = false;
-let aktivSetState = false;
-let activeEvent = false;
-const buildDate = '30.04.20';
+const buildDate = '08.05.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
 // info.Debug
 let debugNAME = [];
 let logDevelop;
+let numEvent = 0;
+let timeEvent = 0;
+let numWriteOut = 0;
+let timeWriteOut = 0;
+let numWriteValue = 0;
+let timeWriteValue = 0;
 // info.Configurations
+let advancedFunction;
 let autoRole;
 let autoFunction;
 let autoRoom;
@@ -122,6 +127,7 @@ function startAdapter(options) {
 // is called if a subscribed state changes
     adapter.on('stateChange', (id, state) => {
         let fn = '[stateChange] ';
+        let ts = Date.now();
         // you can use the ack flag to detect if it is status (true) or command (false)
         if (!state) {
             adapter.log.debug(fn + 'no state - ' + id);
@@ -129,13 +135,26 @@ function startAdapter(options) {
         }
         let val = state.val;
         let ack = state.ack;
-        logDebug(fn, id, id + ' ' + val + ' ' + JSON.stringify(state), 'D');
+        logDebug(fn, id, 'stateChange: ' + id + ' ' + val + ' ' + JSON.stringify(state), '');
         let idFHEM = convertNameIob(fn, id);
         if (fhemIN[idFHEM]) {
-            sendFHEM(fn, 'set ' + idFHEM + ' ' + val);
-            if (!idFHEM.startsWith(adapter.namespace + '.info'))
-                setState(fn, 'info.Info.lastIOBout', id + ' ' + val, true);
-            return;
+            if (val !== fhemINs[idFHEM].val) {
+                eventIOB.push({
+                    command: 'writeOut',
+                    id: idFHEM,
+                    val: val,
+                    ts: ts
+                });
+                fhemINs[idFHEM] = {
+                    id: id,
+                    val: val
+                };
+                if (!firstRun)
+                    checkQueue(fn);
+                return;
+            } else {
+                return;
+            }
         }
         if (ack)
             return;
@@ -152,7 +171,8 @@ function startAdapter(options) {
                 eventIOB.push({
                     command: 'write',
                     id: id,
-                    val: val
+                    val: val,
+                    ts: ts
                 });
                 checkQueue(fn);
                 return;
@@ -183,7 +203,6 @@ function startAdapter(options) {
     // start here!
     adapter.on('ready', main);
     adapter.__timeouts = {};
-    //adapter.__immediates = {};
     return adapter;
 }
 //========================================================================================================================================== start
@@ -203,14 +222,6 @@ function firstCheck(ff, cb) {
 function myObjects(ff, cb) {
     let fn = ff + '[myObjects] ';
     logDebug(fn, '', 'start', 'D');
-    setState(fn, 'info.Info.buildDate', buildDate, true);
-    let start = '----- start FHEM Adapter Instanz ' + adapter.namespace;
-    setState(fn, 'info.Info.lastWarn', start, true);
-    setState(fn, 'info.Info.lastError', start, true);
-    setState(fn, 'info.Info.lastInfo', start, true);
-    setState(fn, 'info.Info.lastSend2ioB', start, true);
-    setState(fn, 'info.Info.lastIOBout', start, true);
-    setState(fn, 'info.Commands.lastCommand', start, true);
     let id;
     const newPoints = [
         // info.Commands
@@ -242,11 +253,16 @@ function myObjects(ff, cb) {
         {_id: 'info.Configurations.onlySyncNAME', type: 'state', common: {name: 'SYNC - only sync device(s) NAME', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.onlySyncTYPE', type: 'state', common: {name: 'SYNC - only sync device(s) TYPE', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.logNoInfo', type: 'state', common: {name: 'FUNCTION - no LOG info', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
+        {_id: 'info.Configurations.advancedFunction', type: 'state', common: {name: 'FUNCTION - advanced', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
         // info.Debug
         {_id: 'info.Debug.jsonlist2', type: 'state', common: {name: 'jsonlist2 of FHEM', type: 'string', read: true, write: true, role: 'json'}, native: {}},
         {_id: 'info.Debug.meta', type: 'state', common: {name: 'Device NAME of FHEM', type: 'string', read: true, write: true, role: 'text'}, native: {}},
         {_id: 'info.Debug.activate', type: 'state', common: {name: 'Debug Mode for Device(s) NAME', type: 'string', read: true, write: true, role: 'text'}, native: {}},
-        {_id: 'info.Debug.logDevelop', type: 'state', common: {name: 'More info debug" ', type: 'boolean', role: 'switch', def: false}, native: {}},
+        {_id: 'info.Debug.logDevelop', type: 'state', common: {name: 'More info debug', type: 'boolean', role: 'switch', def: false}, native: {}},
+        {_id: 'info.Debug.numberIn', type: 'state', common: {name: 'Number of events of FHEM last 5 min', type: 'number', read: true, write: false, role: 'value', def: 0}, native: {}},
+        {_id: 'info.Debug.timeIn', type: 'state', common: {name: 'Average time(ms) of events of FHEM last 5 min', type: 'number', read: true, write: false, role: 'value', def: 0}, native: {}},
+        {_id: 'info.Debug.numberOut', type: 'state', common: {name: 'Number of stateChanges(s) of ioBroker last 5 min', type: 'number', read: true, write: false, role: 'value', def: 0}, native: {}},
+        {_id: 'info.Debug.timeOut', type: 'state', common: {name: 'Average time(ms) stateChanges(s) of ioBroker last 5 min', type: 'number', read: true, write: false, role: 'value', def: 0}, native: {}},
         // info.Info
         {_id: 'info.Info.buildDate', type: 'state', common: {name: 'Date of main.js', type: 'string', read: true, write: false, role: 'text'}, native: {}},
         {_id: 'info.Info.roomioBroker', type: 'state', common: {name: 'room of fhem.x.info.Configurations.onlySyncRoom exist', type: 'boolean', read: true, write: false, role: 'indicator'}, native: {}},
@@ -402,8 +418,23 @@ function getConfigurationsFUNCTION(ff, cb) {
     getSetting(fn, 'info.Configurations.autoStates', value => autoStates = value);
     getSetting(fn, 'info.Configurations.autoRest', value => autoRest = value);
     getSetting(fn, 'info.Configurations.deleteUnusedObjects', value => deleteUnusedObjects = value);
+    getSetting(fn, 'info.Configurations.advancedFunction', value => advancedFunction = value);
     getSetting(fn, 'info.Configurations.oldState', value => {
         oldState = value;
+        adapter.setState('info.Info.buildDate', buildDate, true);
+        let start = '----- start FHEM Adapter Instanz ' + adapter.namespace;
+        let text;
+        if (advancedFunction) {
+            text = start;
+        } else {
+            text = '----- not in use - info.Configurations.advancedFunction(false)';
+        }
+        adapter.setState('info.Info.lastWarn', text, true);
+        adapter.setState('info.Info.lastError', text, true);
+        adapter.setState('info.Info.lastInfo', text, true);
+        adapter.setState('info.Info.lastSend2ioB', text, true);
+        adapter.setState('info.Info.lastIOBout', text, true);
+        adapter.setState('info.Commands.lastCommand', start, true);
         logDebug(fn, '', 'end', 'D');
         cb && cb();
     });
@@ -514,7 +545,7 @@ function checkSubscribe(ff, cb) {
     logDebug(fn, '', 'start', 'D');
     if (!allowedIOBin.length) {
         logInfo(fn, '> no sync - ' + adapter.namespace + '.info.Configurations.allowedIOBin');
-        setState(fn, 'info.Info.numberObjectsIOBoutSub', 0, true);
+        adapter.setState('info.Info.numberObjectsIOBoutSub', 0, true);
         cb && cb();
         return;
     }
@@ -531,13 +562,16 @@ function checkSubscribe(ff, cb) {
                         continue;
                     }
                     let idFHEM = convertNameIob(fn, id);
-                    fhemINs[idFHEM] = {id: id};
+                    fhemINs[idFHEM] = {
+                        id: id,
+                        val: states[id].val
+                    };
                     fhemIgnore[idFHEM] = {id: id};
                     logDebug(fn, '', fn + 'found ' + id, '');
                 }
                 end++;
                 if (end === allowedIOBin.length) {
-                    setState(fn, 'info.Info.numberObjectsIOBoutSub', Object.keys(fhemINs).length, true);
+                    adapter.setState('info.Info.numberObjectsIOBoutSub', Object.keys(fhemINs).length, true);
                     logDebug(fn, '', 'end', 'D');
                     cb && cb();
                 }
@@ -561,7 +595,6 @@ function syncFHEM(ff, cb) {
     }
     telnetOut.send(send, (e, result) => {
         e && logError(fn, 'telnetOut.send: ' + e);
-
         if (result) {
             logInfo(fn, '> result of jsonlist2 OK');
             let objects = null;
@@ -632,9 +665,9 @@ function parseObjects(ff, objs, cb) {
                 logError(fn, 'Cannot check room of object: ' + JSON.stringify(objs[i]) + ' ' + e);
             }
         }
-        setState(fn, 'info.Info.numberDevicesFHEM', objs.length, true);
+        adapter.setState('info.Info.numberDevicesFHEM', objs.length, true);
         firstRun && logInfo(fn, 'STEP 08 ===== parse Objects - check ' + objs.length + ' Device(s) of FHEM detected');
-        setState(fn, 'info.Info.roomioBroker', iobroker, true);
+        adapter.setState('info.Info.roomioBroker', iobroker, true);
         iobroker && logInfo(fn, '> only sync device(s) from room(s) = ' + onlySyncRoom + ' - ' + adapter.namespace + '.info.Info.roomioBroker (' + iobroker + ')');
         onlySyncNAME.length && logInfo(fn, '> only sync device(s) = ' + onlySyncNAME + ' - ' + adapter.namespace + '.info.Configurations.onlySyncNAME (' + onlySyncNAME + ')');
         ignoreObjectsAttributesRoom.length && logInfo(fn, '> no sync device(s) of room(s) = ' + ignoreObjectsAttributesRoom + ' - ' + adapter.namespace + '.info.Configurations.ignoreObjectsAttributesroom (' + ignoreObjectsAttributesRoom + ')');
@@ -785,7 +818,6 @@ function parseObjects(ff, objs, cb) {
                 setFunction(channel, Funktion, nameIob);
             }
             objects.push(obj);
-
             text = 'check channel ' + channel + ' | name: ' + alias + ' | room: ' + objs[i].Attributes.room + ' | role: ' + obj.common.role + ' | function: ' + Funktion + ' | ' + ' ' + (i + 1) + '/' + objs.length;
             if (logCheckObject && debugNAME.indexOf(device) === -1) {
                 logInfo(fn, text);
@@ -1373,10 +1405,8 @@ function parseObjects(ff, objs, cb) {
             (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' check channel ' + channel + ' finished!');
         } catch (e) {
             logError(fn, 'Cannot process object: ' + JSON.stringify(objs[i]) + ' ' + e);
-
             (cb);
             return;
-
         }
     }
     let channel = 0;
@@ -1389,11 +1419,11 @@ function parseObjects(ff, objs, cb) {
             state = state + 1;
         }
     }
-    setState(fn, 'info.Info.numberDevicesFHEMignored', Object.keys(fhemIgnore).length, true);
+    adapter.setState('info.Info.numberDevicesFHEMignored', Object.keys(fhemIgnore).length, true);
     if (firstRun) {
-        setState(fn, 'info.Info.numberObjectsIOBout', Object.keys(fhemIN).length, true);
+        adapter.setState('info.Info.numberObjectsIOBout', Object.keys(fhemIN).length, true);
         logInfo(fn, '> detected ' + Object.keys(fhemIN).length + ' objects to send FHEM (ioBout)');
-        setState(fn, 'info.Info.numberDevicesFHEMsync', channel, true);
+        adapter.setState('info.Info.numberDevicesFHEMsync', channel, true);
         logInfo(fn, '> check channel - ' + channel + ' Device(s) of FHEM synchronized');
         logInfo(fn, 'STEP 09 ===== Synchro objects, rooms, functions, states');
     }
@@ -1417,7 +1447,7 @@ function parseObjects(ff, objs, cb) {
                 if (state !== states.length)
                     logWarn(fn, 'object state(s) <> state(s) to sync');
                 syncStates(states, () => {
-                    debug = false;     // hier syncIOBin dazu
+                    debug = false;     // hier syncIOBin dazu toDO
                     cb();
                 });
             });
@@ -1442,7 +1472,7 @@ function syncObjects(objects, cb) {
         let fn = '[syncObjects] ';
         if (!objects || !objects.length) {
             logDebug(fn, '', fn + 'end', 'D');
-            setState(fn, 'info.Info.numberObjectsIOBin', Object.keys(fhemObjects).length, true);
+            adapter.setState('info.Info.numberObjectsIOBin', Object.keys(fhemObjects).length, true);
             cb();
             return;
         }
@@ -1650,7 +1680,6 @@ function syncFunction(funktion, members, cb) {
     });
 }
 function syncStates(states, cb) {
-    let ts = Date.now();
     let fn = '[syncStates] ';
     if (!states || !states.length) {
         adapter.log.debug(fn + 'end');
@@ -1676,8 +1705,7 @@ function syncStates(states, cb) {
             } else {
                 logDebug(fn, id, 'update state: ' + id + ' = ' + stateG.val + ' > ' + state.val, '');
             }
-
-            setState(fn, id, state.val, true, ts, () => {
+            adapter.setState(id, state.val, true, () => {
                 setImmediate(syncStates, states, cb);
             });
         } else {
@@ -1787,7 +1815,7 @@ function deleteObject(name, cb) {
         if (e && e !== 'Not exists') {
             logError(fn, name + ' ' + e);
         }
-        setState(fn, 'info.Info.numberObjectsIOBin', Object.keys(fhemObjects).length, true);
+        adapter.setState('info.Info.numberObjectsIOBin', Object.keys(fhemObjects).length, true);
         cb && cb();
     });
 }
@@ -1838,9 +1866,19 @@ function syncStatesIOB(cb) {
                             }
 
                             if (fhemIN[idFHEM]) {
-                                sendFHEM(fn, 'set ' + idFHEM + ' ' + val);
+                                eventIOB.push({
+                                    command: 'writeOut',
+                                    id: idFHEM,
+                                    val: val,
+                                    ts: Date.now()
+                                });
+
+
+                                fhemINs[idFHEM] = {
+                                    id: id,
+                                    val: val
+                                };
                                 logDebug(fn, '', 'detected ' + idFHEM + ' > set ' + idFHEM + ' ' + val, '');
-                                //adapter.log.warn('detected ' + idFHEM + ' > set ' + idFHEM + ' ' + val);
                             } else {
                                 fhemIN[idFHEM] = {id: id};
                                 let group = id.substring(0, id.lastIndexOf('.'));
@@ -1896,7 +1934,8 @@ function processQueue(ff, cb) {
             return;
         }
         if (telnetOut.isCommandRunning()) {
-            adapter.log.warn(fn + 'end - commandRunning events: ' + eventIOB.length);
+            if (logDevelop & !firstRun)
+                adapter.log.warn(fn + 'end - commandRunning events: ' + eventIOB.length);
             cb && cb();
             aktivQueue = false;
             return;
@@ -1914,13 +1953,16 @@ function processQueue(ff, cb) {
                 adapter.__timeouts.resyncFHEM = null;
                 resyncFHEM();
             }, 5000);
-        } else if (command.command === 'read') {
-            readValue(fn, command.id, () => setImmediate(processQueue, ff, cb));
         } else if (command.command === 'write') {
             logDebug(fn, command.id, command.command + ' > ' + command.id + ' ' + command.val + ' / todo: ' + eventIOB.length, 'D');
-            writeValue(fn, command.id, command.val, () => setImmediate(processQueue, ff, cb));
+            writeValue(fn, command.id, command.val, command.ts, () => setImmediate(processQueue, ff, cb));
+        } else if (command.command === 'writeOut') {
+            logDebug(fn, command.id, command.command + ' > ' + command.id + ' ' + command.val + ' / todo: ' + eventIOB.length, 'D');
+            writeOut(fn, command.id, command.val, command.ts, () => setImmediate(processQueue, ff, cb));
         } else if (command.command === 'meta') {
             logDebug(fn, command.name, command.command + ' > ' + command.name + ' / todo: ' + eventIOB.length, 'D');
+            if (logDevelop & !firstRun)
+                adapter.log.warn(command.command + ' > ' + command.name + ' / todo: ' + eventIOB.length);
             requestMeta(fn, command.name, () => setImmediate(processQueue, ff, cb));
         } else {
             logError(fn, 'Unknown task: ' + command.command);
@@ -1930,18 +1972,13 @@ function processQueue(ff, cb) {
         adapter.log.warn('processQueue ' + e);
     }
 }
-//
 function resyncFHEM() {
     let fn = '[resyncFHEM] ';
     adapter.log.debug(fn, 'Start Resync FHEM');
-    setState(fn, 'info.Info.alive', false, true);
+    adapter.setState('info.Info.alive', false, true);
     adapter.restart();
 }
-function readValue(ff, id, cb) {
-    //not in use
-    cb && cb();
-}
-function writeValue(ff, id, val, cb) {
+function writeValue(ff, id, val, ts, cb) {
     let fn = ff + '[writeValue] ';
     let cmd;
     if (val === undefined || val === null)
@@ -1956,19 +1993,18 @@ function writeValue(ff, id, val, cb) {
             return;
         }
         // info.Commands?
-        else if (id.indexOf(adapter.namespace + '.info.Commands') !== -1) {
+        else if (id.indexOf(adapter.namespace + '.info.Commands') !== -1) {      /// prüfen
             logDebug(fn, id, 'detect info.Commands - ' + id + ' ' + val, 'D');
             // sendFHEM?
             if (id === adapter.namespace + '.info.Commands.sendFHEM') {
-                let ts = Date.now();
-                setState(fn, 'info.Commands.sendFHEM', val, true, ts, () => {
+                adapter.setState('info.Commands.sendFHEM', val, true, () => {
                     logStateChange(fn, id, val, val, 'pos');
                     telnetOut.send(val, (e, result) => {
+                        cb && cb();
                         e && logError(fn, e);
-                        setState(fn, 'info.Commands.resultFHEM', result.replace(/(\r\n)|(\r)|(\n)/g, '<br>'), true, ts, () => {
-                            setState(fn, 'info.Commands.lastCommand', val, true, ts, () => {
-                                setState(fn, 'info.Commands.sendFHEM', 'done', true, ts, () => {
-                                    cb && cb();
+                        adapter.setState('info.Commands.resultFHEM', result.replace(/(\r\n)|(\r)|(\n)/g, '<br>'), true, () => {
+                            adapter.setState('info.Commands.lastCommand', val, true, () => {
+                                adapter.setState('info.Commands.sendFHEM', 'done', true, () => {
                                 });
                             });
                         });
@@ -1985,7 +2021,7 @@ function writeValue(ff, id, val, cb) {
                     sendFHEM(fn, 'attr ' + valP[0] + ' comment Created by ioBroker ' + adapter.namespace);
                     sendFHEM(fn, 'attr ' + valP[0] + ' setList on:noArg off:noArg');
                     sendFHEM(fn, 'set ' + valP[0] + ' off');
-                    setState(fn, 'info.Commands.createSwitch', 'done', true, () => {
+                    setState(fn, 'info.Commands.createSwitch', 'done', true, Date.now(), () => {
                         cb && cb();
                     });
                 } else {
@@ -2029,7 +2065,7 @@ function writeValue(ff, id, val, cb) {
                 cb && cb();
             } else if (id.indexOf('logDevelop') !== -1) {
                 logDevelop = val;
-                setState(fn, id, val, true);
+                setState(fn, id, val, true, Date.now());
                 cb && cb();
             } else {
                 logStateChange(fn, id, val, 'info.Debug - no match', 'neg');
@@ -2044,7 +2080,7 @@ function writeValue(ff, id, val, cb) {
             // change Configurations?
         } else if (id.indexOf(adapter.namespace + '.info.Configurations.') !== -1) {
             logStateChange(fn, id, val, 'Resync FHEM', 'pos');
-            setState(fn, 'info.resync', true, false);
+            setState(fn, 'info.resync', true, false, Date.now());
             cb && cb();
             return;
         } else {
@@ -2104,18 +2140,48 @@ function writeValue(ff, id, val, cb) {
                 cmd = 'set ' + device + ' ' + attribute;
             }
         }
-        logStateChange(fn, id, val, cmd, 'pos');
         telnetOut.send(cmd, (e) => {
             e && logError(fn, e);
             cb && cb();
+            logStateChange(fn, id, val, cmd, 'pos');
+            let dif = Date.now() - ts;
+            numWriteValue = numWriteValue + 1;
+            timeWriteValue = timeWriteValue + dif;
+            //TEST
+            if (logDevelop & !firstRun) {
+                if (dif > Math.round(timeWriteValue / numWriteValue))
+                    adapter.log.warn(eventIOB1.length + ' (' + dif + ' ms) writeValue: ' + id + ' ' + val);
+            }
         });
     }
+}
+function writeOut(ff, id, val, ts, cb) {
+    let fn = ff + '[writeOut] ';
+    let cmd = 'set ' + id + ' ' + val;
+    telnetOut.send(cmd, (e) => {
+        e && logError(fn, e);
+        cb && cb();
+        if (!id.startsWith(adapter.namespace + '.info') && advancedFunction)
+            adapter.setState('info.Info.lastIOBout', id + ' ' + val, true);
+        logStateChange(fn, id, val, cmd, 'pos');
+        let dif = Date.now() - ts;
+        numWriteOut = numWriteOut + 1;
+        timeWriteOut = timeWriteOut + dif;
+        //TEST
+        if (logDevelop & !firstRun) {
+            if (dif > 500)
+                adapter.log.warn(eventIOB1.length + ' (' + (dif) + ' ms) writeOut: ' + id + ' ' + val);
+        }
+    });
 }
 function requestMeta(ff, name, cb) {
     let fn = ff + '[requestMeta] ';
     logDebug(fn, name, 'requestMeta: check channel ' + name + ' > jsonlist2 ' + name, 'D');
     telnetOut.send('jsonlist2 ' + name, (e, result) => {
         e && logError(fn, e);
+        cb && cb();
+        if (logDevelop & !firstRun)
+            adapter.log.warn('jsonlist2 ende cb');
         if (result) {
             let objects = null;
             try {
@@ -2123,19 +2189,15 @@ function requestMeta(ff, name, cb) {
                 logDebug(fn, name, 'requestMeta: ' + name + ' - Number of Device(s) ' + objects.totalResultsReturned, 'D');
             } catch (e) {
                 logError(fn, 'Cannot parse answer for "jsonlist2 ' + name + '" - ' + e);
-                cb && cb();
             }
             if (objects.totalResultsReturned > 0) {
                 parseObjects(fn, objects.Results, () => {
-                    cb && cb();
                 });
             } else {
                 logWarn(fn, 'no sync - result of "jsonlist2 ' + name + '" <1');
-                cb && cb();
             }
         } else {
             logWarn(fn, 'no sync - no result of "jsonlist2 ' + name + '"');
-            cb && cb();
         }
     });
 }
@@ -2151,7 +2213,6 @@ function eventFHEM(ff, event) {
     if (event.indexOf('display_covertitle') !== -1) {
         return;
     }
-    //14.01.20
     let parts = event.split(' ');
     if (fhemIgnoreConfig[parts[1]]) {
         //eventNOK(fn, event, channel, 'fhemIgnoreConfig', 'debug', device);
@@ -2161,36 +2222,32 @@ function eventFHEM(ff, event) {
         ts = new Date(event.substring(0, 19)).getTime();
         event = event.substring(20);
     }
+    if (logEventFHEM) {
+        adapter.log.info('eventFHEM(in): "' + event + '"');
+    } else {
+        logDebug(fn, event, 'eventFHEM(in): "' + event + '"', '');
+    }
     eventQueue.push({
         parts: parts,
         event: event,
         ts: ts
     });
-    if (logEventFHEM) {
-        adapter.log.info('eventFHEM: "' + event + '"');
-    } else {
-        logDebug(fn, event, 'eventFHEM: "' + event + '"', 'D');
-    }
-    if (!firstRun && !activeEvent) {
-        processEvent(fn);
-    }
+    processEvent(fn);
     return;
 }
 function processEvent(ff, cb) {
     let fn = ff + '[processEvent] ';
-    activeEvent = true;
     if (!eventQueue.length) {
-        activeEvent = false;
         cb && cb();
         return;
     }
     const command = eventQueue.shift();
     logDebug(fn, command.event, '"' + command.event + '"  / todo: ' + eventQueue.length + ' (' + (Date.now() - command.ts) + ' ms processEvent)', 'D');
     //Test
-    if (logDevelop) {
-        let dif = Math.round((Date.now() - command.ts));
-        if (dif > 100)
-            adapter.log.warn(eventQueue.length + ' ' + dif + ' ' + command.event + ' ');
+    if (logDevelop & !firstRun) {
+        let dif = Date.now() - command.ts;
+        if (dif > 20)
+            adapter.log.warn(eventQueue.length + ' (' + dif + ' ms) processEvent: ' + command.event + ' ');
     }
     parseEvent(fn, command, () => setImmediate(processEvent, ff, cb));
 }
@@ -2344,7 +2401,8 @@ function parseEvent(ff, eventIN, cb) {
         } else if (device === adapter.namespace + '.send2ioB') {
             logDebug(fn, event, 'detect send2ioB ', 'D');
             let val = event.substring(parts[0].length + device.length + 2);
-            adapter.setState('info.Info.lastSend2ioB', val, true);
+            if (advancedFunction)
+                adapter.setState('info.Info.lastSend2ioB', val, true);
             adapter.getForeignObject(parts[2], function (e, obj) {
                 if (e) {
                     logError(fn, e);
@@ -2491,7 +2549,6 @@ function eventOK(ff, event, id, val, ts, info, device, channel, cb) {
             adapter.log.debug(fn + tE + out);
         }
     }
-
 }
 function eventNOK(ff, event, id, text, mode, device, cb) {
     let fn = ff + '[eventNOK] ';
@@ -2727,7 +2784,20 @@ function convertFhemSensor(ff, val, device, type) {
 function getAlive(ff) {
     let fn = ff + '[getAlive] ';
     adapter.log.debug(fn + 'alive true - start');
-    setState(fn, 'info.Info.alive', true, true);
+    adapter.setState('info.Info.alive', true, true);
+    if (logDevelop)
+        adapter.log.warn('Anzahl: setState ' + numEvent + '/' + Math.round(timeEvent / numEvent) + 'ms writeValue ' + numWriteValue + '/' + Math.round(timeWriteValue / numWriteValue) + ' ms writeOut ' + numWriteOut + '/' + Math.round(timeWriteOut / numWriteOut) + ' ms'); //24.04.20
+    adapter.setState('info.Debug.numberIn', numEvent, true);
+    adapter.setState('info.Debug.timeIn', Math.round(timeEvent / numEvent), true);
+    adapter.setState('info.Debug.numberOut', (numWriteOut + numWriteValue), true);
+    adapter.setState('info.Debug.timeOut', Math.round((timeWriteOut + timeWriteValue) / (numWriteOut + numWriteValue)), true);
+    numEvent = 0;
+    timeEvent = 0;
+    numWriteOut = 0;
+    timeWriteOut = 0;
+    numWriteValue = 0;
+    timeWriteValue = 0;
+
     if (adapter.__timeouts.getAlive) {
         clearTimeout(adapter.__timeouts.getAlive);
         adapter.log.debug(ff + fn + 'alive reset timer');
@@ -2736,7 +2806,7 @@ function getAlive(ff) {
         adapter.__timeouts.getAlive = null;
         logError(fn, 'lost Connection FHEM --> ioBroker');
         adapter.log.debug(ff + fn + 'alive false');
-        setState(fn, 'info.Info.alive', false, true);
+        adapter.setState('info.Info.alive', false, true);
     }, 6 * 60000);
 }
 function setState(ff, id, val, ack, ts, cb) {
@@ -2752,50 +2822,60 @@ function setState(ff, id, val, ack, ts, cb) {
         ack: ack,
         ts: ts
     });
-    if (!aktivSetState)
+    if (!firstRun)
         processSetState(fn);
     cb && cb();
     return;
 }
 function processSetState(ff, cb) {
     let fn = ff + '[processSetState] ';
-    aktivSetState = true;
     if (!setStateQueue.length) {
-        aktivSetState = false;
         cb && cb();
         return;
     }
     if (!connected) {
-        aktivSetState = false;
         cb && cb();
         return;
     }
     const command = setStateQueue.shift();
-    // noch prüfen !!
     if (command === undefined) {
-        aktivSetState = false;
         cb && cb();
         return;
     }
-    logDebug(fn, command.id, command.id + ' ' + command.val + ' / todo: ' + setStateQueue.length + ' (' + (Date.now() - command.ts) + ')', 'D');
     setStateDo(fn, command, () => setImmediate(processSetState, ff, cb));
+    logDebug(fn, command.id, command.id + ' ' + command.val + ' / todo: ' + setStateQueue.length + ' (' + (Math.round((Date.now() - command.ts))) + ')', 'D');
 }
 function setStateDo(ff, command, cb) {
     let fn = ff + ' ' + '[setStateDo] ';
-    adapter.setState(command.id, command.val, command.ack, command.ts, e => {
+    logDebug(fn, command.id, 'stateChange:setStateDo ' + command.id + ' ' + command.val + ' (' + (Date.now() - command.ts) + ' ms)', 'D');
+    adapter.getState(command.id, (e, stateG) => {
         if (e) {
-            adapter.log.error(ff + ' ' + command.id + ' ' + e);
+            logError(fn, 'rs? ' + e);
             cb && cb();
             return;
         }
-        let dif = Math.round((Date.now() - command.ts));
-        //TEST
-        if (logDevelop) {
-            if (dif > 2000)
-                adapter.log.warn(setStateQueue.length + ' (' + dif + ') setStateDo: ' + command.id + ' ' + command.val);
+        if (stateG.val !== command.val) {
+            adapter.setState(command.id, command.val, command.ack, command.ts, e => {
+                if (e) {
+                    adapter.log.error(ff + ' ' + command.id + ' ' + e);
+                    cb && cb();
+                    return;
+                }
+                cb && cb();
+                let dif = Date.now() - command.ts;
+                logDebug(fn, command.id, 'stateChange:setStateDo ' + command.id + ' ' + command.val + ' (' + (Date.now() - command.ts) + ' ms)', 'D');
+                numEvent = numEvent + 1;
+                timeEvent = timeEvent + dif;
+                //TEST
+                if (logDevelop & !firstRun) {
+                    if (dif > 500)
+                        adapter.log.warn(setStateQueue.length + ' (' + dif + ' ms) setStateDo: ' + command.id + ' ' + command.val);
+                }
+                logDebug(fn, command.id, command.id + ' ' + command.val + ' (' + dif + ' ms)', 'D');
+            });
+        } else {
+            cb && cb();
         }
-        logDebug(fn, command.id, command.id + ' ' + command.val + ' (' + dif + ' ms)', 'D');
-        cb && cb();
     });
 }
 function sendFHEM(ff, cmd, detect, cb) {
@@ -2865,17 +2945,20 @@ function logDebug(func, id, text, typ, cb) {
 function logWarn(ff, text) {
     let fn = ff + '[logWarn] ';
     adapter.log.warn(text);
-    setState(fn, 'info.Info.lastWarn', text, true);
+    if (advancedFunction)
+        adapter.setState('info.Info.lastWarn', text, true);
 }
 function logError(ff, text) {
     let fn = ff + '[logError] ';
     text = text + ' ' + ff;
     adapter.log.error(text);
-    setState(fn, 'info.Info.lastError', text, true);
+    if (advancedFunction)
+        adapter.setState('info.Info.lastError', text, true);
 }
 function logInfo(ff, text, cb) {
     let fn = ff + '[logInfo] ';
-    setState(fn, 'info.Info.lastInfo', text, true);
+    if (advancedFunction)
+        adapter.setState('info.Info.lastInfo', text, true);
     if (!logNoInfo) {
         adapter.log.info(text);
         cb && cb();
@@ -2962,7 +3045,7 @@ function main() {
                                                     return;
                                                 logInfo(fn, 'STEP 11 ==== check/create FHEM dummy Devices in room ioB_IN/ioB_System');
                                                 syncStatesIOB(() => {
-                                                    setState(fn, 'info.Info.alive', false, true);
+                                                    adapter.setState('info.Info.alive', false, true);
                                                     if (fhemObjects[adapter.namespace + '.send2ioB']) {
                                                         logWarn('no', '> please use ' + adapter.namespace + '.send2ioB instead of send2ioB > delete send2ioB');
                                                         sendFHEM(fn, 'delete send2ioB');
@@ -3003,15 +3086,15 @@ function main() {
                                                         if (!connected)
                                                             return;
                                                         logInfo(fn, 'STEP 14 ==== processed saved event(s) of FHEM ');
-                                                        logInfo(fn, '> processed ' + eventQueue.length + ' event(s) of FHEM saved during synchro');
-                                                        processEvent(fn, () => {
+                                                        logInfo(fn, '> processed ' + setStateQueue.length + ' event(s) of FHEM saved during synchro');
+                                                        processSetState(fn, () => {
                                                             logInfo(fn, 'STEP 15 ==== info Synchro');
                                                             adapter.log.debug('fhemIgnore = ' + JSON.stringify(fhemIgnore));
-                                                            setState(fn, 'info.Info.TEST', JSON.stringify(fhemIgnore), true);
+                                                            adapter.setState('info.Info.TEST', JSON.stringify(fhemIgnore), true);
                                                             adapter.log.debug('fhemIN = ' + JSON.stringify(fhemIN));
                                                             adapter.log.debug('fhemINs = ' + JSON.stringify(fhemINs));
                                                             adapter.log.debug('fhemIgnoreConfig = ' + JSON.stringify(fhemIgnoreConfig));
-                                                            adapter.getStates('info.Info.*', (e, obj) => { //noch fehler
+                                                            adapter.getStates('info.Info.*', (e, obj) => {
                                                                 e && logError(fn, e);
                                                                 if (obj) {
                                                                     let end = 0;
@@ -3032,6 +3115,7 @@ function main() {
                                                                                 logInfo(fn, 'END ===== Synchronised FHEM in ' + Math.round((Date.now() - tsStart)) + ' ms :-)');
                                                                                 synchro = false;
                                                                                 firstRun = false;
+                                                                                processSetState(fn);
                                                                             }
                                                                         });
                                                                     }
@@ -3039,7 +3123,6 @@ function main() {
                                                             });
                                                         });
                                                     });
-
                                                 });
                                             });
                                         });
@@ -3073,15 +3156,12 @@ function main() {
     telnetOut.on('error', err => {
         adapter.log.error(err + ' (telnetOut)');
     });
-
 }
-
 process.on('uncaughtException', err => {
     adapter.log.warn('Exception: ' + err);
     telnetOut.stop();
     telnetIn.stop();
 });
-
 // If started as allInOne mode => return function to create instance
 // @ts-ignore
 if (module.parent) {
