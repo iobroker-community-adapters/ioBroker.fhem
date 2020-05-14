@@ -2394,7 +2394,7 @@ function parseEvent(ff, eventIN, cb) {
         logDebug(fn, event, 'detect fhemIgnore - ' + event, 'D');
         if (device === adapter.namespace + '.alive') {
             logDebug(fn, event, 'detect alive', 'D');
-            eventOK(ff, event, adapter.namespace + '.alive (getAlive)', '', ts, 'state', device, 'no');
+            //eventOK(ff, event, adapter.namespace + '.alive (getAlive)', '', ts, 'state', device, 'no');
             getAlive(fn);
             cb && cb();
             return;
