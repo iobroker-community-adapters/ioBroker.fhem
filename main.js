@@ -3159,8 +3159,8 @@ function main() {
 }
 process.on('uncaughtException', err => {
     adapter.log.warn('Exception: ' + err);
-    telnetOut.stop();
-    telnetIn.stop();
+    telnetOut.destroy();
+    telnetIn.destroy();
 });
 // If started as allInOne mode => return function to create instance
 // @ts-ignore
