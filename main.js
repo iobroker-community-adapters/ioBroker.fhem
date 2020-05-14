@@ -3159,6 +3159,7 @@ function main() {
 }
 process.on('uncaughtException', err => {
     adapter.log.warn('Exception: ' + err);
+    err.stack && adapter.log.warn(err.stack);
     telnetOut.destroy();
     telnetIn.destroy();
 });
