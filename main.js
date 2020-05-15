@@ -29,7 +29,7 @@ let firstRun = true;
 let synchro = true;
 let debug = false;
 let aktivQueue = false;
-const buildDate = '08.05.20';
+const buildDate = '15.05.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -2150,7 +2150,7 @@ function writeValue(ff, id, val, ts, cb) {
             //TEST
             if (logDevelop & !firstRun) {
                 if (dif > Math.round(timeWriteValue / numWriteValue))
-                    adapter.log.warn(eventIOB1.length + ' (' + dif + ' ms) writeValue: ' + id + ' ' + val);
+                    adapter.log.warn(eventIOB.length + ' (' + dif + ' ms) writeValue: ' + id + ' ' + val);
             }
         });
     }
@@ -2170,7 +2170,7 @@ function writeOut(ff, id, val, ts, cb) {
         //TEST
         if (logDevelop & !firstRun) {
             if (dif > 500)
-                adapter.log.warn(eventIOB1.length + ' (' + (dif) + ' ms) writeOut: ' + id + ' ' + val);
+                adapter.log.warn(eventIOB.length + ' (' + (dif) + ' ms) writeOut: ' + id + ' ' + val);
         }
     });
 }
