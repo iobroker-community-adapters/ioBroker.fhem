@@ -29,7 +29,7 @@ let firstRun = true;
 let synchro = true;
 let debug = false;
 let aktivQueue = false;
-const buildDate = '15.05.20';
+const buildDate = '17.05.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -1699,7 +1699,7 @@ function syncStates(states, cb) {
             cb();
             return;
         }
-        if (!stateG || stateG.val !== state.val) {
+        if (!stateG || stateG.val != state.val) {
             if (!stateG) {
                 logDebug(fn, id, 'create state: ' + id + ' = ' + state.val, '');
             } else {
@@ -2169,7 +2169,7 @@ function writeOut(ff, id, val, ts, cb) {
         timeWriteOut = timeWriteOut + dif;
         //TEST
         if (logDevelop & !firstRun) {
-            if (dif > 500)
+            if (dif > 1000)
                 adapter.log.warn(eventIOB.length + ' (' + (dif) + ' ms) writeOut: ' + id + ' ' + val);
         }
     });
@@ -2261,6 +2261,11 @@ function parseEvent(ff, eventIN, cb) {
         return;
     }
     let parts = eventIN.parts;
+    if (!parts[1]) {
+        eventNOK(fn, event, channel, 'only parts[0] = ' + parts[0], 'warn', 'unknown');
+        cb && cb();
+        return;
+    }
     let type = parts[0];
     let device = parts[1];
     let nameIob = convertNameFHEM(fn, device);
@@ -2427,10 +2432,6 @@ function parseEvent(ff, eventIN, cb) {
             cb && cb();
             return;
         }
-    } else if (!device) {
-        eventNOK(fn, event, channel, 'only parts[0]', 'warn', 'unknown');
-        cb && cb();
-        return;
     } else if (fhemIN[nameIob]) {
         eventNOK(fn, event, channel, 'included in fhemIN', 'warn', 'unknown');
         cb && cb();
@@ -2786,7 +2787,7 @@ function getAlive(ff) {
     adapter.log.debug(fn + 'alive true - start');
     adapter.setState('info.Info.alive', true, true);
     if (logDevelop)
-        adapter.log.warn('Anzahl: setState ' + numEvent + '/' + Math.round(timeEvent / numEvent) + 'ms writeValue ' + numWriteValue + '/' + Math.round(timeWriteValue / numWriteValue) + ' ms writeOut ' + numWriteOut + '/' + Math.round(timeWriteOut / numWriteOut) + ' ms'); //24.04.20
+        adapter.log.warn('Anzahl: setState ' + numEvent + '/' + Math.round(timeEvent / numEvent) + 'ms writeValue ' + numWriteValue + '/' + Math.round(timeWriteValue / numWriteValue) + ' ms writeOut ' + numWriteOut + '/' + Math.round(timeWriteOut / numWriteOut) + ' ms'); 
     adapter.setState('info.Debug.numberIn', numEvent, true);
     adapter.setState('info.Debug.timeIn', Math.round(timeEvent / numEvent), true);
     adapter.setState('info.Debug.numberOut', (numWriteOut + numWriteValue), true);
@@ -2854,7 +2855,13 @@ function setStateDo(ff, command, cb) {
             cb && cb();
             return;
         }
-        if (stateG.val !== command.val) {
+        if (!stateG) {
+            if (logDevelop)
+                adapter.log.warn('id: ' + command.id + ' - no state found!');
+            cb && cb();
+            return;
+        }
+        if (stateG.val != command.val || !stateG.ack) {
             adapter.setState(command.id, command.val, command.ack, command.ts, e => {
                 if (e) {
                     adapter.log.error(ff + ' ' + command.id + ' ' + e);
@@ -2868,7 +2875,7 @@ function setStateDo(ff, command, cb) {
                 timeEvent = timeEvent + dif;
                 //TEST
                 if (logDevelop & !firstRun) {
-                    if (dif > 500)
+                    if (dif > 1000)
                         adapter.log.warn(setStateQueue.length + ' (' + dif + ' ms) setStateDo: ' + command.id + ' ' + command.val);
                 }
                 logDebug(fn, command.id, command.id + ' ' + command.val + ' (' + dif + ' ms)', 'D');
