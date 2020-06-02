@@ -15,6 +15,7 @@ const eventIOB = [];
 const delObj = [];
 const eventQueue = [];
 const setStateQueue = [];
+const setStateLogQueue = [];
 let fhemIN = {};
 let fhemINs = {};
 let fhemIgnore = {};
@@ -29,7 +30,8 @@ let firstRun = true;
 let synchro = true;
 let debug = false;
 let aktivQueue = false;
-const buildDate = '17.05.20';
+let aktiv = false;
+const buildDate = '02.06.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -43,6 +45,7 @@ let timeWriteOut = 0;
 let numWriteValue = 0;
 let timeWriteValue = 0;
 // info.Configurations
+let syncUpdate;
 let advancedFunction;
 let autoRole;
 let autoFunction;
@@ -254,6 +257,7 @@ function myObjects(ff, cb) {
         {_id: 'info.Configurations.onlySyncTYPE', type: 'state', common: {name: 'SYNC - only sync device(s) TYPE', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.logNoInfo', type: 'state', common: {name: 'FUNCTION - no LOG info', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
         {_id: 'info.Configurations.advancedFunction', type: 'state', common: {name: 'FUNCTION - advanced', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
+        {_id: 'info.Configurations.syncUpdate', type: 'state', common: {name: 'FUNCTION - sync update reading', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
         // info.Debug
         {_id: 'info.Debug.jsonlist2', type: 'state', common: {name: 'jsonlist2 of FHEM', type: 'string', read: true, write: true, role: 'json'}, native: {}},
         {_id: 'info.Debug.meta', type: 'state', common: {name: 'Device NAME of FHEM', type: 'string', read: true, write: true, role: 'text'}, native: {}},
@@ -419,6 +423,7 @@ function getConfigurationsFUNCTION(ff, cb) {
     getSetting(fn, 'info.Configurations.autoRest', value => autoRest = value);
     getSetting(fn, 'info.Configurations.deleteUnusedObjects', value => deleteUnusedObjects = value);
     getSetting(fn, 'info.Configurations.advancedFunction', value => advancedFunction = value);
+    getSetting(fn, 'info.Configurations.syncUpdate', value => syncUpdate = value);
     getSetting(fn, 'info.Configurations.oldState', value => {
         oldState = value;
         adapter.setState('info.Info.buildDate', buildDate, true);
@@ -2162,7 +2167,8 @@ function writeOut(ff, id, val, ts, cb) {
         e && logError(fn, e);
         cb && cb();
         if (!id.startsWith(adapter.namespace + '.info') && advancedFunction)
-            adapter.setState('info.Info.lastIOBout', id + ' ' + val, true);
+            //adapter.setState('info.Info.lastIOBout', id + ' ' + val, true); //22.05.2020
+            setStateLog(fn, 'info.Info.lastIOBout', id + ' ' + val, true, Date.now());
         logStateChange(fn, id, val, cmd, 'pos');
         let dif = Date.now() - ts;
         numWriteOut = numWriteOut + 1;
@@ -2407,7 +2413,8 @@ function parseEvent(ff, eventIN, cb) {
             logDebug(fn, event, 'detect send2ioB ', 'D');
             let val = event.substring(parts[0].length + device.length + 2);
             if (advancedFunction)
-                adapter.setState('info.Info.lastSend2ioB', val, true);
+                //    adapter.setState('info.Info.lastSend2ioB', val, true);
+                setStateLog('info.Info.lastSend2ioB', val, true, Date.now());
             adapter.getForeignObject(parts[2], function (e, obj) {
                 if (e) {
                     logError(fn, e);
@@ -2787,7 +2794,7 @@ function getAlive(ff) {
     adapter.log.debug(fn + 'alive true - start');
     adapter.setState('info.Info.alive', true, true);
     if (logDevelop)
-        adapter.log.warn('Anzahl: setState ' + numEvent + '/' + Math.round(timeEvent / numEvent) + 'ms writeValue ' + numWriteValue + '/' + Math.round(timeWriteValue / numWriteValue) + ' ms writeOut ' + numWriteOut + '/' + Math.round(timeWriteOut / numWriteOut) + ' ms'); 
+        adapter.log.warn('Anzahl: setState ' + numEvent + '/' + Math.round(timeEvent / numEvent) + 'ms writeValue ' + numWriteValue + '/' + Math.round(timeWriteValue / numWriteValue) + ' ms writeOut ' + numWriteOut + '/' + Math.round(timeWriteOut / numWriteOut) + ' ms');
     adapter.setState('info.Debug.numberIn', numEvent, true);
     adapter.setState('info.Debug.timeIn', Math.round(timeEvent / numEvent), true);
     adapter.setState('info.Debug.numberOut', (numWriteOut + numWriteValue), true);
@@ -2849,42 +2856,118 @@ function processSetState(ff, cb) {
 function setStateDo(ff, command, cb) {
     let fn = ff + ' ' + '[setStateDo] ';
     logDebug(fn, command.id, 'stateChange:setStateDo ' + command.id + ' ' + command.val + ' (' + (Date.now() - command.ts) + ' ms)', 'D');
-    adapter.getState(command.id, (e, stateG) => {
-        if (e) {
-            logError(fn, 'rs? ' + e);
-            cb && cb();
-            return;
-        }
-        if (!stateG) {
-            if (logDevelop)
-                adapter.log.warn('id: ' + command.id + ' - no state found!');
-            cb && cb();
-            return;
-        }
-        if (stateG.val != command.val || !stateG.ack) {
-            adapter.setState(command.id, command.val, command.ack, command.ts, e => {
-                if (e) {
-                    adapter.log.error(ff + ' ' + command.id + ' ' + e);
-                    cb && cb();
-                    return;
-                }
+    if (syncUpdate) {
+        adapter.setState(command.id, command.val, command.ack, command.ts, e => {
+            if (e) {
+                adapter.log.error(ff + ' ' + command.id + ' ' + e);
                 cb && cb();
-                let dif = Date.now() - command.ts;
-                logDebug(fn, command.id, 'stateChange:setStateDo ' + command.id + ' ' + command.val + ' (' + (Date.now() - command.ts) + ' ms)', 'D');
-                numEvent = numEvent + 1;
-                timeEvent = timeEvent + dif;
-                //TEST
-                if (logDevelop & !firstRun) {
-                    if (dif > 1000)
-                        adapter.log.warn(setStateQueue.length + ' (' + dif + ' ms) setStateDo: ' + command.id + ' ' + command.val);
-                }
-                logDebug(fn, command.id, command.id + ' ' + command.val + ' (' + dif + ' ms)', 'D');
-            });
-        } else {
+                return;
+            }
             cb && cb();
-        }
+            let dif = Date.now() - command.ts;
+            logDebug(fn, command.id, 'stateChange:setStateDo ' + command.id + ' ' + command.val + ' (' + (Date.now() - command.ts) + ' ms)', 'D');
+            numEvent = numEvent + 1;
+            timeEvent = timeEvent + dif;
+            //TEST
+            if (logDevelop & !firstRun) {
+                if (dif > 1000)
+                    adapter.log.warn(setStateQueue.length + ' (' + dif + ' ms) setStateDo: ' + command.id + ' ' + command.val);
+            }
+            logDebug(fn, command.id, command.id + ' ' + command.val + ' (' + dif + ' ms)', 'D');
+        });
+
+    } else {
+        adapter.getState(command.id, (e, stateG) => {
+            if (e) {
+                logError(fn, 'rs? ' + e);
+                cb && cb();
+                return;
+            }
+            if (!stateG) {
+                if (logDevelop)
+                    adapter.log.warn('id: ' + command.id + ' - no state found!');
+                cb && cb();
+                return;
+            }
+            if (stateG.val != command.val || !stateG.ack) {
+                adapter.setState(command.id, command.val, command.ack, command.ts, e => {
+                    if (e) {
+                        adapter.log.error(ff + ' ' + command.id + ' ' + e);
+                        cb && cb();
+                        return;
+                    }
+                    cb && cb();
+                    let dif = Date.now() - command.ts;
+                    logDebug(fn, command.id, 'stateChange:setStateDo ' + command.id + ' ' + command.val + ' (' + (Date.now() - command.ts) + ' ms)', 'D');
+                    numEvent = numEvent + 1;
+                    timeEvent = timeEvent + dif;
+                    //TEST
+                    if (logDevelop & !firstRun) {
+                        if (dif > 1000)
+                            adapter.log.warn(setStateQueue.length + ' (' + dif + ' ms) setStateDo: ' + command.id + ' ' + command.val);
+                    }
+                    logDebug(fn, command.id, command.id + ' ' + command.val + ' (' + dif + ' ms)', 'D');
+                });
+            } else {
+                cb && cb();
+            }
+        });
+    }
+}
+
+
+
+function setStateLog(ff, id, val, ack, ts, cb) {
+    let fn = ff + '[setStateLog] ';
+    if (!id) {
+        adapter.log.warn(fn + 'no id - return');
+        cb && cb();
+        return;
+    }
+    setStateLogQueue.push({
+        id: id,
+        val: val,
+        ack: ack,
+        ts: ts
+    });
+    if (!aktiv)
+        processSetStateLog(fn);
+    cb && cb();
+    return;
+}
+function processSetStateLog(ff, cb) {
+    let fn = ff + '[processSetStateLog] ';
+    aktiv = true;
+    if (!setStateLogQueue.length) {
+        aktiv = false;
+        cb && cb();
+        return;
+    }
+    if (!connected) {
+        aktiv = false;
+        cb && cb();
+        return;
+    }
+    const command = setStateLogQueue.shift();
+    if (command === undefined) {
+        aktiv = false;
+        cb && cb();
+        return;
+    }
+    setStateLogDo(fn, command, () => setImmediate(processSetStateLog, ff, cb));
+    logDebug(fn, command.id, command.id + ' ' + command.val + ' / todo: ' + setStateLogQueue.length + ' (' + (Math.round((Date.now() - command.ts))) + ')', 'D');
+}
+function setStateLogDo(ff, command, cb) {
+    let fn = ff + ' ' + '[setStateLogDo] ';
+    //logDebug(fn, command.id, 'stateChange:setStateDo ' + command.id + ' ' + command.val + ' (' + (Date.now() - command.ts) + ' ms)', 'D');
+    //adapter.log.warn('found info. ' + command.id);
+    adapter.setState(command.id, command.val, command.ack, e => {
+        cb && cb();
+        return;
     });
 }
+
+
 function sendFHEM(ff, cmd, detect, cb) {
     let fn = ff + ' ' + '[sendFHEM] ';
     logDebug(fn, '', 'cmd = ' + cmd + ' / detect=' + detect, 'D');
@@ -2953,7 +3036,8 @@ function logWarn(ff, text) {
     let fn = ff + '[logWarn] ';
     adapter.log.warn(text);
     if (advancedFunction)
-        adapter.setState('info.Info.lastWarn', text, true);
+        //adapter.setState('info.Info.lastWarn', text, true);
+        setStateLog(fn, 'info.Info.lastWarn', text, true, Date.now());
 }
 function logError(ff, text) {
     let fn = ff + '[logError] ';
@@ -2961,11 +3045,13 @@ function logError(ff, text) {
     adapter.log.error(text);
     if (advancedFunction)
         adapter.setState('info.Info.lastError', text, true);
+    setStateLog(fn, 'info.Info.lastError', text, true, Date.now());
 }
 function logInfo(ff, text, cb) {
     let fn = ff + '[logInfo] ';
     if (advancedFunction)
-        adapter.setState('info.Info.lastInfo', text, true);
+        //adapter.setState('info.Info.lastInfo', text, true);
+        setStateLog(fn, 'info.Info.lastInfo', text, true, Date.now());  //22.05.20
     if (!logNoInfo) {
         adapter.log.info(text);
         cb && cb();
