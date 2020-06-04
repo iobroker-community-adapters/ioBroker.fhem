@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '02.06.20';
+const buildDate = '03.06.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -138,7 +138,7 @@ function startAdapter(options) {
         }
         let val = state.val;
         let ack = state.ack;
-        logDebug(fn, id, 'stateChange: ' + id + ' ' + val + ' ' + JSON.stringify(state), '');
+        logDebug(fn, id, 'stateChange (in): ' + id + ' ' + val + ' ' + JSON.stringify(state), '');
         let idFHEM = convertNameIob(fn, id);
         if (fhemIN[idFHEM]) {
             if (val !== fhemINs[idFHEM].val) {
@@ -161,7 +161,7 @@ function startAdapter(options) {
         }
         if (ack)
             return;
-        // no ack and from adapter
+        // no ack and from adapter ?
         if (!state.ack && id.startsWith(adapter.namespace)) {
             if (id === adapter.namespace + '.info.resync') {
                 logWarn(fn, '----- request restart adapter');
@@ -171,6 +171,7 @@ function startAdapter(options) {
                 checkQueue(fn);
                 return;
             } else if (fhemObjects[id] || id.indexOf(adapter.namespace + '.info') !== -1) {
+                //logDebug(fn, id, 'stateChange(write): ' + id + ' ' + val + ' ' + JSON.stringify(state), '');
                 eventIOB.push({
                     command: 'write',
                     id: id,
@@ -180,7 +181,7 @@ function startAdapter(options) {
                 checkQueue(fn);
                 return;
             } else {
-                logStateChange(fn, id, val, 'stateChange - no match !state.ack & fhemObjects[id]' + JSON.stringify(state), 'neg');
+                logStateChange(fn, id, val, 'stateChange - no match !state.ack && id.startsWith(adapter.namespace) id: ' + id , 'neg');
                 return;
             }
         } else {
@@ -2993,7 +2994,7 @@ function logStateChange(fn, id, val, text, typ) {
         search = fhemObjects[id].native.Name;
     }
     if (typ === 'pos') {
-        text = 'stateChange: ' + id + ' | ' + val + ' > ' + text;
+        text = 'stateChange (out): ' + id + ' | ' + val + ' > ' + text;
         if (debugNAME.indexOf(search) !== -1 || debugNAME.indexOf(parts[2]) !== -1) {
             adapter.log.info(search + ' | ' + text);
         } else if (logEventIOB) {
@@ -3044,7 +3045,7 @@ function logError(ff, text) {
     text = text + ' ' + ff;
     adapter.log.error(text);
     if (advancedFunction)
-        adapter.setState('info.Info.lastError', text, true);
+        //adapter.setState('info.Info.lastError', text, true);
     setStateLog(fn, 'info.Info.lastError', text, true, Date.now());
 }
 function logInfo(ff, text, cb) {
