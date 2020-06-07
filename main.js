@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '04.06.20';
+const buildDate = '07.06.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -171,7 +171,7 @@ function startAdapter(options) {
                 checkQueue(fn);
                 return;
             } else if (fhemObjects[id] || id.indexOf(adapter.namespace + '.info') !== -1) {
-                //logDebug(fn, id, 'stateChange(write): ' + id + ' ' + val + ' ' + JSON.stringify(state), '');
+                logDebug(fn, id, 'stateChange(write): ' + id + ' ' + val + ' ' + JSON.stringify(state), 'D');
                 eventIOB.push({
                     command: 'write',
                     id: id,
@@ -181,7 +181,7 @@ function startAdapter(options) {
                 checkQueue(fn);
                 return;
             } else {
-                logStateChange(fn, id, val, 'stateChange - no match !state.ack && id.startsWith(adapter.namespace) id: ' + id , 'neg');
+                logStateChange(fn, id, val, 'stateChange - no match !state.ack && id.startsWith(adapter.namespace) id: ' + id, 'neg');
                 return;
             }
         } else {
@@ -1816,35 +1816,74 @@ function processDelObj(cb) {
 }
 function deleteObject(name, cb) {
     let fn = '[deleteObject] ';
-    logDebug(fn, name, 'delete object: ' + name, '');
     adapter.delObject(name, e => {
-        if (e && e !== 'Not exists') {
-            logError(fn, name + ' ' + e);
+        if (e) {
+            logError(fn, name + ': ' + e);
+            cb && cb();
+        } else {
+            logDebug(fn, name, 'delete object: ' + name, '');
+            adapter.setState('info.Info.numberObjectsIOBin', Object.keys(fhemObjects).length, true);
+            cb && cb();
         }
-        adapter.setState('info.Info.numberObjectsIOBin', Object.keys(fhemObjects).length, true);
-        cb && cb();
     });
 }
 function deleteState(name, cb) {
     let fn = '[deleteState] ';
-    logDebug(fn, name, 'delete state: ' + name, '');
     adapter.delState(name, e => {
-        if (e && e !== 'Not exists') {
-            logError(fn, name + ' ' + e);
+        if (e) {
+            logError(fn, name + ': ' + e);
+            cb && cb();
+        } else {
+            logDebug(fn, name, 'delete state: ' + name, '');
+            cb && cb();
         }
-        cb && cb();
     });
 }
 function deleteChannel(name, cb) {
     let fn = '[deleteChannel] ';
     delete fhemObjects[adapter.namespace + '.' + name];
     adapter.deleteChannel(name, e => {
-        if (e && e !== 'Not exists') {
-            logError(fn, name + ' ' + e);
+        if (e) {
+            logError(fn, name + ': ' + e);
+            cb && cb();
+        } else {
+            cb && cb();
         }
-        cb && cb();
     });
 }
+/*
+ function deleteObject(name, cb) {
+ let fn = '[deleteObject] ';
+ logDebug(fn, name, 'delete object: ' + name, '');
+ adapter.delObject(name, e => {
+ if (e && e !== 'Not exists') {
+ logError(fn, name + ' ' + e);
+ }
+ adapter.setState('info.Info.numberObjectsIOBin', Object.keys(fhemObjects).length, true);
+ cb && cb();
+ });
+ }
+ function deleteState(name, cb) {
+ let fn = '[deleteState] ';
+ logDebug(fn, name, 'delete state: ' + name, '');
+ adapter.delState(name, e => {
+ if (e && e !== 'Not exists') {
+ logError(fn, name + ' ' + e);
+ }
+ cb && cb();
+ });
+ }
+ function deleteChannel(name, cb) {
+ let fn = '[deleteChannel] ';
+ delete fhemObjects[adapter.namespace + '.' + name];
+ adapter.deleteChannel(name, e => {
+ if (e && e !== 'Not exists') {
+ logError(fn, name + ' ' + e);
+ }
+ cb && cb();
+ });
+ }
+ */
 //STEP 11
 function syncStatesIOB(cb) {
     let fn = '[syncStatesIOB] ';
@@ -3046,7 +3085,7 @@ function logError(ff, text) {
     adapter.log.error(text);
     if (advancedFunction)
         //adapter.setState('info.Info.lastError', text, true);
-    setStateLog(fn, 'info.Info.lastError', text, true, Date.now());
+        setStateLog(fn, 'info.Info.lastError', text, true, Date.now());
 }
 function logInfo(ff, text, cb) {
     let fn = ff + '[logInfo] ';
