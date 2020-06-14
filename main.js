@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '07.06.20';
+const buildDate = '14.06.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -568,9 +568,15 @@ function checkSubscribe(ff, cb) {
                         continue;
                     }
                     let idFHEM = convertNameIob(fn, id);
+                    let val;
+                    try {
+                        val = states[id].val;
+                    } catch (e) {
+                        val = '???';
+                    }
                     fhemINs[idFHEM] = {
                         id: id,
-                        val: states[id].val
+                        val: val
                     };
                     fhemIgnore[idFHEM] = {id: id};
                     logDebug(fn, '', fn + 'found ' + id, '');
