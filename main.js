@@ -568,6 +568,16 @@ function checkSubscribe(ff, cb) {
                         continue;
                     }
                     let idFHEM = convertNameIob(fn, id);
+                    let val;
+                    try {
+                        val = states[id].val;
+                    } catch (e) {
+                        val = '???';
+                    }
+                    fhemINs[idFHEM] = {
+                        id: id,
+                        val: val
+                    };
                     fhemINs[idFHEM] = {
                         id: id,
                         val: states[id].val
