@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '14.06.20';
+const buildDate = '15.06.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -568,6 +568,7 @@ function checkSubscribe(ff, cb) {
                         continue;
                     }
                     let idFHEM = convertNameIob(fn, id);
+                    // 140620
                     let val;
                     try {
                         val = states[id].val;
@@ -578,10 +579,7 @@ function checkSubscribe(ff, cb) {
                         id: id,
                         val: val
                     };
-                    fhemINs[idFHEM] = {
-                        id: id,
-                        val: states[id].val
-                    };
+                    //
                     fhemIgnore[idFHEM] = {id: id};
                     logDebug(fn, '', fn + 'found ' + id, '');
                 }
@@ -940,7 +938,7 @@ function parseObjects(ff, objs, cb) {
                         (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' >> ' + parts[0] + ' > no sync - included in ' + adapter.namespace + '.info.Config.ignorePossibleSets');
                         continue;
                     }
-                    const stateName = convertNameFHEM(fn, parts[0]);
+                    const stateName = convertNameFHEM(fn, parts[0]); //KNX
                     if (parts[0] === 'off')
                         isOff = true;
                     if (parts[0] === 'on')
@@ -1238,7 +1236,7 @@ function parseObjects(ff, objs, cb) {
                             obj.common.role = 'state';
                             // detect on/off (create state_switch)
                             if (isOff && isOn || objs[i].Internals.TYPE === 'dummy' && (val === 'on' || val === 'off')) {
-                                obj.common.type = 'string';
+                                //obj.common.type = 'string';
                                 obj.native.onoff = true;
                                 Funktion = 'switch';
                                 let obj_switch = {
@@ -2284,7 +2282,7 @@ function parseEvent(ff, eventIN, cb) {
     }
     let parts = eventIN.parts;
     if (!parts[1]) {
-        eventNOK(fn, event, channel, 'only parts[0] = ' + parts[0], 'warn', 'unknown');
+        eventNOK(fn, event, 'no channel', 'only parts[0] = ' + parts[0], 'warn', 'unknown');
         cb && cb();
         return;
     }
