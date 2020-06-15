@@ -2314,7 +2314,7 @@ function parseEvent(ff, eventIN, cb) {
     }
     let parts = eventIN.parts;
     if (!parts[1]) {
-        eventNOK(fn, event, channel, 'only parts[0] = ' + parts[0], 'warn', 'unknown');
+        eventNOK(fn, event, 'no channel 'only parts[0] = ' + parts[0], 'warn', 'unknown');
         cb && cb();
         return;
     }
