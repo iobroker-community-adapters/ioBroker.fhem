@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '15.06.20';
+const buildDate = '18.06.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -2314,7 +2314,7 @@ function parseEvent(ff, eventIN, cb) {
     }
     let parts = eventIN.parts;
     if (!parts[1]) {
-        eventNOK(fn, event, 'no channel 'only parts[0] = ' + parts[0], 'warn', 'unknown');
+        eventNOK(fn, event, 'no channel', 'only parts[0] = ' + parts[0], 'warn', 'unknown');
         cb && cb();
         return;
     }
