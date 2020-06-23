@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '15.06.20';
+const buildDate = '23.06.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -568,7 +568,6 @@ function checkSubscribe(ff, cb) {
                         continue;
                     }
                     let idFHEM = convertNameIob(fn, id);
-                    // 140620
                     let val;
                     try {
                         val = states[id].val;
@@ -579,7 +578,6 @@ function checkSubscribe(ff, cb) {
                         id: id,
                         val: val
                     };
-                    //
                     fhemIgnore[idFHEM] = {id: id};
                     logDebug(fn, '', fn + 'found ' + id, '');
                 }
@@ -2964,7 +2962,6 @@ function processSetStateLog(ff, cb) {
 function setStateLogDo(ff, command, cb) {
     let fn = ff + ' ' + '[setStateLogDo] ';
     //logDebug(fn, command.id, 'stateChange:setStateDo ' + command.id + ' ' + command.val + ' (' + (Date.now() - command.ts) + ' ms)', 'D');
-    //adapter.log.warn('found info. ' + command.id);
     adapter.setState(command.id, command.val, command.ack, e => {
         if (e) {
             logError(fn, command.id + ': ' + e);
