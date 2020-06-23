@@ -1233,7 +1233,7 @@ function parseObjects(ff, objs, cb) {
                             obj.common.write = true;
                             obj.common.role = 'state';
                             // detect on/off (create state_switch)
-                            if (isOff && isOn || objs[i].Internals.TYPE === 'dummy' && (val === 'on' || val === 'off')) {
+                            if (isOff || isOn || objs[i].Internals.TYPE === 'dummy' && (val === 'on' || val === 'off')) {
                                 obj.common.type = 'string';
                                 obj.native.onoff = true;
                                 Funktion = 'switch';
