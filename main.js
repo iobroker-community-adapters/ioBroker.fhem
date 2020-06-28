@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '23.06.20';
+const buildDate = '28.06.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -623,7 +623,7 @@ function syncFHEM(ff, cb) {
                 } else {
                     logError(fn, 'Cannot parse answer for jsonlist2: ' + e);
                 }
-                if (firstRun)   //??
+                if (firstRun)
                     adapter.setForeignState('system.adapter.fhem.1.alive', false, false);
             }
             if (objects) {
@@ -936,7 +936,7 @@ function parseObjects(ff, objs, cb) {
                         (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' >> ' + parts[0] + ' > no sync - included in ' + adapter.namespace + '.info.Config.ignorePossibleSets');
                         continue;
                     }
-                    const stateName = convertNameFHEM(fn, parts[0]);
+                    const stateName = convertNameFHEM(fn, parts[0]); //KNX
                     if (parts[0] === 'off')
                         isOff = true;
                     if (parts[0] === 'on')
@@ -1232,9 +1232,8 @@ function parseObjects(ff, objs, cb) {
                         if (attr === 'state') {
                             obj.common.write = true;
                             obj.common.role = 'state';
-                            // detect on/off (create state_switch)
-                            if (isOff || isOn || objs[i].Internals.TYPE === 'dummy' && (val === 'on' || val === 'off')) {
-                                obj.common.type = 'string';
+                            // detect on and off or KNX or dummy (create state_switch)
+                            if (isOff && isOn || objs[i].Internals.TYPE === 'KNX' || objs[i].Internals.TYPE === 'dummy' && (val === 'on' || val === 'off')) {
                                 obj.native.onoff = true;
                                 Funktion = 'switch';
                                 let obj_switch = {
@@ -1794,14 +1793,14 @@ function unusedObjects(ff, check, cb) {
         }
         firstRun && logInfo(fn, '> delete unused objects (' + check + ') > delete ' + channel + ' channel(s) and ' + state + ' state(s)');
         logDebug(fn, '', '[processDelObj] start', 'D');
-        processDelObj(() => {
+        processDelObj(fn, () => {
             logDebug(fn, '', '[processDelObj] end', 'D');
             cb && cb();
         });
     });
 }
-function processDelObj(cb) {
-    let fn = '[processDelObj] ';
+function processDelObj(ff, cb) {
+    let fn = ff + '[processDelObj] ';
     if (!delObj.length) {
         logDebug(fn, '', 'end', 'D');
         cb && cb();
@@ -1810,18 +1809,18 @@ function processDelObj(cb) {
     const command = delObj.shift();
     logDebug(fn, '', command.command + ' ' + command.name, '');
     if (command.command === 'delObject') {
-        deleteObject(command.name, () => setImmediate(processDelObj, cb));
+        deleteObject(fn, command.name, () => setImmediate(processDelObj, ff, cb));
     } else if (command.command === 'delState') {
-        deleteState(command.name, () => setImmediate(processDelObj, cb));
+        deleteState(fn, command.name, () => setImmediate(processDelObj, ff, cb));
     } else if (command.command === 'delChannel') {
-        deleteChannel(command.name, () => setImmediate(processDelObj, cb));
+        deleteChannel(fn, command.name, () => setImmediate(processDelObj, ff, cb));
     } else {
         logError(fn, 'Unknown task: ' + command.command);
-        setImmediate(processDelObj, cb);
+        setImmediate(processDelObj, ff, cb);
     }
 }
-function deleteObject(name, cb) {
-    let fn = '[deleteObject] ';
+function deleteObject(ff, name, cb) {
+    let fn = ff + '[deleteObject] ';
     adapter.delObject(name, e => {
         if (e) {
             logError(fn, name + ': ' + e);
@@ -1833,8 +1832,8 @@ function deleteObject(name, cb) {
         }
     });
 }
-function deleteState(name, cb) {
-    let fn = '[deleteState] ';
+function deleteState(ff, name, cb) {
+    let fn = ff + '[deleteState] ';
     adapter.delState(name, e => {
         if (e) {
             logError(fn, name + ': ' + e);
@@ -1845,8 +1844,8 @@ function deleteState(name, cb) {
         }
     });
 }
-function deleteChannel(name, cb) {
-    let fn = '[deleteChannel] ';
+function deleteChannel(ff, name, cb) {
+    let fn = ff + '[deleteChannel] ';
     delete fhemObjects[adapter.namespace + '.' + name];
     adapter.deleteChannel(name, e => {
         if (e) {
@@ -1857,39 +1856,6 @@ function deleteChannel(name, cb) {
         }
     });
 }
-/*
- function deleteObject(name, cb) {
- let fn = '[deleteObject] ';
- logDebug(fn, name, 'delete object: ' + name, '');
- adapter.delObject(name, e => {
- if (e && e !== 'Not exists') {
- logError(fn, name + ' ' + e);
- }
- adapter.setState('info.Info.numberObjectsIOBin', Object.keys(fhemObjects).length, true);
- cb && cb();
- });
- }
- function deleteState(name, cb) {
- let fn = '[deleteState] ';
- logDebug(fn, name, 'delete state: ' + name, '');
- adapter.delState(name, e => {
- if (e && e !== 'Not exists') {
- logError(fn, name + ' ' + e);
- }
- cb && cb();
- });
- }
- function deleteChannel(name, cb) {
- let fn = '[deleteChannel] ';
- delete fhemObjects[adapter.namespace + '.' + name];
- adapter.deleteChannel(name, e => {
- if (e && e !== 'Not exists') {
- logError(fn, name + ' ' + e);
- }
- cb && cb();
- });
- }
- */
 //STEP 11
 function syncStatesIOB(cb) {
     let fn = '[syncStatesIOB] ';
@@ -2213,7 +2179,6 @@ function writeOut(ff, id, val, ts, cb) {
         e && logError(fn, e);
         cb && cb();
         if (!id.startsWith(adapter.namespace + '.info') && advancedFunction)
-            //adapter.setState('info.Info.lastIOBout', id + ' ' + val, true); //22.05.2020
             setStateLog(fn, 'info.Info.lastIOBout', id + ' ' + val, true, Date.now());
         logStateChange(fn, id, val, cmd, 'pos');
         let dif = Date.now() - ts;
@@ -2222,7 +2187,7 @@ function writeOut(ff, id, val, ts, cb) {
         //TEST
         if (logDevelop & !firstRun) {
             if (dif > 1000)
-                adapter.log.warn(eventIOB.length + ' (' + (dif) + ' ms) writeOut: ' + id + ' ' + val);
+                adapter.log.warn(eventIOB.length + ' (' + dif + ' ms) writeOut: ' + id + ' ' + val);
         }
     });
 }
@@ -2459,7 +2424,6 @@ function parseEvent(ff, eventIN, cb) {
             logDebug(fn, event, 'detect send2ioB ', 'D');
             let val = event.substring(parts[0].length + device.length + 2);
             if (advancedFunction)
-                //    adapter.setState('info.Info.lastSend2ioB', val, true);
                 setStateLog('info.Info.lastSend2ioB', val, true, Date.now());
             adapter.getForeignObject(parts[2], function (e, obj) {
                 if (e) {
@@ -2903,25 +2867,10 @@ function setStateDo(ff, command, cb) {
     let fn = ff + ' ' + '[setStateDo] ';
     logDebug(fn, command.id, 'stateChange:setStateDo ' + command.id + ' ' + command.val + ' (' + (Date.now() - command.ts) + ' ms)', 'D');
     if (syncUpdate) {
-        adapter.setState(command.id, command.val, command.ack, command.ts, e => {
-            if (e) {
-                adapter.log.error(ff + ' ' + command.id + ' ' + e);
-                cb && cb();
-                return;
-            }
+        setStateDoWrite(ff, command, () => {
             cb && cb();
-            let dif = Date.now() - command.ts;
-            logDebug(fn, command.id, 'stateChange:setStateDo ' + command.id + ' ' + command.val + ' (' + (Date.now() - command.ts) + ' ms)', 'D');
-            numEvent = numEvent + 1;
-            timeEvent = timeEvent + dif;
-            //TEST
-            if (logDevelop & !firstRun) {
-                if (dif > 1000)
-                    adapter.log.warn(setStateQueue.length + ' (' + dif + ' ms) setStateDo: ' + command.id + ' ' + command.val);
-            }
-            logDebug(fn, command.id, command.id + ' ' + command.val + ' (' + dif + ' ms)', 'D');
+            return;
         });
-
     } else {
         adapter.getState(command.id, (e, stateG) => {
             if (e) {
@@ -2936,23 +2885,9 @@ function setStateDo(ff, command, cb) {
                 return;
             }
             if (stateG.val != command.val || !stateG.ack) {
-                adapter.setState(command.id, command.val, command.ack, command.ts, e => {
-                    if (e) {
-                        adapter.log.error(ff + ' ' + command.id + ' ' + e);
-                        cb && cb();
-                        return;
-                    }
+                setStateDoWrite(ff, command, () => {
                     cb && cb();
-                    let dif = Date.now() - command.ts;
-                    logDebug(fn, command.id, 'stateChange:setStateDo ' + command.id + ' ' + command.val + ' (' + (Date.now() - command.ts) + ' ms)', 'D');
-                    numEvent = numEvent + 1;
-                    timeEvent = timeEvent + dif;
-                    //TEST
-                    if (logDevelop & !firstRun) {
-                        if (dif > 1000)
-                            adapter.log.warn(setStateQueue.length + ' (' + dif + ' ms) setStateDo: ' + command.id + ' ' + command.val);
-                    }
-                    logDebug(fn, command.id, command.id + ' ' + command.val + ' (' + dif + ' ms)', 'D');
+                    return;
                 });
             } else {
                 cb && cb();
@@ -2960,9 +2895,29 @@ function setStateDo(ff, command, cb) {
         });
     }
 }
-
-
-
+function setStateDoWrite(ff, command, cb) {
+    let fn = ff + '[setStateDoWrite] ';
+    adapter.setState(command.id, command.val, command.ack, command.ts, e => {
+        if (e) {
+            logError(fn, command.id + ': ' + e);
+            cb && cb();
+            return;
+        } else {
+            cb && cb();
+            let dif = Date.now() - command.ts;
+            logDebug(fn, command.id, 'stateChange:setStateDo ' + command.id + ' ' + command.val + ' (' + dif + ' ms)', 'D');
+            numEvent = numEvent + 1;
+            timeEvent = timeEvent + dif;
+            //TEST
+            if (logDevelop & !firstRun) {
+                if (dif > 1000)
+                    adapter.log.warn(setStateQueue.length + ' (' + dif + ' ms) setStateDo: ' + command.id + ' ' + command.val);
+            }
+            logDebug(fn, command.id, command.id + ' ' + command.val + ' (' + dif + ' ms)', 'D');
+            return;
+        }
+    });
+}
 function setStateLog(ff, id, val, ack, ts, cb) {
     let fn = ff + '[setStateLog] ';
     if (!id) {
@@ -3006,10 +2961,15 @@ function processSetStateLog(ff, cb) {
 function setStateLogDo(ff, command, cb) {
     let fn = ff + ' ' + '[setStateLogDo] ';
     //logDebug(fn, command.id, 'stateChange:setStateDo ' + command.id + ' ' + command.val + ' (' + (Date.now() - command.ts) + ' ms)', 'D');
-    //adapter.log.warn('found info. ' + command.id);
     adapter.setState(command.id, command.val, command.ack, e => {
-        cb && cb();
-        return;
+        if (e) {
+            logError(fn, command.id + ': ' + e);
+            cb && cb();
+            return;
+        } else {
+            cb && cb();
+            return;
+        }
     });
 }
 
@@ -3082,7 +3042,6 @@ function logWarn(ff, text) {
     let fn = ff + '[logWarn] ';
     adapter.log.warn(text);
     if (advancedFunction)
-        //adapter.setState('info.Info.lastWarn', text, true);
         setStateLog(fn, 'info.Info.lastWarn', text, true, Date.now());
 }
 function logError(ff, text) {
@@ -3090,14 +3049,12 @@ function logError(ff, text) {
     text = text + ' ' + ff;
     adapter.log.error(text);
     if (advancedFunction)
-        //adapter.setState('info.Info.lastError', text, true);
         setStateLog(fn, 'info.Info.lastError', text, true, Date.now());
 }
 function logInfo(ff, text, cb) {
     let fn = ff + '[logInfo] ';
     if (advancedFunction)
-        //adapter.setState('info.Info.lastInfo', text, true);
-        setStateLog(fn, 'info.Info.lastInfo', text, true, Date.now());  //22.05.20
+        setStateLog(fn, 'info.Info.lastInfo', text, true, Date.now());
     if (!logNoInfo) {
         adapter.log.info(text);
         cb && cb();
