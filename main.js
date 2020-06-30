@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '28.06.20';
+const buildDate = '30.06.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -827,7 +827,8 @@ function parseObjects(ff, objs, cb) {
             }
             // Functions
             if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
-                setFunction(channel, Funktion, nameIob);
+                //setFunction(channel, Funktion, nameIob);
+                setFunction(channel, Funktion);
             }
             objects.push(obj);
             text = 'check channel ' + channel + ' | name: ' + alias + ' | room: ' + objs[i].Attributes.room + ' | role: ' + obj.common.role + ' | function: ' + Funktion + ' | ' + ' ' + (i + 1) + '/' + objs.length;
@@ -1406,7 +1407,8 @@ function parseObjects(ff, objs, cb) {
                                 id = channel + '.state_boolean';
                             //noch ändern
                             adapter.log.debug(fn + 'Funktion: ' + Funktion + ' für ' + id);
-                            setFunction(id, Funktion, nameIob);
+                            //setFunction(id, Funktion, nameIob);
+                            setFunction(id, Funktion);
                         }
                     }
                 }
@@ -1726,7 +1728,8 @@ function syncStates(states, cb) {
     });
 }
 //
-function setFunction(id, Funktion, name) {
+//function setFunction(id, Funktion, name) {
+function setFunction(id, Funktion) {
     let fff = Funktion.split(',');
     for (let f = 0; f < fff.length; f++) {
         fff[f] = fff[f].trim();
