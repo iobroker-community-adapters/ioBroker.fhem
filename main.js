@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '30.06.20';
+const buildDate = '05.07.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -213,6 +213,8 @@ function startAdapter(options) {
 function firstCheck(ff, cb) {
     let fn = ff + '[firstCheck] ';
     logDebug(fn, '', 'start', 'D');
+    //050720
+    adapter.setState('info.resync', false, true);
     getSetting(fn, 'info.Debug.logDevelop', value => {
         logDevelop = value;
         getSetting(fn, 'info.Configurations.logNoInfo', value => {
@@ -479,6 +481,8 @@ function getSetting(ff, id, cb) {
                 if (state) {
                     logDebug(fn, '', id + ' ' + state.val, '');
                     state.val && logInfo(fn, '> ' + obj.common.name + ' - ' + id + ' (' + state.val + ')');
+                    //050720
+                    adapter.setState(id,state.val,true);
                     cb(state.val);
                 } else {
                     logDebug(fn, '', id + ' - no state found', '');
@@ -501,6 +505,8 @@ function getConfig(ff, id, config, cb) {
                 e && logError(fn, e);
                 adapter.log.debug(fn + id + ': ' + JSON.stringify(state));
                 if (state && state.val) {
+                    //050720
+                    adapter.setState(id,state.val,true);
                     const part = state.val.split(",");
                     if (part[0]) {
                         for (const i in part) {
@@ -1996,6 +2002,8 @@ function resyncFHEM() {
     let fn = '[resyncFHEM] ';
     adapter.log.debug(fn, 'Start Resync FHEM');
     adapter.setState('info.Info.alive', false, true);
+    //050720
+    adapter.setState('info.resync', false, true);
     adapter.restart();
 }
 function writeValue(ff, id, val, ts, cb) {
