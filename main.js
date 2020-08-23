@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '05.07.20';
+const buildDate = '23.08.20';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -270,6 +270,7 @@ function myObjects(ff, cb) {
         {_id: 'info.Debug.timeIn', type: 'state', common: {name: 'Average time(ms) of events of FHEM last 5 min', type: 'number', read: true, write: false, role: 'value', def: 0}, native: {}},
         {_id: 'info.Debug.numberOut', type: 'state', common: {name: 'Number of stateChanges(s) of ioBroker last 5 min', type: 'number', read: true, write: false, role: 'value', def: 0}, native: {}},
         {_id: 'info.Debug.timeOut', type: 'state', common: {name: 'Average time(ms) stateChanges(s) of ioBroker last 5 min', type: 'number', read: true, write: false, role: 'value', def: 0}, native: {}},
+        {_id: 'info.Debug.fhemObjectsRead', type: 'state', common: {name: 'Device NAME of FHEM', type: 'string', read: true, write: true, role: 'text'}, native: {}},
         // info.Info
         {_id: 'info.Info.buildDate', type: 'state', common: {name: 'Date of main.js', type: 'string', read: true, write: false, role: 'text'}, native: {}},
         {_id: 'info.Info.roomioBroker', type: 'state', common: {name: 'room of fhem.x.info.Configurations.onlySyncRoom exist', type: 'boolean', read: true, write: false, role: 'indicator'}, native: {}},
@@ -482,7 +483,7 @@ function getSetting(ff, id, cb) {
                     logDebug(fn, '', id + ' ' + state.val, '');
                     state.val && logInfo(fn, '> ' + obj.common.name + ' - ' + id + ' (' + state.val + ')');
                     //050720
-                    adapter.setState(id,state.val,true);
+                    adapter.setState(id, state.val, true);
                     cb(state.val);
                 } else {
                     logDebug(fn, '', id + ' - no state found', '');
@@ -506,7 +507,7 @@ function getConfig(ff, id, config, cb) {
                 adapter.log.debug(fn + id + ': ' + JSON.stringify(state));
                 if (state && state.val) {
                     //050720
-                    adapter.setState(id,state.val,true);
+                    adapter.setState(id, state.val, true);
                     const part = state.val.split(",");
                     if (part[0]) {
                         for (const i in part) {
@@ -700,9 +701,9 @@ function parseObjects(ff, objs, cb) {
             return;
         }
         try {
-            // Auto-created by ioBroker ?
+// Auto-created by ioBroker ?
             if (objs[i].Attributes.comment && objs[i].Attributes.comment.indexOf('Auto-created by ioBroker fhem') !== -1) {
-                // nicht eigene Instanz?
+// nicht eigene Instanz?
                 if (objs[i].Attributes.comment.indexOf('Auto-created by ioBroker ' + adapter.namespace) === -1) {
                     fhemIgnore[device] = {id: device};
                     logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
@@ -831,9 +832,9 @@ function parseObjects(ff, objs, cb) {
             if (objs[i].Attributes.subType === 'blindActuator') {
                 Funktion = 'blind';
             }
-            // Functions
+// Functions
             if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
-                //setFunction(channel, Funktion, nameIob);
+//setFunction(channel, Funktion, nameIob);
                 setFunction(channel, Funktion);
             }
             objects.push(obj);
@@ -843,7 +844,7 @@ function parseObjects(ff, objs, cb) {
             } else {
                 logDebug(fn, device, text, '');
             }
-            // Rooms
+// Rooms
             if (objs[i].Attributes && objs[i].Attributes.room && autoRoom) {
                 const rrr = objs[i].Attributes.room.split(',');
                 for (let r = 0; r < rrr.length; r++) {
@@ -852,7 +853,7 @@ function parseObjects(ff, objs, cb) {
                     rooms[rrr[r]].push(channel);
                 }
             }
-            // Attributes
+// Attributes
             if (objs[i].Attributes) {
                 (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' > check Attributes');
                 if (!objs[i].Attributes.alias) {
@@ -860,7 +861,7 @@ function parseObjects(ff, objs, cb) {
                     sendFHEM(fn, 'attr ' + device + ' alias ' + device);
                 }
                 for (const attr in objs[i].Attributes) {
-                    // allowed Attributes?
+// allowed Attributes?
                     if (allowedAttributes.indexOf(attr) === -1) {
                         (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' >> ' + attr + ' = ' + objs[i].Attributes[attr] + ' > no sync - not included in ' + adapter.namespace + '.info.Config.allowedAttributes');
                         continue;
@@ -892,11 +893,11 @@ function parseObjects(ff, objs, cb) {
                     });
                 }
             }
-            // Internals
+// Internals
             if (objs[i].Internals) {
                 (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' > check Internals');
                 for (const attr in objs[i].Internals) {
-                    // allowed Internals?
+// allowed Internals?
                     if (!objs[i].Internals.hasOwnProperty(attr) || allowedInternals.indexOf(attr) === -1) {
                         (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' >> ' + attr + ' = ' + objs[i].Internals[attr] + ' > no sync - not included in ' + adapter.namespace + '.info.Config.allowedInternals');
                         continue;
@@ -928,7 +929,7 @@ function parseObjects(ff, objs, cb) {
                     });
                 }
             }
-            // Possible Sets
+// Possible Sets
             if (objs[i].PossibleSets && objs[i].PossibleSets.length > 1) {
                 (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' > check PossibleSets');
                 const attrs = objs[i].PossibleSets.split(' ');
@@ -1140,14 +1141,14 @@ function parseObjects(ff, objs, cb) {
                     }
                 }
             }
-            // Readings
+// Readings
             if (objs[i].Readings) {
                 (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' > check Readings');
                 for (const attr in objs[i].Readings) {
                     if (!objs[i].Readings.hasOwnProperty(attr)) {
                         continue;
                     }
-                    // ignore Readings ?
+// ignore Readings ?
                     if (ignoreReadings.indexOf(attr) !== -1) {
                         (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' > no sync - included in ' + adapter.namespace + '.info.Config.ignoreReadings');
                         continue;
@@ -1176,6 +1177,10 @@ function parseObjects(ff, objs, cb) {
                                 Name: device,
                                 Attribute: attr,
                                 Readings: true
+                                        //23.08.20
+                            },
+                            value: {
+                                val: objs[i].Readings[attr].Value
                             }
                         };
                     }
@@ -1195,7 +1200,7 @@ function parseObjects(ff, objs, cb) {
                         } else {
                             obj.common.role = obj.common.role || 'text';
                         }
-                        // detect indicator
+// detect indicator
                         if (Rindicator.indexOf(attr) !== -1) {
                             obj.native.indicator = true;
                             obj.common.type = 'boolean';
@@ -1211,31 +1216,31 @@ function parseObjects(ff, objs, cb) {
                             if (attr === 'battery')
                                 obj.common.role = 'indicator.lowbat';
                         }
-                        // detect temperature
+// detect temperature
                         if (obj.common.unit === '°C' && !combined) {
                             obj.native.temperature = true;
                             Funktion = 'temperature';
                             obj.common.type = 'number';
                             obj.common.role = 'value.temperature';
                         }
-                        // detect Wh (energy)
+// detect Wh (energy)
                         if (obj.common.unit === 'Wh') {
                             obj.native.Wh = true;
                             obj.common.role = 'value.power.consumption';
                         }
-                        // detect V (voltage)
+// detect V (voltage)
                         if (obj.common.unit === 'V') {
                             obj.native.V = true;
                             obj.common.role = 'value.voltage';
                         }
-                        // special role
+// special role
                         if (attr === 'infoSummarize1') {
                             obj.common.role = 'media.title';
                         }
                         if (attr === 'currentAlbumArtURL') {
                             obj.common.role = 'media.cover';
                         }
-                        // detect state
+// detect state
                         if (attr === 'state') {
                             obj.common.write = true;
                             obj.common.role = 'state';
@@ -1281,7 +1286,7 @@ function parseObjects(ff, objs, cb) {
                                     ack: true
                                 });
                             }
-                            // sensor?
+// sensor?
                             let type = objs[i].Internals.TYPE;
                             const sensor = convertFhemSensor(fn, valOrg, device, type);
                             if ((typeof (sensor[0]) === "boolean" || objs[i].Attributes.subType === 'motionDetector')) {
@@ -1322,7 +1327,7 @@ function parseObjects(ff, objs, cb) {
                                     ack: true
                                 });
                             }
-                            // create state_value
+// create state_value
                             if (typeof (sensor[3]) === "number") {
                                 obj.native.StateValue = true;
                                 let obj_sensor = {
@@ -1349,7 +1354,7 @@ function parseObjects(ff, objs, cb) {
                                     ack: true
                                 });
                             }
-                            // create media.state
+// create media.state
                             if (objs[i].Internals.TYPE === 'SONOSPLAYER') {
                                 obj.native.media = true;
                                 let valMedia = false;
@@ -1381,13 +1386,13 @@ function parseObjects(ff, objs, cb) {
                                 });
                             }
                         }
-                        // detect readingList
+// detect readingList
                         if (objs[i].Attributes.readingList && objs[i].Attributes.readingList.indexOf(attr) !== -1) {
                             adapter.log.debug(fn + 'detect readingList - ' + objs[i].Internals.TYPE + ' ' + device + ' ' + attr + ' ' + val);
                             obj.common.write = true;
                             obj.common.role = 'state';
                         }
-                        // special, because error on auto detect
+// special, because error on auto detect
                         if (objs[i].Internals.TYPE === 'LGTV_IP12' && attr === 'power') {
                             obj.common.type = 'string';
                             obj.common.role = 'text';
@@ -1466,7 +1471,7 @@ function parseObjects(ff, objs, cb) {
                 if (state !== states.length)
                     logWarn(fn, 'object state(s) <> state(s) to sync');
                 syncStates(states, () => {
-                    debug = false;     // hier syncIOBin dazu toDO
+                    debug = false; // hier syncIOBin dazu toDO
                     cb();
                 });
             });
@@ -1765,7 +1770,7 @@ function unusedObjects(ff, check, cb) {
                 if (channelS[2] === 'info') {
                     continue;
                 }
-                // readingsGroup?
+// readingsGroup?
                 if (channelS[3] === 'readingsGroup') {
                     debugNAME.indexOf(channelS[2]) !== -1 && adapter.log.info(channelS[2] + ' | detect "' + id + '" - readingsGroup > no delete');
                     continue;
@@ -1898,8 +1903,6 @@ function syncStatesIOB(cb) {
                                     val: val,
                                     ts: Date.now()
                                 });
-
-
                                 fhemINs[idFHEM] = {
                                     id: id,
                                     val: val
@@ -2013,14 +2016,14 @@ function writeValue(ff, id, val, ts, cb) {
         val = '';
     // info ?
     if (id.indexOf(adapter.namespace + '.info.') !== -1) {
-        // info.Info?
+// info.Info?
         if (id.indexOf(adapter.namespace + '.info.Info') !== -1) {
             logDebug(fn, id, 'detect info.Info - ' + id + ' ' + val, 'D');
             logStateChange(fn, id, val, 'writeValue - no match', 'neg');
             cb && cb();
             return;
         }
-        // info.Commands?
+// info.Commands?
         else if (id.indexOf(adapter.namespace + '.info.Commands') !== -1) {      /// prüfen
             logDebug(fn, id, 'detect info.Commands - ' + id + ' ' + val, 'D');
             // sendFHEM?
@@ -2095,6 +2098,12 @@ function writeValue(ff, id, val, ts, cb) {
                 logDevelop = val;
                 setState(fn, id, val, true, Date.now());
                 cb && cb();
+                // 23.08.20
+            } else if (id.indexOf('fhemObjectsRead') !== -1) {
+                adapter.log.warn(val + ': ' + JSON.stringify(fhemObjects[val]));
+                //fhemObjectsRead(ff, val, cb);
+                cb && cb();
+                //
             } else {
                 logStateChange(fn, id, val, 'info.Debug - no match', 'neg');
                 cb && cb();
@@ -2130,7 +2139,7 @@ function writeValue(ff, id, val, ts, cb) {
             });
             return;
         }
-        // attr?
+// attr?
         if (allowedAttributes.indexOf(attribute) !== -1) {
             logDebug(fn, id, 'detect allowedAttributes ' + attribute + ' - ' + id, 'D');
             cmd = 'attr ' + device + ' ' + attribute + ' ' + val;
@@ -2149,7 +2158,7 @@ function writeValue(ff, id, val, ts, cb) {
         if (fhemObjects[id].common.unit === '%') {
             val = Math.round(val);
         }
-        // bol0?
+// bol0?
         if (fhemObjects[id].native.bol0) {    //benötigt??????
             if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true) {
                 val = '1';
@@ -2158,7 +2167,7 @@ function writeValue(ff, id, val, ts, cb) {
                 val = '0';
             }
         }
-        // state?
+// state?
         if (attribute === 'state') {
             cmd = 'set ' + device + ' ' + convertOnOff(fn, val);
         } else {
@@ -2182,6 +2191,10 @@ function writeValue(ff, id, val, ts, cb) {
             }
         });
     }
+}
+//23.08.20
+function fhemObjectsRead(ff, val, cb) {
+    adapter.log.warn(val + ': ' + JSON.stringify(fhemObjects[val]));
 }
 function writeOut(ff, id, val, ts, cb) {
     let fn = ff + '[writeOut] ';
@@ -2237,13 +2250,13 @@ function eventFHEM(ff, event) {
         adapter.log.debug(fn + 'no event - return ' + ff);
         return;
     }
-    // Sonos special
+// Sonos special
     if (event.indexOf('display_covertitle') !== -1) {
         return;
     }
     let parts = event.split(' ');
     if (fhemIgnoreConfig[parts[1]]) {
-        //eventNOK(fn, event, channel, 'fhemIgnoreConfig', 'debug', device);
+//eventNOK(fn, event, channel, 'fhemIgnoreConfig', 'debug', device);
         return;
     }
     if (event[4] === '-' && event[7] === '-') {
@@ -2305,7 +2318,7 @@ function parseEvent(ff, eventIN, cb) {
         cb && cb();
         return;
     }
-    // Global global ?
+// Global global ?
     if (parts[0] === 'Global' && parts[1] === 'global') {
         logDebug(fn, channel, 'detect "Global global" - ' + event, 'D');
         if (parts[3]) {
@@ -2349,7 +2362,7 @@ function parseEvent(ff, eventIN, cb) {
                 cb && cb();
                 return;
             }
-            // Global global DELETEATTR ?
+// Global global DELETEATTR ?
         } else if (parts[2] === 'DELETEATTR') {
             logDebug(fn, channel, 'detect "Global global DELETEATTR" - ' + event, 'D');
             if (allowedAttributes.indexOf(parts[4]) !== -1) {
@@ -2372,7 +2385,7 @@ function parseEvent(ff, eventIN, cb) {
                 cb && cb();
                 return;
             }
-            // Global global DELETED ?
+// Global global DELETED ?
         } else if (parts[2] === 'DELETED') {
             logDebug(fn, channel, 'detect "Global global DELETED" - ' + event, 'D');
             eventOK(fn, event, 'unusedObjects', nameIob + '.*', ts, 'global', device, channel);
@@ -2422,7 +2435,7 @@ function parseEvent(ff, eventIN, cb) {
             cb && cb();
             return;
         }
-        //ignored
+//ignored
     } else if (fhemIgnore[device] && !fhemObjects[channel]) {
         logDebug(fn, event, 'detect fhemIgnore - ' + event, 'D');
         if (device === adapter.namespace + '.alive') {
@@ -2500,7 +2513,7 @@ function parseEvent(ff, eventIN, cb) {
                         cb && cb();
                         return;
                     }
-                    // state_boolean?
+// state_boolean?
                     search = channel + '.state_boolean';
                     if (fhemObjects[search] || typeof (sensor[0]) === "boolean")
                         eventOK(fn, event, channel + '.state_boolean', sensor[0], ts, 'boolean', device, channel);
@@ -2532,7 +2545,22 @@ function parseEvent(ff, eventIN, cb) {
                     cb && cb();
                     return;
                 } else {
-                    eventNOK(fn, event, id, 'no fhemObjects', 'json', device);
+//23.08.20
+//adapter.log.warn("prüfe state");
+                    let idS = channel + '.' + "state";
+                    if (fhemObjects[idS] && "value" in fhemObjects[idS]) {
+                        let valOld = fhemObjects[idS].value.val.split(' ');
+                        //adapter.log.warn(valOld[0] + ' neu: ' + partsR[2] + ':');
+                        if (valOld[0] === partsR[2] + ':') {
+                            val = convertFhemValue(event.substring(partsR[0].length + partsR[1].length + 2));
+                            //adapter.log.warn('OK ' + val);
+                            eventOK(fn, event, idS, val, ts, 'state', device, channel);
+                        } else {
+                            eventNOK(fn, event, id, 'no fhemObjects', 'json', device);
+                        }
+                    } else {
+                        eventNOK(fn, event, id, 'no fhemObjects', 'json', device);
+                    }
                     cb && cb();
                     return;
                 }
@@ -2826,7 +2854,6 @@ function getAlive(ff) {
     timeWriteOut = 0;
     numWriteValue = 0;
     timeWriteValue = 0;
-
     if (adapter.__timeouts.getAlive) {
         clearTimeout(adapter.__timeouts.getAlive);
         adapter.log.debug(ff + fn + 'alive reset timer');
@@ -2883,28 +2910,53 @@ function setStateDo(ff, command, cb) {
             return;
         });
     } else {
-        adapter.getState(command.id, (e, stateG) => {
-            if (e) {
-                logError(fn, 'rs? ' + e);
-                cb && cb();
-                return;
-            }
-            if (!stateG) {
-                if (logDevelop)
-                    adapter.log.warn('id: ' + command.id + ' - no state found!');
-                cb && cb();
-                return;
-            }
-            if (stateG.val != command.val || !stateG.ack) {
+//23.08.20
+        if (fhemObjects[command.id] && "value" in fhemObjects[command.id]) {
+            //adapter.log.warn('found val '+fhemObjects[command.id].value.val);
+            if (fhemObjects[command.id].value.val != command.val) {
+                //adapter.log.warn('different val'+fhemObjects[command.id].value.val+' '+command.val);
                 setStateDoWrite(ff, command, () => {
                     cb && cb();
                     return;
                 });
             } else {
+                //adapter.log.warn('same val '+command.id);
                 cb && cb();
+                return;
             }
-        });
+        } else {
+            //adapter.log.warn('unknown val '+command.id);
+            setStateDoWrite(ff, command, () => {
+                cb && cb();
+                return;
+            });
+        }
     }
+    /*
+     } else {
+     adapter.getState(command.id, (e, stateG) => {
+     if (e) {
+     logError(fn, 'rs? ' + e);
+     cb && cb();
+     return;
+     }
+     if (!stateG) {
+     if (logDevelop)
+     adapter.log.warn('id: ' + command.id + ' - no state found!');
+     cb && cb();
+     return;
+     }
+     if (stateG.val != command.val || !stateG.ack) {
+     setStateDoWrite(ff, command, () => {
+     cb && cb();
+     return;
+     });
+     } else {
+     cb && cb();
+     }
+     });
+     }
+     */
 }
 function setStateDoWrite(ff, command, cb) {
     let fn = ff + '[setStateDoWrite] ';
@@ -2915,6 +2967,10 @@ function setStateDoWrite(ff, command, cb) {
             return;
         } else {
             cb && cb();
+            //23.08.20
+            if (fhemObjects[command.id] && "value" in fhemObjects[command.id]) {
+                fhemObjects[command.id].value.val = command.val;
+            }
             let dif = Date.now() - command.ts;
             logDebug(fn, command.id, 'stateChange:setStateDo ' + command.id + ' ' + command.val + ' (' + dif + ' ms)', 'D');
             numEvent = numEvent + 1;
@@ -3086,7 +3142,6 @@ function main() {
     }
 // in this template all states changes inside the adapters namespace are subscribed
     adapter.subscribeStates('*');
-
     telnetIn = new Telnet({
         host: adapter.config.host,
         port: adapter.config.port,
@@ -3117,7 +3172,6 @@ function main() {
     telnetIn.on('error', err => {
         adapter.log.error(err + ' (telnetIn)');
     });
-
     telnetOut = new Telnet({
         host: adapter.config.host,
         port: adapter.config.port,
