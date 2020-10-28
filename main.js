@@ -2695,7 +2695,8 @@ function convertNameIob(ff, id) {
     idFHEM = idFHEM.replace(/{/g, '[');
     idFHEM = idFHEM.replace(/}/g, ']');
     idFHEM = idFHEM.replace(/~/g, '\.');
-    logDebug(fn, id, 'convertNameIob: ' + id + ' --> ' + idFHEM, 'D');
+    if (id !== idFHEM)
+        logDebug(fn, id, 'convertNameIob: ' + id + ' --> ' + idFHEM, 'D');
     return idFHEM;
 }
 function convertNameFHEM(ff, name) {
