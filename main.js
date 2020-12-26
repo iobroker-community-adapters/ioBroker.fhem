@@ -2691,13 +2691,22 @@ function getUnit(name) {
 function convertNameIob(ff, id) {
     let fn = ff + '[convertNameIob] ';
     let idFHEM = id.replace(/[-#:]/g, '_');
+    // Conversion back Iob->FHEM (required?)
+    idFHEM = idFHEM.replace(/{/g, '[');
+    idFHEM = idFHEM.replace(/}/g, ']');
+    idFHEM = idFHEM.replace(/~/g, '\.');
     if (id !== idFHEM)
         logDebug(fn, id, 'convertNameIob: ' + id + ' --> ' + idFHEM, 'D');
     return idFHEM;
 }
 function convertNameFHEM(ff, name) {
     let fn = ff + '[convertNameFHEM] ';
-    let id = name.replace(/\./g, '_');
+    // old: let id = name.replace(/\./g, '_');
+    // Conversion - e.g. for FHEM HPSU https://forum.fhem.de/index.php/topic,106503.0.htm HPSUVal.Betriebsart_[mode_01] ==> HPSUVal~Betriebsart_{mode_01}
+    let id = name.replace(/\./g, '~');
+    id = id.replace(/\[/g, '{'); 
+    id = id.replace(/\]/g, '}');
+    id = id.replace(/-#:/g, '_');
     if (name !== id)
         logDebug(fn, name, 'convertNameFHEM: ' + name + ' --> ' + id, 'D');
     return id;
