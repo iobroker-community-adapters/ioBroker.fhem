@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '26.12.20';
+const buildDate = '26.12.20a';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -2692,10 +2692,11 @@ function convertNameIob(ff, id) {
     let fn = ff + '[convertNameIob] ';
     let idFHEM = id.replace(/[-#:]/g, '_');
     // Conversion back Iob->FHEM (required?)
-    idFHEM = idFHEM.replace(/{/g, '[');
-    idFHEM = idFHEM.replace(/}/g, ']');
-    idFHEM = idFHEM.replace(/~/g, '\.');
+    //idFHEM = idFHEM.replace(/{/g, '[');
+    //idFHEM = idFHEM.replace(/}/g, ']');
+    //idFHEM = idFHEM.replace(/~/g, '\.');
     if (id !== idFHEM)
+        //adapter.log.warn('convertNameIob: ' + id + ' --> ' + idFHEM);   
         logDebug(fn, id, 'convertNameIob: ' + id + ' --> ' + idFHEM, 'D');
     return idFHEM;
 }
@@ -2703,11 +2704,18 @@ function convertNameFHEM(ff, name) {
     let fn = ff + '[convertNameFHEM] ';
     // old: let id = name.replace(/\./g, '_');
     // Conversion - e.g. for FHEM HPSU https://forum.fhem.de/index.php/topic,106503.0.htm HPSUVal.Betriebsart_[mode_01] ==> HPSUVal~Betriebsart_{mode_01}
-    let id = name.replace(/\./g, '~');
-    id = id.replace(/\[/g, '{'); 
+    //let id = name.replace(/\./g, '~');
+    //edit DL 26.12.20
+    let id = name.replace(/\[/g, '{');
     id = id.replace(/\]/g, '}');
-    id = id.replace(/-#:/g, '_');
+    if (id.indexOf('{') !== -1) {
+        id = id.replace(/\./g, '~');
+    } else {
+        id = id.replace(/\./g, '_');
+    }
+    //id = id.replace(/-#:/g, '_');
     if (name !== id)
+        //adapter.log.warn('convertNameFHEM: ' + name + ' --> ' + id);   
         logDebug(fn, name, 'convertNameFHEM: ' + name + ' --> ' + id, 'D');
     return id;
 }
