@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '26.12.20a';
+const buildDate = '09.01.21';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -141,6 +141,7 @@ function startAdapter(options) {
         logDebug(fn, id, 'stateChange (in): ' + id + ' ' + val + ' ' + JSON.stringify(state), '');
         let idFHEM = convertNameIob(fn, id);
         if (fhemIN[idFHEM]) {
+            //prüfen
             if (val !== fhemINs[idFHEM].val) {
                 eventIOB.push({
                     command: 'writeOut',
@@ -213,7 +214,6 @@ function startAdapter(options) {
 function firstCheck(ff, cb) {
     let fn = ff + '[firstCheck] ';
     logDebug(fn, '', 'start', 'D');
-    //050720
     adapter.setState('info.resync', false, true);
     getSetting(fn, 'info.Debug.logDevelop', value => {
         logDevelop = value;
@@ -260,7 +260,7 @@ function myObjects(ff, cb) {
         {_id: 'info.Configurations.onlySyncTYPE', type: 'state', common: {name: 'SYNC - only sync device(s) TYPE', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.logNoInfo', type: 'state', common: {name: 'FUNCTION - no LOG info', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
         {_id: 'info.Configurations.advancedFunction', type: 'state', common: {name: 'FUNCTION - advanced', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
-        {_id: 'info.Configurations.syncUpdate', type: 'state', common: {name: 'FUNCTION - sync update reading', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
+        {_id: 'info.Configurations.syncUpdate', type: 'state', common: {name: 'FUNCTION - sync update reading', type: 'boolean', read: true, write: true, role: 'switch', def: true}, native: {}},
         // info.Debug
         {_id: 'info.Debug.jsonlist2', type: 'state', common: {name: 'jsonlist2 of FHEM', type: 'string', read: true, write: true, role: 'json'}, native: {}},
         {_id: 'info.Debug.meta', type: 'state', common: {name: 'Device NAME of FHEM', type: 'string', read: true, write: true, role: 'text'}, native: {}},
@@ -482,7 +482,6 @@ function getSetting(ff, id, cb) {
                 if (state) {
                     logDebug(fn, '', id + ' ' + state.val, '');
                     state.val && logInfo(fn, '> ' + obj.common.name + ' - ' + id + ' (' + state.val + ')');
-                    //050720
                     adapter.setState(id, state.val, true);
                     cb(state.val);
                 } else {
@@ -506,7 +505,6 @@ function getConfig(ff, id, config, cb) {
                 e && logError(fn, e);
                 adapter.log.debug(fn + id + ': ' + JSON.stringify(state));
                 if (state && state.val) {
-                    //050720
                     adapter.setState(id, state.val, true);
                     const part = state.val.split(",");
                     if (part[0]) {
@@ -705,7 +703,9 @@ function parseObjects(ff, objs, cb) {
             if (objs[i].Attributes.comment && objs[i].Attributes.comment.indexOf('Auto-created by ioBroker fhem') !== -1) {
 // nicht eigene Instanz?
                 if (objs[i].Attributes.comment.indexOf('Auto-created by ioBroker ' + adapter.namespace) === -1) {
+                    //adapter.log.warn("nicht: " + device);
                     fhemIgnore[device] = {id: device};
+                    fhemIgnoreConfig[device] = {id: device};
                     logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
                     continue;
                 }
@@ -1418,7 +1418,6 @@ function parseObjects(ff, objs, cb) {
                                 id = channel + '.state_boolean';
                             //noch ändern
                             adapter.log.debug(fn + 'Funktion: ' + Funktion + ' für ' + id);
-                            //setFunction(id, Funktion, nameIob);
                             setFunction(id, Funktion);
                         }
                     }
@@ -1482,7 +1481,9 @@ function parseObjects(ff, objs, cb) {
 function logIgnoreConfig(ff, name, text, nr, from) {
     let fn = ff + '[logIgnoreConfig] ';
     if (!fhemIgnore[name]) {
+        //adapter.log.warn("fhemIg " + name);
         fhemIgnoreConfig[name] = {id: name};
+       //cb && cb();
     }
     text = 'ignored FHEM device "' + name + '" > no sync - ' + text + ' | ' + ' ' + (nr + 1) + '/' + from;
     if (logIgnoreConfigurations && debugNAME.indexOf(name) === -1) {
@@ -1738,8 +1739,6 @@ function syncStates(states, cb) {
         }
     });
 }
-//
-//function setFunction(id, Funktion, name) {
 function setFunction(id, Funktion) {
     let fff = Funktion.split(',');
     for (let f = 0; f < fff.length; f++) {
@@ -2005,7 +2004,6 @@ function resyncFHEM() {
     let fn = '[resyncFHEM] ';
     adapter.log.debug(fn, 'Start Resync FHEM');
     adapter.setState('info.Info.alive', false, true);
-    //050720
     adapter.setState('info.resync', false, true);
     adapter.restart();
 }
@@ -2098,12 +2096,12 @@ function writeValue(ff, id, val, ts, cb) {
                 logDevelop = val;
                 setState(fn, id, val, true, Date.now());
                 cb && cb();
-                // 23.08.20
             } else if (id.indexOf('fhemObjectsRead') !== -1) {
                 adapter.log.warn(val + ': ' + JSON.stringify(fhemObjects[val]));
-                //fhemObjectsRead(ff, val, cb);
                 cb && cb();
-                //
+            } else if (id.indexOf('fhemObjectsRead') !== -1) {
+                adapter.log.warn(val + ': ' + JSON.stringify(fhemObjects[val]));
+                cb && cb();
             } else {
                 logStateChange(fn, id, val, 'info.Debug - no match', 'neg');
                 cb && cb();
@@ -2192,7 +2190,7 @@ function writeValue(ff, id, val, ts, cb) {
         });
     }
 }
-//23.08.20
+// ?????
 function fhemObjectsRead(ff, val, cb) {
     adapter.log.warn(val + ': ' + JSON.stringify(fhemObjects[val]));
 }
@@ -2244,6 +2242,7 @@ function requestMeta(ff, name, cb) {
 }
 // STEP 14
 function eventFHEM(ff, event) {
+    //adapter.log.warn("event: " + event);
     let fn = ff + '[eventFHEM] ';
     let ts = Date.now();
     if (!event) {
@@ -2256,7 +2255,7 @@ function eventFHEM(ff, event) {
     }
     let parts = event.split(' ');
     if (fhemIgnoreConfig[parts[1]]) {
-//eventNOK(fn, event, channel, 'fhemIgnoreConfig', 'debug', device);
+        //adapter.log.warn("fhemIgnoreConfig: " + parts[1]);
         return;
     }
     if (event[4] === '-' && event[7] === '-') {
@@ -2538,22 +2537,19 @@ function parseEvent(ff, eventIN, cb) {
                 logDebug(fn, event, 'check reading or state? (mit : vorne)' + event, 'D');
                 name = event.substring(0, pos);
                 let partsR = name.split(' ');
-                let id = channel + '.' + partsR[2];
+                // let id = channel + '.' + partsR[2];   09.01.21 HPSU
+                let id = channel + '.' + convertNameFHEM(fn, partsR[2]);
                 if (fhemObjects[id]) {
                     val = convertFhemValue(event.substring(partsR[0].length + partsR[1].length + partsR[2].length + 4));
                     eventOK(fn, event, id, val, ts, 'reading', device, channel);
                     cb && cb();
                     return;
                 } else {
-//23.08.20
-//adapter.log.warn("prüfe state");
                     let idS = channel + '.' + "state";
                     if (fhemObjects[idS] && "value" in fhemObjects[idS]) {
                         let valOld = fhemObjects[idS].value.val.split(' ');
-                        //adapter.log.warn(valOld[0] + ' neu: ' + partsR[2] + ':');
                         if (valOld[0] === partsR[2] + ':') {
                             val = convertFhemValue(event.substring(partsR[0].length + partsR[1].length + 2));
-                            //adapter.log.warn('OK ' + val);
                             eventOK(fn, event, idS, val, ts, 'state', device, channel);
                         } else {
                             eventNOK(fn, event, id, 'no fhemObjects', 'json', device);
@@ -2708,7 +2704,8 @@ function convertNameFHEM(ff, name) {
     //edit DL 26.12.20
     let id = name.replace(/\[/g, '{');
     id = id.replace(/\]/g, '}');
-    if (id.indexOf('{') !== -1) {
+    // Device HPSU?
+    if (id.indexOf('HPSU') !== -1) {
         id = id.replace(/\./g, '~');
     } else {
         id = id.replace(/\./g, '_');
@@ -2927,53 +2924,23 @@ function setStateDo(ff, command, cb) {
             return;
         });
     } else {
-//23.08.20
         if (fhemObjects[command.id] && "value" in fhemObjects[command.id]) {
-            //adapter.log.warn('found val '+fhemObjects[command.id].value.val);
             if (fhemObjects[command.id].value.val != command.val) {
-                //adapter.log.warn('different val'+fhemObjects[command.id].value.val+' '+command.val);
                 setStateDoWrite(ff, command, () => {
                     cb && cb();
                     return;
                 });
             } else {
-                //adapter.log.warn('same val '+command.id);
                 cb && cb();
                 return;
             }
         } else {
-            //adapter.log.warn('unknown val '+command.id);
             setStateDoWrite(ff, command, () => {
                 cb && cb();
                 return;
             });
         }
     }
-    /*
-     } else {
-     adapter.getState(command.id, (e, stateG) => {
-     if (e) {
-     logError(fn, 'rs? ' + e);
-     cb && cb();
-     return;
-     }
-     if (!stateG) {
-     if (logDevelop)
-     adapter.log.warn('id: ' + command.id + ' - no state found!');
-     cb && cb();
-     return;
-     }
-     if (stateG.val != command.val || !stateG.ack) {
-     setStateDoWrite(ff, command, () => {
-     cb && cb();
-     return;
-     });
-     } else {
-     cb && cb();
-     }
-     });
-     }
-     */
 }
 function setStateDoWrite(ff, command, cb) {
     let fn = ff + '[setStateDoWrite] ';
@@ -2984,7 +2951,6 @@ function setStateDoWrite(ff, command, cb) {
             return;
         } else {
             cb && cb();
-            //23.08.20
             if (fhemObjects[command.id] && "value" in fhemObjects[command.id]) {
                 fhemObjects[command.id].value.val = command.val;
             }
@@ -3044,7 +3010,6 @@ function processSetStateLog(ff, cb) {
 }
 function setStateLogDo(ff, command, cb) {
     let fn = ff + ' ' + '[setStateLogDo] ';
-    //logDebug(fn, command.id, 'stateChange:setStateDo ' + command.id + ' ' + command.val + ' (' + (Date.now() - command.ts) + ' ms)', 'D');
     adapter.setState(command.id, command.val, command.ack, e => {
         if (e) {
             logError(fn, command.id + ': ' + e);
