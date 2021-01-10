@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '09.01.21';
+const buildDate = '10.01.21';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -1171,13 +1171,13 @@ function parseObjects(ff, objs, cb) {
                                 role: undefined,
                                 read: true,
                                 write: false,
+                                // ?
                                 unit: getUnit(attr, objs[i].Internals.TYPE)
                             },
                             native: {
                                 Name: device,
                                 Attribute: attr,
                                 Readings: true
-                                        //23.08.20
                             },
                             value: {
                                 val: objs[i].Readings[attr].Value
@@ -1199,6 +1199,60 @@ function parseObjects(ff, objs, cb) {
                             obj.common.role = obj.common.role || 'value';
                         } else {
                             obj.common.role = obj.common.role || 'text';
+                        }
+                        // val=string?
+                        if (obj.common.type === 'string' && !obj.common.states) {
+                            const checkUnit = val.split(' ');
+                            if (!checkUnit[2]) {
+                                if (checkUnit[1] === 'C' || checkUnit[1] === '°C') {
+                                    //adapter.log.warn('detect Temp: ' + obj.common.name + ' ' + val);
+                                    obj.native.temperature = true;
+                                    obj.common.type = 'number';
+                                    obj.common.role = 'value.temperature';
+                                    obj.common.unit = '°C';
+                                    val = checkUnit[0];
+                                }
+                                if (checkUnit[1] === 'kWh' || checkUnit[1] === 'kW') {
+                                    //adapter.log.warn('detect kW: ' + obj.common.name + ' ' + val);
+                                    obj.native.power = true;
+                                    obj.common.type = 'number';
+                                    obj.common.role = 'value.power.consumption';
+                                    obj.common.unit = checkUnit[1];
+                                    val = checkUnit[0];
+                                }
+                                if (checkUnit[1] === 'lh' || checkUnit[1] === 'lh') {
+                                    //adapter.log.warn('detect lh: ' + obj.common.name + ' ' + val);
+                                    obj.native.flow = true;
+                                    obj.common.type = 'number';
+                                    obj.common.role = 'value.flow';
+                                    obj.common.unit = checkUnit[1];
+                                    val = checkUnit[0];
+                                }
+                                if (checkUnit[1] === 'W') {
+                                    //adapter.log.warn('detect Watt: ' + obj.common.name + ' ' + val);
+                                    obj.native.power = true;
+                                    obj.common.type = 'number';
+                                    obj.common.role = 'value.power';
+                                    obj.common.unit = checkUnit[1];
+                                    val = checkUnit[0];
+                                }
+                                if (checkUnit[1] === 'V') {
+                                    //adapter.log.warn('detect Volt: ' + obj.common.name + ' ' + val);
+                                    obj.native.voltage = true;
+                                    obj.common.type = 'number';
+                                    obj.common.role = 'value.voltage';
+                                    obj.common.unit = checkUnit[1];
+                                    val = checkUnit[0];
+                                }
+                                if (checkUnit[1] === '%') {
+                                    //adapter.log.warn('detect %: ' + obj.common.name + ' ' + val);
+                                    obj.native.voltage = true;
+                                    obj.common.type = 'number';
+                                    obj.common.role = 'value.percent';
+                                    obj.common.unit = checkUnit[1];
+                                    val = checkUnit[0];
+                                }
+                            }
                         }
 // detect indicator
                         if (Rindicator.indexOf(attr) !== -1) {
@@ -1232,6 +1286,11 @@ function parseObjects(ff, objs, cb) {
                         if (obj.common.unit === 'V') {
                             obj.native.V = true;
                             obj.common.role = 'value.voltage';
+                        }
+                        // detect W (power)    09.01.21
+                        if (obj.common.unit === 'W') {
+                            obj.native.W = true;
+                            obj.common.role = 'value.power';
                         }
 // special role
                         if (attr === 'infoSummarize1') {
@@ -1481,9 +1540,7 @@ function parseObjects(ff, objs, cb) {
 function logIgnoreConfig(ff, name, text, nr, from) {
     let fn = ff + '[logIgnoreConfig] ';
     if (!fhemIgnore[name]) {
-        //adapter.log.warn("fhemIg " + name);
         fhemIgnoreConfig[name] = {id: name};
-       //cb && cb();
     }
     text = 'ignored FHEM device "' + name + '" > no sync - ' + text + ' | ' + ' ' + (nr + 1) + '/' + from;
     if (logIgnoreConfigurations && debugNAME.indexOf(name) === -1) {
@@ -2439,7 +2496,6 @@ function parseEvent(ff, eventIN, cb) {
         logDebug(fn, event, 'detect fhemIgnore - ' + event, 'D');
         if (device === adapter.namespace + '.alive') {
             logDebug(fn, event, 'detect alive', 'D');
-            //eventOK(ff, event, adapter.namespace + '.alive (getAlive)', '', ts, 'state', device, 'no');
             getAlive(fn);
             cb && cb();
             return;
@@ -2541,6 +2597,13 @@ function parseEvent(ff, eventIN, cb) {
                 let id = channel + '.' + convertNameFHEM(fn, partsR[2]);
                 if (fhemObjects[id]) {
                     val = convertFhemValue(event.substring(partsR[0].length + partsR[1].length + partsR[2].length + 4));
+                    // Unit?
+                    if (fhemObjects[id].common.unit) {
+                        const valOU = val.split(' ');
+                        logDebug(fn, name, ' detect Unit (' + fhemObjects[id].common.unit + '): ' + name +' '+ val + ' --> '+ name +' '+ valOU[0], 'D');
+                        if (fhemObjects[id].common.unit !== valOU[1]&&valOU[1]) adapter.log.warn('different unit! '+ name + ' old: '+fhemObjects[id].common.unit+' / new: '+valOU[1]);
+                        val = valOU[0];
+                    }
                     eventOK(fn, event, id, val, ts, 'reading', device, channel);
                     cb && cb();
                     return;
@@ -2687,32 +2750,22 @@ function getUnit(name) {
 function convertNameIob(ff, id) {
     let fn = ff + '[convertNameIob] ';
     let idFHEM = id.replace(/[-#:]/g, '_');
-    // Conversion back Iob->FHEM (required?)
-    //idFHEM = idFHEM.replace(/{/g, '[');
-    //idFHEM = idFHEM.replace(/}/g, ']');
-    //idFHEM = idFHEM.replace(/~/g, '\.');
     if (id !== idFHEM)
-        //adapter.log.warn('convertNameIob: ' + id + ' --> ' + idFHEM);   
         logDebug(fn, id, 'convertNameIob: ' + id + ' --> ' + idFHEM, 'D');
     return idFHEM;
 }
 function convertNameFHEM(ff, name) {
     let fn = ff + '[convertNameFHEM] ';
-    // old: let id = name.replace(/\./g, '_');
-    // Conversion - e.g. for FHEM HPSU https://forum.fhem.de/index.php/topic,106503.0.htm HPSUVal.Betriebsart_[mode_01] ==> HPSUVal~Betriebsart_{mode_01}
-    //let id = name.replace(/\./g, '~');
-    //edit DL 26.12.20
+    //Conversion - e.g. for FHEM HPSU https://forum.fhem.de/index.php/topic,106503.0.htm HPSUVal.Betriebsart_[mode_01] ==> HPSUVal~Betriebsart_{mode_01}
     let id = name.replace(/\[/g, '{');
     id = id.replace(/\]/g, '}');
-    // Device HPSU?
-    if (id.indexOf('HPSU') !== -1) {
+    // Device HPSU? 
+    if (id.startsWith('HPSU')) {
         id = id.replace(/\./g, '~');
     } else {
         id = id.replace(/\./g, '_');
     }
-    //id = id.replace(/-#:/g, '_');
     if (name !== id)
-        //adapter.log.warn('convertNameFHEM: ' + name + ' --> ' + id);   
         logDebug(fn, name, 'convertNameFHEM: ' + name + ' --> ' + id, 'D');
     return id;
 }
@@ -3021,8 +3074,6 @@ function setStateLogDo(ff, command, cb) {
         }
     });
 }
-
-
 function sendFHEM(ff, cmd, detect, cb) {
     let fn = ff + ' ' + '[sendFHEM] ';
     logDebug(fn, '', 'cmd = ' + cmd + ' / detect=' + detect, 'D');
