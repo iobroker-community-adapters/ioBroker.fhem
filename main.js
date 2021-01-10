@@ -2600,8 +2600,9 @@ function parseEvent(ff, eventIN, cb) {
                     // Unit?
                     if (fhemObjects[id].common.unit) {
                         const valOU = val.split(' ');
-                        logDebug(fn, name, ' detect Unit (' + fhemObjects[id].common.unit + '): ' + name +' '+ val + ' --> '+ name +' '+ valOU[0], 'D');
-                        if (fhemObjects[id].common.unit !== valOU[1]&&valOU[1]) adapter.log.warn('different unit! '+ name + ' old: '+fhemObjects[id].common.unit+' / new: '+valOU[1]);
+                        logDebug(fn, name, ' detect Unit (' + fhemObjects[id].common.unit + '): ' + name + ' ' + val + ' --> ' + name + ' ' + valOU[0], 'D');
+                        if (fhemObjects[id].common.unit !== valOU[1] && valOU[1] && fhemObjects[id].common.unit !== '°C' && valOU[1] !== 'C')
+                            adapter.log.warn('different unit! ' + name + ' old: ' + fhemObjects[id].common.unit + ' / new: ' + valOU[1]);
                         val = valOU[0];
                     }
                     eventOK(fn, event, id, val, ts, 'reading', device, channel);
