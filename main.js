@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '10.01.21a';
+const buildDate = '15.01.21';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -97,7 +97,8 @@ const volumePossibleSets = ['Volume', 'volume', 'GroupVolume'];
 const temperaturePossibleSets = ['desired-temp'];
 const Utemperature = ['temperature', 'measured-temp', 'desired-temp', 'degrees', 'box_cputemp', 'temp_c', 'cpu_temp', 'cpu_temp_avg'];
 const rgbPossibleSets = ['rgb'];
-const Rindicator = ['reachable', 'presence', 'battery', 'Activity', 'present'];
+const Rindicator = ['reachable', 'presence', 'battery', 'Activity', 'present', 'batteryState'];
+//const 
 function startAdapter(options) {
     options = options || {};
     Object.assign(options, {name: adapterName});
@@ -703,7 +704,7 @@ function parseObjects(ff, objs, cb) {
             if (objs[i].Attributes.comment && objs[i].Attributes.comment.indexOf('Auto-created by ioBroker fhem') !== -1) {
 // nicht eigene Instanz?
                 if (objs[i].Attributes.comment.indexOf('Auto-created by ioBroker ' + adapter.namespace) === -1) {
-                    //adapter.log.warn("nicht: " + device);
+//adapter.log.warn("nicht: " + device);
                     fhemIgnore[device] = {id: device};
                     fhemIgnoreConfig[device] = {id: device};
                     logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
@@ -1171,8 +1172,8 @@ function parseObjects(ff, objs, cb) {
                                 role: undefined,
                                 read: true,
                                 write: false,
-                                // ?
-                                unit: getUnit(attr, objs[i].Internals.TYPE)
+                                // Unit nach attr
+                                unit: getUnit(attr)
                             },
                             native: {
                                 Name: device,
@@ -1192,71 +1193,73 @@ function parseObjects(ff, objs, cb) {
                             val = convertFhemValue(val);
                         }
                         if (attr !== 'state') {
+                            //
                             val = convertAttr(attr, val);
                         }
                         obj.common.type = obj.common.type || typeof val;
                         if (obj.common.type === 'number') {
                             obj.common.role = obj.common.role || 'value';
-                        } else {
+                        } else if (obj.common.type === 'boolean') {
+//obj.common.role = obj.common.role || 'text';
+                            //adapter.log.warn('found boolean?');
+                        } else if (obj.common.type === 'object') {
+//obj.common.role = obj.common.role || 'text';
+                            adapter.log.warn('found object?');
+                        } else if (obj.common.type === 'string') {
                             obj.common.role = obj.common.role || 'text';
-                        }
-                        // val=string?
-                        if (obj.common.type === 'string' && !obj.common.states) {
-                            const checkUnit = val.split(' ');
-                            if (!checkUnit[2]) {
-                                if (checkUnit[1] === 'C' || checkUnit[1] === '°C') {
-                                    //adapter.log.warn('detect Temp: ' + obj.common.name + ' ' + val);
-                                    obj.native.temperature = true;
-                                    obj.common.type = 'number';
-                                    obj.common.role = 'value.temperature';
-                                    obj.common.unit = '°C';
-                                    val = checkUnit[0];
-                                }
-                                if (checkUnit[1] === 'kWh' || checkUnit[1] === 'kW') {
-                                    //adapter.log.warn('detect kW: ' + obj.common.name + ' ' + val);
-                                    obj.native.power = true;
-                                    obj.common.type = 'number';
-                                    obj.common.role = 'value.power.consumption';
-                                    obj.common.unit = checkUnit[1];
-                                    val = checkUnit[0];
-                                }
-                                if (checkUnit[1] === 'lh' || checkUnit[1] === 'lh') {
-                                    //adapter.log.warn('detect lh: ' + obj.common.name + ' ' + val);
-                                    obj.native.flow = true;
-                                    obj.common.type = 'number';
-                                    obj.common.role = 'value.flow';
-                                    obj.common.unit = checkUnit[1];
-                                    val = checkUnit[0];
-                                }
-                                if (checkUnit[1] === 'W') {
-                                    //adapter.log.warn('detect Watt: ' + obj.common.name + ' ' + val);
-                                    obj.native.power = true;
-                                    obj.common.type = 'number';
-                                    obj.common.role = 'value.power';
-                                    obj.common.unit = checkUnit[1];
-                                    val = checkUnit[0];
-                                }
-                                if (checkUnit[1] === 'V') {
-                                    //adapter.log.warn('detect Volt: ' + obj.common.name + ' ' + val);
-                                    obj.native.voltage = true;
-                                    obj.common.type = 'number';
-                                    obj.common.role = 'value.voltage';
-                                    obj.common.unit = checkUnit[1];
-                                    val = checkUnit[0];
-                                }
-                                if (checkUnit[1] === '%') {
-                                    //adapter.log.warn('detect %: ' + obj.common.name + ' ' + val);
-                                    obj.native.voltage = true;
-                                    obj.common.type = 'number';
-                                    obj.common.role = 'value.percent';
-                                    obj.common.unit = checkUnit[1];
-                                    val = checkUnit[0];
+                            if (!obj.common.states) {
+                                const checkUnit = val.split(' ');
+                                if (Number(checkUnit[0]) > 0 && checkUnit[1] && !checkUnit[2]) {
+                                    if ('C °C kWh kW lh W V % km hPa mins min s'.indexOf(checkUnit[1]) !== -1) {
+                                        if (checkUnit[1] === 'C')
+                                            checkUnit[1] = '°C';
+                                        val = checkUnit[0];
+                                        obj.common.unit = checkUnit[1];
+                                    } else {
+                                        adapter.log.warn(val + ' Unit: ' + checkUnit[1] + ' not found indexoF!');
+                                    }
                                 }
                             }
+                        } else {
+                            adapter.log.warn('obj.common.role ' + obj.common.role + ' not found!');
                         }
+                        //
+                        if (obj.common.unit && !combined) {
+                            obj.common.type = 'number';
+                            if (obj.common.unit === '°C') {
+                                obj.common.role = 'value.temperature';
+                                Funktion = 'temperature';
+                            } else if (obj.common.unit === 'kWh' || obj.common.unit === 'kW') {
+                                obj.common.role = 'value.power.consumption';
+                            } else if (obj.common.unit === 'V') {
+                                obj.common.role = 'value.voltage';
+                            } else if (obj.common.unit === 'W') {
+                                obj.common.role = 'value.power';
+                            } else if (obj.common.unit === 'Wh') {
+                                obj.common.role = 'value.energie';
+                            } else if (obj.common.unit === 'lh') {
+                                obj.common.role = 'value.flow';
+                            } else if (obj.common.unit === '%') {
+                                if (attr.indexOf('humidity') !== -1) {
+                                    obj.common.role = 'value.humidity';
+                                } else {
+                                    obj.common.role = 'value.percent';
+                                }
+                            } else if (obj.common.unit === 'km') {
+                                obj.common.role = 'value.distance';
+                            } else if (obj.common.unit === 'kmh') {
+                                obj.common.role = 'value.speed';
+                            } else if (obj.common.unit === 'hPa') {
+                                obj.common.role = 'value.pressure';
+                            } else if (obj.common.unit === 's' | obj.common.unit === 'min' || obj.common.unit === 'mins') {
+                                obj.common.role = 'value.duration';
+                            } else {
+                                adapter.log.warn(val + ' Unit: ' + obj.common.unit + ' not found!');
+                            }
+                        }
+
 // detect indicator
                         if (Rindicator.indexOf(attr) !== -1) {
-                            obj.native.indicator = true;
                             obj.common.type = 'boolean';
                             obj.common.role = 'indicator.' + attr.toLowerCase();
                             if (objs[i].Internals.TYPE === 'HUEDevice' && attr === 'reachable')
@@ -1267,31 +1270,10 @@ function parseObjects(ff, objs, cb) {
                                 obj.common.role = 'indicator.unreach';
                             if (objs[i].Internals.TYPE === 'FBDECT' && attr === 'present')
                                 obj.common.role = 'indicator.unreach';
-                            if (attr === 'battery')
+                            if (attr === 'battery' || attr === 'batteryState')
                                 obj.common.role = 'indicator.lowbat';
                         }
-// detect temperature
-                        if (obj.common.unit === '°C' && !combined) {
-                            obj.native.temperature = true;
-                            Funktion = 'temperature';
-                            obj.common.type = 'number';
-                            obj.common.role = 'value.temperature';
-                        }
-// detect Wh (energy)
-                        if (obj.common.unit === 'Wh') {
-                            obj.native.Wh = true;
-                            obj.common.role = 'value.power.consumption';
-                        }
-// detect V (voltage)
-                        if (obj.common.unit === 'V') {
-                            obj.native.V = true;
-                            obj.common.role = 'value.voltage';
-                        }
-                        // detect W (power)    09.01.21
-                        if (obj.common.unit === 'W') {
-                            obj.native.W = true;
-                            obj.common.role = 'value.power';
-                        }
+
 // special role
                         if (attr === 'infoSummarize1') {
                             obj.common.role = 'media.title';
@@ -1466,6 +1448,18 @@ function parseObjects(ff, objs, cb) {
                         });
                         combined && (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' > ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' (Value Possible Set)');
                         !combined && (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' > ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | Funktion: ' + Funktion);
+
+                        //neuif (isNaN(timestamp) === false)
+/*
+                        if (obj.common.type === 'string' && obj.common.role === 'text' && isNaN(Date.parse(val))=== false) {
+                            adapter.log.warn('Datum ' + obj.common.name  );
+                            obj.common.role = 'date';
+                        }
+*/
+                        obj.native.type = obj.common.type;
+                        obj.native.role = obj.common.role;
+                        obj.native.unit = obj.common.unit;
+
                         objects.push(obj);
                         if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
                             id = obj._id;
@@ -1587,13 +1581,12 @@ function syncObjects(objects, cb) {
                     setImmediate(syncObjects, objects, cb);
                 } else {
                     let newObj = JSON.parse(JSON.stringify(oldObj));
-                    let updateText = '';
-                    if (JSON.stringify(obj.native) !== JSON.stringify(oldObj.native)) {
+                    let text;
+                    if (JSON.stringify(obj.native) !== JSON.stringify(newObj.native)) {
                         newObj.native = obj.native;
-                        updateText = updateText + ' native';
+                        text = 'native';
                     }
-                    if (JSON.stringify(obj.common) !== JSON.stringify(oldObj.common)) {
-                        updateText = updateText + ' common';
+                    if (JSON.stringify(obj.common) !== JSON.stringify(newObj.common)) {
                         if (autoSmartName) {
                             newObj.common.smartName = obj.common.smartName;
                         }
@@ -1616,14 +1609,17 @@ function syncObjects(objects, cb) {
                             newObj.common.read = obj.common.read;
                             newObj.common.write = obj.common.write;
                         }
+                        if (JSON.stringify(oldObj.common) !== JSON.stringify(newObj.common)) {
+                            text = text + ' common';
+                        }
                     }
                     if (JSON.stringify(newObj) !== JSON.stringify(oldObj)) {
                         if (obj.type === 'channel' && logUpdateChannel) {
-                            logInfo(fn, 'Update channel: ' + obj.common.name + ' | ' + obj._id + ' - ' + updateText);
+                            logInfo(fn, 'update channel: ' + obj.common.name + ' | ' + obj._id + ' - ' + text);
                         } else {
-                            logDebug(fn, obj._id, 'update object: ' + obj._id + ' (' + obj.type + ') - ' + updateText, '');
+                            logDebug(fn, obj._id, 'update object: ' + obj._id + ' (' + obj.type + ') - ' + text, '');
                         }
-                        adapter.extendObject(obj._id, newObj, e => {
+                        adapter.setObject(obj._id, newObj, e => {
                             e && logError(fn, e);
                             setImmediate(syncObjects, objects, cb);
                         });
@@ -2299,7 +2295,7 @@ function requestMeta(ff, name, cb) {
 }
 // STEP 14
 function eventFHEM(ff, event) {
-    //adapter.log.warn("event: " + event);
+//adapter.log.warn("event: " + event);
     let fn = ff + '[eventFHEM] ';
     let ts = Date.now();
     if (!event) {
@@ -2312,7 +2308,7 @@ function eventFHEM(ff, event) {
     }
     let parts = event.split(' ');
     if (fhemIgnoreConfig[parts[1]]) {
-        //adapter.log.warn("fhemIgnoreConfig: " + parts[1]);
+//adapter.log.warn("fhemIgnoreConfig: " + parts[1]);
         return;
     }
     if (event[4] === '-' && event[7] === '-') {
@@ -2597,13 +2593,18 @@ function parseEvent(ff, eventIN, cb) {
                 let id = channel + '.' + convertNameFHEM(fn, partsR[2]);
                 if (fhemObjects[id]) {
                     val = convertFhemValue(event.substring(partsR[0].length + partsR[1].length + partsR[2].length + 4));
-                    // Unit?
+                    // unit?
                     if (fhemObjects[id].common.unit) {
                         const valOU = val.split(' ');
                         logDebug(fn, name, ' detect Unit (' + fhemObjects[id].common.unit + '): ' + name + ' ' + val + ' --> ' + name + ' ' + valOU[0], 'D');
                         if (fhemObjects[id].common.unit !== valOU[1] && valOU[1] && fhemObjects[id].common.unit !== '°C' && valOU[1] !== 'C')
                             adapter.log.warn('different unit! ' + name + ' old: ' + fhemObjects[id].common.unit + ' / new: ' + valOU[1]);
                         val = valOU[0];
+                    }
+                    //indicator?
+                    if (fhemObjects[id].native.role.startsWith('indicator')) {
+                        //adapter.log.warn(id+' found indicator');
+                        val = convertValueBol(val);
                     }
                     eventOK(fn, event, id, val, ts, 'reading', device, channel);
                     cb && cb();
@@ -2730,7 +2731,9 @@ function doJsonlist(ff, device, cb) {
 // get
 function getUnit(name) {
     name = name.toLowerCase();
-    if (Utemperature.indexOf(name) !== -1) {
+    // if (Utemperature.indexOf(name) !== -1) {
+    //    return '°C';
+    if (name.indexOf('temp') !== -1 && name.indexOf('time') === -1) {
         return '°C';
     } else if (name.indexOf('power') !== -1) {
         return 'W';
@@ -2740,10 +2743,12 @@ function getUnit(name) {
         return '%';
     } else if (name.indexOf('pressure') !== -1) {
         return 'hPa';
-    } else if (name.indexOf('speed') !== -1) {
+    } else if (name.indexOf('wind_speed') !== -1) {
         return 'kmh';
     } else if (name.indexOf('voltage') !== -1) {
         return 'V';
+    } else if (name.indexOf('percent') !== -1 && name.indexOf('cpu') === -1) {
+        return '%';
     }
     return undefined;
 }
