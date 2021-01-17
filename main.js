@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '15.01.21';
+const buildDate = '17.01.21';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -1205,7 +1205,8 @@ function parseObjects(ff, objs, cb) {
                         } else if (obj.common.type === 'object') {
 //obj.common.role = obj.common.role || 'text';
                             adapter.log.warn('found object?');
-                        } else if (obj.common.type === 'string') {
+                        //} else if (obj.common.type === 'string' && !obj.common.role) {
+                         } else if (obj.common.type === 'string') {    
                             obj.common.role = obj.common.role || 'text';
                             if (!obj.common.states) {
                                 const checkUnit = val.split(' ');
@@ -1242,6 +1243,8 @@ function parseObjects(ff, objs, cb) {
                             } else if (obj.common.unit === '%') {
                                 if (attr.indexOf('humidity') !== -1) {
                                     obj.common.role = 'value.humidity';
+                                } else if (attr.indexOf('battery') !== -1) {
+                                    obj.common.role = 'battery.percent';
                                 } else {
                                     obj.common.role = 'value.percent';
                                 }
@@ -1450,12 +1453,12 @@ function parseObjects(ff, objs, cb) {
                         !combined && (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' > ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | Funktion: ' + Funktion);
 
                         //neuif (isNaN(timestamp) === false)
-/*
-                        if (obj.common.type === 'string' && obj.common.role === 'text' && isNaN(Date.parse(val))=== false) {
-                            adapter.log.warn('Datum ' + obj.common.name  );
-                            obj.common.role = 'date';
-                        }
-*/
+                        /*
+                         if (obj.common.type === 'string' && obj.common.role === 'text' && isNaN(Date.parse(val))=== false) {
+                         adapter.log.warn('Datum ' + obj.common.name  );
+                         obj.common.role = 'date';
+                         }
+                         */
                         obj.native.type = obj.common.type;
                         obj.native.role = obj.common.role;
                         obj.native.unit = obj.common.unit;
@@ -2605,6 +2608,10 @@ function parseEvent(ff, eventIN, cb) {
                     if (fhemObjects[id].native.role.startsWith('indicator')) {
                         //adapter.log.warn(id+' found indicator');
                         val = convertValueBol(val);
+                    }
+                    //rgb?
+                    if (fhemObjects[id].native.role.startsWith('level.color.rgb')) {
+                        val = '#' + val;
                     }
                     eventOK(fn, event, id, val, ts, 'reading', device, channel);
                     cb && cb();
