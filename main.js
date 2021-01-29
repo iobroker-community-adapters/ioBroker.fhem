@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '17.01.21';
+const buildDate = '29.01.21';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -46,6 +46,7 @@ let numWriteValue = 0;
 let timeWriteValue = 0;
 // info.Configurations
 let syncUpdate;
+let syncUpdateIOBin;  //29.01.21
 let advancedFunction;
 let autoRole;
 let autoFunction;
@@ -79,6 +80,8 @@ const allowedInternalsS = ['TYPE', 'NAME'];
 let allowedInternals = [];
 const allowedIOBinS = [];
 let allowedIOBin = [];
+let allowedIOBinExclude = []; //29.01.21
+let allowedIOBinExcludeS = [];
 // info.Settings
 let logCheckObject;
 let logUpdateChannel;
@@ -140,25 +143,27 @@ function startAdapter(options) {
         let val = state.val;
         let ack = state.ack;
         logDebug(fn, id, 'stateChange (in): ' + id + ' ' + val + ' ' + JSON.stringify(state), '');
-        let idFHEM = convertNameIob(fn, id);
-        if (fhemIN[idFHEM]) {
-            //prüfen
-            if (val !== fhemINs[idFHEM].val) {
-                eventIOB.push({
-                    command: 'writeOut',
-                    id: idFHEM,
-                    val: val,
-                    ts: ts
-                });
-                fhemINs[idFHEM] = {
-                    id: id,
-                    val: val
-                };
-                if (!firstRun)
-                    checkQueue(fn);
-                return;
-            } else {
-                return;
+        //29.01.21
+        if (!id.startsWith(adapter.namespace)) {
+            let idFHEM = convertNameIob(fn, id);
+            if (fhemIN[idFHEM]) {
+                if (val !== fhemINs[idFHEM].val || syncUpdateIOBin) {    //29.01.21
+                    eventIOB.push({
+                        command: 'writeOut',
+                        id: idFHEM,
+                        val: val,
+                        ts: ts
+                    });
+                    fhemINs[idFHEM] = {
+                        id: id,
+                        val: val
+                    };
+                    if (!firstRun)
+                        checkQueue(fn);
+                    return;
+                } else {
+                    return;
+                }
             }
         }
         if (ack)
@@ -249,6 +254,7 @@ function myObjects(ff, cb) {
         {_id: 'info.Configurations.deleteUnusedObjects', type: 'state', common: {name: 'FUNCTION - delete unused objects automatically', type: 'boolean', role: 'switch', def: true}, native: {}},
         {_id: 'info.Configurations.oldState', type: 'state', common: {name: 'FUNCTION - old version of state with true/false', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
         {_id: 'info.Configurations.allowedIOBin', type: 'state', common: {name: 'SYNC - allowed objects send2FHEM', type: 'string', read: true, write: true, role: 'state'}, native: {default: '.'}},
+        {_id: 'info.Configurations.allowedIOBinExclude', type: 'state', common: {name: 'SYNC - exclude allowedIOBin', type: 'string', read: true, write: true, role: 'state'}, native: {default: '.'}}, //29.01.21   
         {_id: 'info.Configurations.ignoreObjectsInternalsTYPE', type: 'state', common: {name: 'SYNC - ignore device(s) TYPE (default: ' + ignoreObjectsInternalsTYPES + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.ignoreObjectsInternalsNAME', type: 'state', common: {name: 'SYNC - ignore device(s) NAME (default: ' + ignoreObjectsInternalsNAMES + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.ignoreObjectsAttributesroom', type: 'state', common: {name: 'SYNC - ignore device(s) of room(s) (default: ' + ignoreObjectsAttributesRoomS + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
@@ -262,6 +268,7 @@ function myObjects(ff, cb) {
         {_id: 'info.Configurations.logNoInfo', type: 'state', common: {name: 'FUNCTION - no LOG info', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
         {_id: 'info.Configurations.advancedFunction', type: 'state', common: {name: 'FUNCTION - advanced', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
         {_id: 'info.Configurations.syncUpdate', type: 'state', common: {name: 'FUNCTION - sync update reading', type: 'boolean', read: true, write: true, role: 'switch', def: true}, native: {}},
+        {_id: 'info.Configurations.syncUpdateIOBin', type: 'state', common: {name: 'FUNCTION - sync update allowedIOBin', type: 'boolean', read: true, write: true, role: 'switch', def: true}, native: {}}, //29.01.21
         // info.Debug
         {_id: 'info.Debug.jsonlist2', type: 'state', common: {name: 'jsonlist2 of FHEM', type: 'string', read: true, write: true, role: 'json'}, native: {}},
         {_id: 'info.Debug.meta', type: 'state', common: {name: 'Device NAME of FHEM', type: 'string', read: true, write: true, role: 'text'}, native: {}},
@@ -370,35 +377,38 @@ function deleteMyObjects(ff, i, cb) {
     });
 }
 //STEP 02
-function getConfigurationsSYNC(ff, cb) {
+function getConfigurationsSYNC(ff, cb) {  //29.01.21
     let fn = ff + '[getConfigurationsSYNC] ';
     logDebug(fn, '', 'start', 'D');
     if (!firstRun)
         logInfo(fn, 'change Configurations of FUNCTION ===== check ' + adapter.namespace + '.' + 'info.Configurations (true or value) - select function of Adapter and Devices to sync');
     allowedIOBin = allowedIOBinS.slice();
     getConfig(fn, 'info.Configurations.allowedIOBin', allowedIOBin, () => {
-        ignoreObjectsAttributesRoom = ignoreObjectsAttributesRoomS.slice();
-        getConfig(fn, 'info.Configurations.ignoreObjectsAttributesroom', ignoreObjectsAttributesRoom, () => {
-            ignoreObjectsInternalsNAME = ignoreObjectsInternalsNAMES.slice();
-            getConfig(fn, 'info.Configurations.ignoreObjectsInternalsNAME', ignoreObjectsInternalsNAME, () => {
-                ignoreObjectsInternalsTYPE = ignoreObjectsInternalsTYPES.slice();
-                getConfig(fn, 'info.Configurations.ignoreObjectsInternalsTYPE', ignoreObjectsInternalsTYPE, () => {
-                    allowedAttributes = allowedAttributesS.slice();
-                    getConfig(fn, 'info.Configurations.allowedAttributes', allowedAttributes, () => {
-                        allowedInternals = allowedInternalsS.slice();
-                        getConfig(fn, 'info.Configurations.allowedInternals', allowedInternals, () => {
-                            ignoreReadings = ignoreReadingsS.slice();
-                            getConfig(fn, 'info.Configurations.ignoreReadings', ignoreReadings, () => {
-                                ignorePossibleSets = ignorePossibleSetsS.slice();
-                                getConfig(fn, 'info.Configurations.ignorePossibleSets', ignorePossibleSets, () => {
-                                    onlySyncNAME = [];
-                                    getConfig(fn, 'info.Configurations.onlySyncNAME', onlySyncNAME, () => {
-                                        onlySyncTYPE = [];
-                                        getConfig(fn, 'info.Configurations.onlySyncTYPE', onlySyncTYPE, () => {
-                                            onlySyncRoom = onlySyncRoomS.slice();
-                                            getConfig(fn, 'info.Configurations.onlySyncRoom', onlySyncRoom, () => {
-                                                logDebug(fn, '', 'end', 'D');
-                                                cb && cb();
+        allowedIOBinExclude = allowedIOBinExcludeS.slice();
+        getConfig(fn, 'info.Configurations.allowedIOBinExclude', allowedIOBinExclude, () => {
+            ignoreObjectsAttributesRoom = ignoreObjectsAttributesRoomS.slice();
+            getConfig(fn, 'info.Configurations.ignoreObjectsAttributesroom', ignoreObjectsAttributesRoom, () => {
+                ignoreObjectsInternalsNAME = ignoreObjectsInternalsNAMES.slice();
+                getConfig(fn, 'info.Configurations.ignoreObjectsInternalsNAME', ignoreObjectsInternalsNAME, () => {
+                    ignoreObjectsInternalsTYPE = ignoreObjectsInternalsTYPES.slice();
+                    getConfig(fn, 'info.Configurations.ignoreObjectsInternalsTYPE', ignoreObjectsInternalsTYPE, () => {
+                        allowedAttributes = allowedAttributesS.slice();
+                        getConfig(fn, 'info.Configurations.allowedAttributes', allowedAttributes, () => {
+                            allowedInternals = allowedInternalsS.slice();
+                            getConfig(fn, 'info.Configurations.allowedInternals', allowedInternals, () => {
+                                ignoreReadings = ignoreReadingsS.slice();
+                                getConfig(fn, 'info.Configurations.ignoreReadings', ignoreReadings, () => {
+                                    ignorePossibleSets = ignorePossibleSetsS.slice();
+                                    getConfig(fn, 'info.Configurations.ignorePossibleSets', ignorePossibleSets, () => {
+                                        onlySyncNAME = [];
+                                        getConfig(fn, 'info.Configurations.onlySyncNAME', onlySyncNAME, () => {
+                                            onlySyncTYPE = [];
+                                            getConfig(fn, 'info.Configurations.onlySyncTYPE', onlySyncTYPE, () => {
+                                                onlySyncRoom = onlySyncRoomS.slice();
+                                                getConfig(fn, 'info.Configurations.onlySyncRoom', onlySyncRoom, () => {
+                                                    logDebug(fn, '', 'end', 'D');
+                                                    cb && cb();
+                                                });
                                             });
                                         });
                                     });
@@ -429,6 +439,7 @@ function getConfigurationsFUNCTION(ff, cb) {
     getSetting(fn, 'info.Configurations.deleteUnusedObjects', value => deleteUnusedObjects = value);
     getSetting(fn, 'info.Configurations.advancedFunction', value => advancedFunction = value);
     getSetting(fn, 'info.Configurations.syncUpdate', value => syncUpdate = value);
+    getSetting(fn, 'info.Configurations.syncUpdateIOBin', value => syncUpdateIOBin = value);   //29.01.21
     getSetting(fn, 'info.Configurations.oldState', value => {
         oldState = value;
         adapter.setState('info.Info.buildDate', buildDate, true);
@@ -570,23 +581,25 @@ function checkSubscribe(ff, cb) {
                 logDebug(fn, '', fn + 'detected' + JSON.stringify(states), 'D');
                 logInfo(fn, '> detected ' + Object.keys(states).length + ' state(s) of "' + search + '"');
                 for (const id in states) {
-                    if (!states.hasOwnProperty(id)) {
-                        continue;
+                    if (!id.startsWith(allowedIOBinExclude)) {//29.01.21
+                        if (!states.hasOwnProperty(id)) {
+                            continue;
+                        }
+                        let idFHEM = convertNameIob(fn, id);
+                        let val;
+                        try {
+                            val = states[id].val;
+                        } catch (e) {
+                            val = '???';
+                        }
+                        fhemINs[idFHEM] = {
+                            id: id,
+                            val: val
+                        };
+                        fhemIgnore[idFHEM] = {id: id};
+                        logDebug(fn, '', fn + 'found ' + id, '');
                     }
-                    let idFHEM = convertNameIob(fn, id);
-                    let val;
-                    try {
-                        val = states[id].val;
-                    } catch (e) {
-                        val = '???';
-                    }
-                    fhemINs[idFHEM] = {
-                        id: id,
-                        val: val
-                    };
-                    fhemIgnore[idFHEM] = {id: id};
-                    logDebug(fn, '', fn + 'found ' + id, '');
-                }
+                }//29.01.21
                 end++;
                 if (end === allowedIOBin.length) {
                     adapter.setState('info.Info.numberObjectsIOBoutSub', Object.keys(fhemINs).length, true);
@@ -1205,8 +1218,8 @@ function parseObjects(ff, objs, cb) {
                         } else if (obj.common.type === 'object') {
 //obj.common.role = obj.common.role || 'text';
                             adapter.log.warn('found object?');
-                        //} else if (obj.common.type === 'string' && !obj.common.role) {
-                         } else if (obj.common.type === 'string') {    
+                            //} else if (obj.common.type === 'string' && !obj.common.role) {
+                        } else if (obj.common.type === 'string') {
                             obj.common.role = obj.common.role || 'text';
                             if (!obj.common.states) {
                                 const checkUnit = val.split(' ');
@@ -2762,7 +2775,9 @@ function getUnit(name) {
 // convert
 function convertNameIob(ff, id) {
     let fn = ff + '[convertNameIob] ';
-    let idFHEM = id.replace(/[-#:]/g, '_');
+    let idFHEM = id.replace(/[-#:~]/g, '_'); //29.01.21
+    idFHEM = idFHEM.replace(/\{/g, '_');
+    idFHEM = idFHEM.replace(/\}/g, '_');
     if (id !== idFHEM)
         logDebug(fn, id, 'convertNameIob: ' + id + ' --> ' + idFHEM, 'D');
     return idFHEM;
