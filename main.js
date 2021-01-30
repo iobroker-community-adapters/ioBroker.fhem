@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '30.01.21b';
+const buildDate = '30.01.21c';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -2324,37 +2324,37 @@ function requestMeta(ff, name, cb) {
 }
 // STEP 14
 function eventFHEM(ff, event) {
-
-    let fn = ff + '[eventFHEM] ';
     let ts = Date.now();
-    if (!event) {
-        adapter.log.debug(fn + 'no event - return ' + ff);
-        return;
-    }
-// Sonos special
-    if (event.indexOf('display_covertitle') !== -1) {
-        return;
-    }
+    let fn = ff + '[eventFHEM] ';
+    logDebug(fn, event, 'eventFHEM(telnet) / ' + event, '');
     let parts = event.split(' ');
-    if (fhemIgnoreConfig[parts[1]]) {
+    if (!event) {
+        logDebug(fn, event, 'detect !event ' + event, '');
         return;
     }
-    if (event[4] === '-' && event[7] === '-') {
-        ts = new Date(event.substring(0, 19)).getTime();
-        event = event.substring(20);
-    }
-    if (logEventFHEM) {
-        adapter.log.info('eventFHEM(in): "' + event + '"');
+    if (parts[2].indexOf('display_covertitle') !== -1) { // Sonos special
+        logDebug(fn, parts[1], 'detect display_covertitle > return / ' + event, '');
+        return;
+    } else if (fhemIgnoreConfig[parts[1]]) {
+        logDebug(fn, parts[1], 'detect fhemIgnoreConfig > return / ' + event, '');
+        return;
     } else {
-        logDebug(fn, event, 'eventFHEM(in): "' + event + '"', '');
+        if (event[4] === '-' && event[7] === '-') {
+            ts = new Date(event.substring(0, 19)).getTime();
+            event = event.substring(20);
+            adapter.log.warn('eventFHEM: found date');
+        }
+        eventQueue.push({
+            parts: parts,
+            event: event,
+            ts: ts
+        });
+        processEvent(fn);
+        if (logEventFHEM) {
+            adapter.log.info('eventFHEM(telnet): "' + event + '"');
+        }
+        return;
     }
-    eventQueue.push({
-        parts: parts,
-        event: event,
-        ts: ts
-    });
-    processEvent(fn);
-    return;
 }
 function processEvent(ff, cb) {
     let fn = ff + '[processEvent] ';
@@ -2580,7 +2580,7 @@ function parseEvent(ff, eventIN, cb) {
                         cb && cb();
                         return;
                     }
-                    // state_media?
+// state_media?
                     search = channel + '.state_media';
                     if (fhemObjects[search]) {
                         val = (parts[2] === 'PLAYING');
@@ -2588,7 +2588,7 @@ function parseEvent(ff, eventIN, cb) {
                         cb && cb();
                         return;
                     }
-                    // state_boolean?
+// state_boolean?
                     search = channel + '.state_boolean';
                     if (fhemObjects[search]) {
                         const sensor = convertFhemSensor(fn, val, device, type);
@@ -2612,7 +2612,7 @@ function parseEvent(ff, eventIN, cb) {
                      eventOK(fn, event, channel + '.state_value', sensor[3], ts, 'value', device, channel);
                      */
 
-                    // special for ZWave dim
+// special for ZWave dim
                     if (parts[0] === 'ZWave' && parts[2] === 'dim') {
                         let zwave = parts[0] + ' ' + device + ' ' + parts[2] + ': ' + parts[3];
                         adapter.log.info('--- | event FHEM: ' + event + ' (Create4ZWave) > ' + zwave);
@@ -2641,12 +2641,12 @@ function parseEvent(ff, eventIN, cb) {
                             adapter.log.warn('different unit! ' + name + ' old: ' + fhemObjects[id].common.unit + ' / new: ' + valOU[1]);
                         val = valOU[0];
                     }
-                    //indicator?
+//indicator?
                     if (fhemObjects[id].native.role.startsWith('indicator')) {
-                        //adapter.log.warn(id+' found indicator');
+//adapter.log.warn(id+' found indicator');
                         val = convertValueBol(val);
                     }
-                    //rgb?
+//rgb?
                     if (fhemObjects[id].native.role.startsWith('level.color.rgb')) {
                         val = '#' + val;
                     }
