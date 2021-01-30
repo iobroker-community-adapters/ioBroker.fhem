@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '30.01.21a';
+const buildDate = '30.01.21b';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -2364,12 +2364,6 @@ function processEvent(ff, cb) {
     }
     const command = eventQueue.shift();
     logDebug(fn, command.event, '"' + command.event + '"  / todo: ' + eventQueue.length + ' (' + (Date.now() - command.ts) + ' ms processEvent)', 'D');
-    //Test
-    if (logDevelop & !firstRun) {
-        let dif = Date.now() - command.ts;
-        if (dif > 20)
-            adapter.log.warn(eventQueue.length + ' (' + dif + ' ms) processEvent: ' + command.event + ' ');
-    }
     parseEvent(fn, command, () => setImmediate(processEvent, ff, cb));
 }
 function parseEvent(ff, eventIN, cb) {
@@ -2581,9 +2575,11 @@ function parseEvent(ff, eventIN, cb) {
                     eventOK(fn, event, id, val, ts, 'state', device, channel);
                     // state_switch?
                     search = channel + '.state_switch';
-                    if (fhemObjects[search])
+                    if (fhemObjects[search]) {
                         eventOK(fn, event, search, convertFhemValue(parts[2]), ts, 'switch', device, channel);
-                    const sensor = convertFhemSensor(fn, val, device, type);
+                        cb && cb();
+                        return;
+                    }
                     // state_media?
                     search = channel + '.state_media';
                     if (fhemObjects[search]) {
@@ -2592,22 +2588,38 @@ function parseEvent(ff, eventIN, cb) {
                         cb && cb();
                         return;
                     }
-// state_boolean?
+                    // state_boolean?
                     search = channel + '.state_boolean';
-                    if (fhemObjects[search] || typeof (sensor[0]) === "boolean")
-                        eventOK(fn, event, channel + '.state_boolean', sensor[0], ts, 'boolean', device, channel);
-                    search = channel + '.state_value';
-                    // state_value?
-                    if (fhemObjects[search] || typeof (sensor[3]) === "number")
-                        eventOK(fn, event, channel + '.state_value', sensor[3], ts, 'value', device, channel);
+                    if (fhemObjects[search]) {
+                        const sensor = convertFhemSensor(fn, val, device, type);
+                        eventOK(fn, event, search, sensor[0], ts, 'boolean', device, channel);
+                        search = channel + '.state_value';
+                        // state_value?
+                        if (fhemObjects[search]) {
+                            eventOK(fn, event, search, sensor[3], ts, 'value', device, channel);
+                        }
+                        cb && cb();
+                        return;
+                    }
+                    /*
+                     const sensor = convertFhemSensor(fn, val, device, type);
+                     search = channel + '.state_boolean';
+                     if (fhemObjects[search] || typeof (sensor[0]) === "boolean")
+                     eventOK(fn, event, channel + '.state_boolean', sensor[0], ts, 'boolean', device, channel);
+                     search = channel + '.state_value';
+                     // state_value?
+                     if (fhemObjects[search] || typeof (sensor[3]) === "number")
+                     eventOK(fn, event, channel + '.state_value', sensor[3], ts, 'value', device, channel);
+                     */
+
                     // special for ZWave dim
                     if (parts[0] === 'ZWave' && parts[2] === 'dim') {
                         let zwave = parts[0] + ' ' + device + ' ' + parts[2] + ': ' + parts[3];
                         adapter.log.info('--- | event FHEM: ' + event + ' (Create4ZWave) > ' + zwave);
                         eventFHEM(fn, zwave);
+                        cb && cb();
+                        return;
                     }
-                    cb && cb();
-                    return;
                 } else {
                     eventNOK(fn, event, id, 'no object(state)', 'json', device);
                     cb && cb();
