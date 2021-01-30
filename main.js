@@ -177,7 +177,7 @@ function startAdapter(options) {
                 });
                 checkQueue(fn);
                 return;
-            } else if (fhemObjects[id] || id.indexOf(adapter.namespace + '.info') !== -1) {
+            } else if (fhemObjects[id] || id.startsWith(adapter.namespace + '.info')) {
                 logDebug(fn, id, 'stateChange(write): ' + id + ' ' + val + ' ' + JSON.stringify(state), 'D');
                 eventIOB.push({
                     command: 'write',
@@ -267,7 +267,7 @@ function myObjects(ff, cb) {
         {_id: 'info.Configurations.onlySyncTYPE', type: 'state', common: {name: 'SYNC - only sync device(s) TYPE', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.logNoInfo', type: 'state', common: {name: 'FUNCTION - no LOG info', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
         {_id: 'info.Configurations.advancedFunction', type: 'state', common: {name: 'FUNCTION - advanced', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
-        {_id: 'info.Configurations.syncUpdate', type: 'state', common: {name: 'FUNCTION - sync update reading', type: 'boolean', read: true, write: true, role: 'switch', def: true}, native: {}},
+        {_id: 'info.Configurations.syncUpdate', type: 'state', common: {name: 'FUNCTION - sync update FHEM reading', type: 'boolean', read: true, write: true, role: 'switch', def: true}, native: {}},
         {_id: 'info.Configurations.syncUpdateIOBin', type: 'state', common: {name: 'FUNCTION - sync update allowedIOBin', type: 'boolean', read: true, write: true, role: 'switch', def: true}, native: {}}, //29.01.21
         // info.Debug
         {_id: 'info.Debug.jsonlist2', type: 'state', common: {name: 'jsonlist2 of FHEM', type: 'string', read: true, write: true, role: 'json'}, native: {}},
@@ -285,7 +285,7 @@ function myObjects(ff, cb) {
         {_id: 'info.Info.numberDevicesFHEM', type: 'state', common: {name: 'Number devices of FHEM (jsonlist2)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
         {_id: 'info.Info.numberDevicesFHEMsync', type: 'state', common: {name: 'Number devices of FHEM (synchronized)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
         {_id: 'info.Info.numberObjectsIOBout', type: 'state', common: {name: 'Number of objects IOB out (detected)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
-        {_id: 'info.Info.numberObjectsIOBoutSub', type: 'state', common: {name: 'Number of objects IOB out (possible)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
+        {_id: 'info.Info.numberObjectsIOBoutSub', type: 'state', common: {name: 'Number of objects IOB out (subscribe)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
         {_id: 'info.Info.numberObjectsIOBin', type: 'state', common: {name: 'Number of objects IOB in', type: 'number', read: true, write: false, role: 'value'}, native: {}},
         {_id: 'info.Info.alive', type: 'state', common: {name: 'FHEM alive', type: 'boolean', read: true, write: false, role: 'indicator.connected'}, native: {}},
         {_id: 'info.Info.numberDevicesFHEMignored', type: 'state', common: {name: 'Number devices of FHEM (ignored)', type: 'number', read: true, write: false, role: 'value'}, native: {}},
@@ -646,7 +646,7 @@ function syncFHEM(ff, cb) {
             try {
                 objects = JSON.parse(result);
             } catch (e) {
-                if (e.name === 'SyntaxError' && e.message.startsWith('Unexpected token') === true) {
+                if (e.name === 'SyntaxError' && e.message.startsWith('Unexpected token')) {
                     let stelle = Number(e.message.replace(/[^0-9]/g, ""));
                     let stelleN = result.lastIndexOf('NAME', stelle);
                     let stelleName = result.indexOf(',', stelleN);
@@ -728,21 +728,20 @@ function parseObjects(ff, objs, cb) {
         }
         try {
 // Auto-created by ioBroker ?
-            if (objs[i].Attributes.comment && objs[i].Attributes.comment.indexOf('Auto-created by ioBroker fhem') !== -1) {
-// nicht eigene Instanz?
-                if (objs[i].Attributes.comment.indexOf('Auto-created by ioBroker ' + adapter.namespace) === -1) {
-//adapter.log.warn("nicht: " + device);
+            if (objs[i].Attributes.comment && objs[i].Attributes.comment.startsWith('Auto-created by ioBroker fhem')) {
+                // nicht eigene Instanz?
+                if (objs[i].Attributes.comment.indexOf('Auto-created by ioBroker ' + adapter.namespace)) {
                     fhemIgnore[device] = {id: device};
                     fhemIgnoreConfig[device] = {id: device};
                     logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
                     continue;
                 }
-                if (!fhemINs[device] && objs[i].Attributes.room.indexOf('ioB_IN') !== -1) {
+                if (!fhemINs[device] && objs[i].Attributes.room.startsWith('ioB_IN')) {
                     logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
                     sendFHEM(fn, 'delete ' + device);
                     continue;
                 }
-                if (fhemINs[device] && objs[i].Attributes.room.indexOf('ioB_IN') !== -1) {
+                if (fhemINs[device] && objs[i].Attributes.room.startsWith('ioB_IN')) {
                     fhemIN[device] = {id: device};
                     fhemIgnore[device] = {id: device};
                     logIgnoreConfig(fn, device, 'comment: ' + objs[i].Attributes.comment, i, objs.length);
@@ -2096,16 +2095,16 @@ function writeValue(ff, id, val, ts, cb) {
     if (val === undefined || val === null)
         val = '';
     // info ?
-    if (id.indexOf(adapter.namespace + '.info.') !== -1) {
+    if (id.startsWith(adapter.namespace + '.info.')) {
 // info.Info?
-        if (id.indexOf(adapter.namespace + '.info.Info') !== -1) {
+        if (id.startsWith(adapter.namespace + '.info.Info')) {
             logDebug(fn, id, 'detect info.Info - ' + id + ' ' + val, 'D');
             logStateChange(fn, id, val, 'writeValue - no match', 'neg');
             cb && cb();
             return;
         }
 // info.Commands?
-        else if (id.indexOf(adapter.namespace + '.info.Commands') !== -1) {      /// prüfen
+        else if (id.startsWith(adapter.namespace + '.info.Commands')) {      /// prüfen     
             logDebug(fn, id, 'detect info.Commands - ' + id + ' ' + val, 'D');
             // sendFHEM?
             if (id === adapter.namespace + '.info.Commands.sendFHEM') {
@@ -2146,7 +2145,7 @@ function writeValue(ff, id, val, ts, cb) {
             }
             return;
             // change Debug?
-        } else if (id.indexOf(adapter.namespace + '.info.Debug.') !== -1) {
+        } else if (id.startsWith(adapter.namespace + '.info.Debug.')) {
             logDebug(fn, id, 'detect info.Debug = ' + id, 'D');
             if (id.indexOf('jsonlist2') !== -1) {
                 adapter.log.info('start debug jsonlist2 ' + val);
@@ -2191,12 +2190,12 @@ function writeValue(ff, id, val, ts, cb) {
             }
             return;
             // change Settings?
-        } else if (id.indexOf(adapter.namespace + '.info.Settings.') !== -1) {
+        } else if (id.startsWith(adapter.namespace + '.info.Settings.')) {
             getSettings(fn, cb);
             cb && cb();
             return;
             // change Configurations?
-        } else if (id.indexOf(adapter.namespace + '.info.Configurations.') !== -1) {
+        } else if (id.startsWith(adapter.namespace + '.info.Configurations.')) {
             logStateChange(fn, id, val, 'Resync FHEM', 'pos');
             setState(fn, 'info.resync', true, false, Date.now());
             cb && cb();
@@ -2325,7 +2324,7 @@ function requestMeta(ff, name, cb) {
 }
 // STEP 14
 function eventFHEM(ff, event) {
-//adapter.log.warn("event: " + event);
+
     let fn = ff + '[eventFHEM] ';
     let ts = Date.now();
     if (!event) {
@@ -2338,7 +2337,6 @@ function eventFHEM(ff, event) {
     }
     let parts = event.split(' ');
     if (fhemIgnoreConfig[parts[1]]) {
-//adapter.log.warn("fhemIgnoreConfig: " + parts[1]);
         return;
     }
     if (event[4] === '-' && event[7] === '-') {
@@ -2379,7 +2377,7 @@ function parseEvent(ff, eventIN, cb) {
     let event = eventIN.event;
     let ts = eventIN.ts;
     if (!event) {
-        logDebug(fn, '', 'no event - return', 'D');
+        logDebug(fn, '', 'no event > return', '');
         cb && cb();
         return;
     }
