@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '30.01.21c';
+const buildDate = '06.02.21';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -2331,8 +2331,10 @@ function eventFHEM(ff, event) {
     if (!event) {
         logDebug(fn, event, 'detect !event ' + event, '');
         return;
-    }
-    if (parts[2].indexOf('display_covertitle') !== -1) { // Sonos special
+    } else if (!parts[2]) {
+        adapter.log.warn('eventFHEM: ' + event + ' > too short!');
+        return;
+    } else if (parts[2].indexOf('display_covertitle') !== -1) { // Sonos special
         logDebug(fn, parts[1], 'detect display_covertitle > return / ' + event, '');
         return;
     } else if (fhemIgnoreConfig[parts[1]]) {
@@ -2521,7 +2523,7 @@ function parseEvent(ff, eventIN, cb) {
             logDebug(fn, event, 'detect send2ioB ', 'D');
             let val = event.substring(parts[0].length + device.length + 2);
             if (advancedFunction)
-                setStateLog('info.Info.lastSend2ioB', val, true, Date.now());
+                setStateLog(fn, 'info.Info.lastSend2ioB', val, true, Date.now());
             adapter.getForeignObject(parts[2], function (e, obj) {
                 if (e) {
                     logError(fn, e);
@@ -2535,7 +2537,7 @@ function parseEvent(ff, eventIN, cb) {
                         setState = parseInt(setState);
                     if (obj.common.type === 'boolean')
                         setState = JSON.parse(setState);
-                    eventOK(fn, event, parts[2], setState, ts, 'state', device, 'no');
+                    //eventOK(fn, event, parts[2], setState, ts, 'state', device, 'no');
                     adapter.setForeignState(parts[2], setState, false);
                 }
             });
@@ -2634,7 +2636,7 @@ function parseEvent(ff, eventIN, cb) {
                 if (fhemObjects[id]) {
                     val = convertFhemValue(event.substring(partsR[0].length + partsR[1].length + partsR[2].length + 4));
                     // unit?
-                    if (fhemObjects[id].common.unit) {
+                    if (fhemObjects[id].common.unit && typeof val !== 'boolean' && val.indexOf('device') !== -1) { //05.02.21
                         const valOU = val.split(' ');
                         logDebug(fn, name, ' detect Unit (' + fhemObjects[id].common.unit + '): ' + name + ' ' + val + ' --> ' + name + ' ' + valOU[0], 'D');
                         if (fhemObjects[id].common.unit !== valOU[1] && valOU[1] && fhemObjects[id].common.unit !== '°C' && valOU[1] !== 'C')
@@ -3336,7 +3338,7 @@ function main() {
                                                         processSetState(fn, () => {
                                                             logInfo(fn, 'STEP 15 ==== info Synchro');
                                                             adapter.log.debug('fhemIgnore = ' + JSON.stringify(fhemIgnore));
-                                                            adapter.setState('info.Info.TEST', JSON.stringify(fhemIgnore), true);
+                                                            //adapter.setState('info.Info.TEST', JSON.stringify(fhemIgnore), true);
                                                             adapter.log.debug('fhemIN = ' + JSON.stringify(fhemIN));
                                                             adapter.log.debug('fhemINs = ' + JSON.stringify(fhemINs));
                                                             adapter.log.debug('fhemIgnoreConfig = ' + JSON.stringify(fhemIgnoreConfig));
