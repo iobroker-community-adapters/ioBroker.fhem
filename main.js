@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '06.02.21';
+const buildDate = '10.02.21';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -95,7 +95,7 @@ let logEventFHEMstate;
 let logUnhandledEventFHEM;
 let logIgnoreConfigurations;
 // parseObject
-const dimPossibleSets = ['pct', 'brightness', 'dim'];
+const dimPossibleSets = ['pct', 'brightness', 'dim', 'pos']; //08.02.21
 const volumePossibleSets = ['Volume', 'volume', 'GroupVolume'];
 const temperaturePossibleSets = ['desired-temp'];
 const Utemperature = ['temperature', 'measured-temp', 'desired-temp', 'degrees', 'box_cputemp', 'temp_c', 'cpu_temp', 'cpu_temp_avg'];
@@ -1016,6 +1016,13 @@ function parseObjects(ff, objs, cb) {
                                 obj.common.role = 'button.prev';
                             if (parts[0] === 'Next')
                                 obj.common.role = 'button.next';
+                            //06.02.21
+                            if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
+                                obj.common.smartName = {//08.02.12
+                                    'de': alias,
+                                    'smartType': 'SWITCH'
+                                };
+                            }
                         }
                         if (parts[1].indexOf('slider') !== -1) {
                             Cstates = false;
@@ -1065,7 +1072,7 @@ function parseObjects(ff, objs, cb) {
                         obj.common.role = 'level.dimmer';
                         obj.common.unit = '%';
                         obj.native.level_dimmer = true;
-                        if (objs[i].Attributes.subType === 'blindActuator') {
+                        if (objs[i].Attributes.subType === 'blindActuator' || parts[0] === 'pos') { //08.02.21
                             obj.common.role = 'level.blind';
                             obj.native.level_blind = true;
                             typ = 'kein Typ';
@@ -1243,7 +1250,8 @@ function parseObjects(ff, objs, cb) {
                                         val = checkUnit[0];
                                         obj.common.unit = checkUnit[1];
                                     } else {
-                                        adapter.log.warn(val + ' Unit: ' + checkUnit[1] + ' not found indexoF!');
+                                        //adapter.log.warn(val + ' Unit: ' + checkUnit[1] + ' not found indexoF!');
+                                        logDebug(fn, device, val + ' Unit: ' + checkUnit[1] + ' not found indexoF!', '');
                                     }
                                 }
                             }
@@ -2332,7 +2340,8 @@ function eventFHEM(ff, event) {
         logDebug(fn, event, 'detect !event ' + event, '');
         return;
     } else if (!parts[2]) {
-        adapter.log.warn('eventFHEM: ' + event + ' > too short!');
+        //adapter.log.warn('eventFHEM: ' + event + ' > too short!');
+        eventNOK(fn, event, parts[1], 'event too short', 'info', parts[1]);
         return;
     } else if (parts[2].indexOf('display_covertitle') !== -1) { // Sonos special
         logDebug(fn, parts[1], 'detect display_covertitle > return / ' + event, '');
