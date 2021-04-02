@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '10.02.21';
+const buildDate = '02.04.21';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -1226,10 +1226,11 @@ function parseObjects(ff, objs, cb) {
                             val = convertFhemValue(val);
                         }
                         if (attr !== 'state') {
-                            //
                             val = convertAttr(attr, val);
                         }
-                        obj.common.type = obj.common.type || typeof val;
+                        //02.04.21 fix zahl possible set & reading
+                        //obj.common.type = obj.common.type || typeof val;
+                        obj.common.type = typeof val;
                         if (obj.common.type === 'number') {
                             obj.common.role = obj.common.role || 'value';
                         } else if (obj.common.type === 'boolean') {
@@ -1243,7 +1244,7 @@ function parseObjects(ff, objs, cb) {
                             obj.common.role = obj.common.role || 'text';
                             if (!obj.common.states) {
                                 const checkUnit = val.split(' ');
-                                if (Number(checkUnit[0]) > 0 && checkUnit[1] && !checkUnit[2]) {
+                                if (Number(checkUnit[0]) > -100 && checkUnit[1] && !checkUnit[2]) {
                                     if ('C °C kWh kW lh W V % km hPa mins min s'.indexOf(checkUnit[1]) !== -1) {
                                         if (checkUnit[1] === 'C')
                                             checkUnit[1] = '°C';
