@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '02.04.21';
+const buildDate = '03.04.21';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -46,7 +46,7 @@ let numWriteValue = 0;
 let timeWriteValue = 0;
 // info.Configurations
 let syncUpdate;
-let syncUpdateIOBin;  //29.01.21
+let syncUpdateIOBin;
 let advancedFunction;
 let autoRole;
 let autoFunction;
@@ -80,7 +80,7 @@ const allowedInternalsS = ['TYPE', 'NAME'];
 let allowedInternals = [];
 const allowedIOBinS = [];
 let allowedIOBin = [];
-let allowedIOBinExclude = []; //29.01.21
+let allowedIOBinExclude = [];
 let allowedIOBinExcludeS = [];
 // info.Settings
 let logCheckObject;
@@ -143,11 +143,10 @@ function startAdapter(options) {
         let val = state.val;
         let ack = state.ack;
         logDebug(fn, id, 'stateChange (in): ' + id + ' ' + val + ' ' + JSON.stringify(state), '');
-        //29.01.21
         if (!id.startsWith(adapter.namespace)) {
             let idFHEM = convertNameIob(fn, id);
             if (fhemIN[idFHEM]) {
-                if (val !== fhemINs[idFHEM].val || syncUpdateIOBin) {    //29.01.21
+                if (val !== fhemINs[idFHEM].val || syncUpdateIOBin) {
                     eventIOB.push({
                         command: 'writeOut',
                         id: idFHEM,
@@ -584,7 +583,6 @@ function checkSubscribe(ff, cb) {
                     if (!states.hasOwnProperty(id)) {
                         continue;
                     }
-                    //30.01.21
                     let foundEx = false;
                     let end1 = 0;
                     if (!allowedIOBinExclude.length)
@@ -1016,9 +1014,8 @@ function parseObjects(ff, objs, cb) {
                                 obj.common.role = 'button.prev';
                             if (parts[0] === 'Next')
                                 obj.common.role = 'button.next';
-                            //06.02.21
                             if (adapter.namespace === 'fhem.0' && objs[i].Attributes.room) {
-                                obj.common.smartName = {//08.02.12
+                                obj.common.smartName = {
                                     'de': alias,
                                     'smartType': 'SWITCH'
                                 };
@@ -1182,11 +1179,12 @@ function parseObjects(ff, objs, cb) {
                     if (!objs[i].Readings.hasOwnProperty(attr)) {
                         continue;
                     }
-// ignore Readings ?
+                    // ignore Readings ?
                     if (ignoreReadings.indexOf(attr) !== -1) {
                         (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' > no sync - included in ' + adapter.namespace + '.info.Config.ignoreReadings');
                         continue;
                     }
+                    //try { 
                     const stateName = convertNameFHEM(fn, attr);
                     // PossibleSets?
                     let combined = false;
@@ -1229,7 +1227,7 @@ function parseObjects(ff, objs, cb) {
                             val = convertAttr(attr, val);
                         }
                         //02.04.21 fix zahl possible set & reading
-                        //obj.common.type = obj.common.type || typeof val;
+                        // obj.common.type = obj.common.type || typeof val;
                         obj.common.type = typeof val;
                         if (obj.common.type === 'number') {
                             obj.common.role = obj.common.role || 'value';
@@ -1251,7 +1249,6 @@ function parseObjects(ff, objs, cb) {
                                         val = checkUnit[0];
                                         obj.common.unit = checkUnit[1];
                                     } else {
-                                        //adapter.log.warn(val + ' Unit: ' + checkUnit[1] + ' not found indexoF!');
                                         logDebug(fn, device, val + ' Unit: ' + checkUnit[1] + ' not found indexoF!', '');
                                     }
                                 }
@@ -1259,7 +1256,6 @@ function parseObjects(ff, objs, cb) {
                         } else {
                             adapter.log.warn('obj.common.role ' + obj.common.role + ' not found!');
                         }
-                        //
                         if (obj.common.unit && !combined) {
                             obj.common.type = 'number';
                             if (obj.common.unit === '°C') {
@@ -1295,7 +1291,6 @@ function parseObjects(ff, objs, cb) {
                                 adapter.log.warn(val + ' Unit: ' + obj.common.unit + ' not found!');
                             }
                         }
-
 // detect indicator
                         if (Rindicator.indexOf(attr) !== -1) {
                             obj.common.type = 'boolean';
@@ -1311,7 +1306,6 @@ function parseObjects(ff, objs, cb) {
                             if (attr === 'battery' || attr === 'batteryState')
                                 obj.common.role = 'indicator.lowbat';
                         }
-
 // special role
                         if (attr === 'infoSummarize1') {
                             obj.common.role = 'media.title';
@@ -1486,18 +1480,9 @@ function parseObjects(ff, objs, cb) {
                         });
                         combined && (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' > ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' (Value Possible Set)');
                         !combined && (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value.replace(/\n|\r/g, '\u005cn') + ' > ' + obj._id + ' = ' + val.toString().replace(/\n|\r/g, '\u005cn') + ' | type: ' + obj.common.type + ' | read: ' + obj.common.read + ' | write: ' + obj.common.write + ' | role: ' + obj.common.role + ' | Funktion: ' + Funktion);
-
-                        //neuif (isNaN(timestamp) === false)
-                        /*
-                         if (obj.common.type === 'string' && obj.common.role === 'text' && isNaN(Date.parse(val))=== false) {
-                         adapter.log.warn('Datum ' + obj.common.name  );
-                         obj.common.role = 'date';
-                         }
-                         */
                         obj.native.type = obj.common.type;
                         obj.native.role = obj.common.role;
                         obj.native.unit = obj.common.unit;
-
                         objects.push(obj);
                         if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
                             id = obj._id;
@@ -1514,13 +1499,15 @@ function parseObjects(ff, objs, cb) {
                     }
                 }
                 delete objs[i].Readings;
+
             }
             setStates = null;
             (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' check channel ' + channel + ' finished!');
+
         } catch (e) {
-            logError(fn, 'Cannot process object: ' + JSON.stringify(objs[i]) + ' ' + e);
+            logError(fn, 'Cannot process object: ' + obj._id + ' > ' + e + ' ' + JSON.stringify(objs[i]));
             (cb);
-            return;
+            continue;
         }
     }
     let channel = 0;
@@ -1568,7 +1555,6 @@ function parseObjects(ff, objs, cb) {
         });
     });
 }
-//
 function logIgnoreConfig(ff, name, text, nr, from) {
     let fn = ff + '[logIgnoreConfig] ';
     if (!fhemIgnore[name]) {
@@ -2641,7 +2627,6 @@ function parseEvent(ff, eventIN, cb) {
                 logDebug(fn, event, 'check reading or state? (mit : vorne)' + event, 'D');
                 name = event.substring(0, pos);
                 let partsR = name.split(' ');
-                // let id = channel + '.' + partsR[2];   09.01.21 HPSU
                 let id = channel + '.' + convertNameFHEM(fn, partsR[2]);
                 if (fhemObjects[id]) {
                     val = convertFhemValue(event.substring(partsR[0].length + partsR[1].length + partsR[2].length + 4));
@@ -2655,7 +2640,6 @@ function parseEvent(ff, eventIN, cb) {
                     }
 //indicator?
                     if (fhemObjects[id].native.role.startsWith('indicator')) {
-//adapter.log.warn(id+' found indicator');
                         val = convertValueBol(val);
                     }
 //rgb?
