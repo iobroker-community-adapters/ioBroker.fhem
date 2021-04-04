@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '03.04.21';
+const buildDate = '04.04.21';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -1246,7 +1246,8 @@ function parseObjects(ff, objs, cb) {
                                     if ('C °C kWh kW lh W V % km hPa mins min s'.indexOf(checkUnit[1]) !== -1) {
                                         if (checkUnit[1] === 'C')
                                             checkUnit[1] = '°C';
-                                        val = checkUnit[0];
+                                        //val = checkUnit[0];
+                                        val = parseFloat(val);
                                         obj.common.unit = checkUnit[1];
                                     } else {
                                         logDebug(fn, device, val + ' Unit: ' + checkUnit[1] + ' not found indexoF!', '');
@@ -2631,12 +2632,18 @@ function parseEvent(ff, eventIN, cb) {
                 if (fhemObjects[id]) {
                     val = convertFhemValue(event.substring(partsR[0].length + partsR[1].length + partsR[2].length + 4));
                     // unit?
-                    if (fhemObjects[id].common.unit && typeof val !== 'boolean' && val.indexOf('device') !== -1) { //05.02.21
-                        const valOU = val.split(' ');
-                        logDebug(fn, name, ' detect Unit (' + fhemObjects[id].common.unit + '): ' + name + ' ' + val + ' --> ' + name + ' ' + valOU[0], 'D');
-                        if (fhemObjects[id].common.unit !== valOU[1] && valOU[1] && fhemObjects[id].common.unit !== '°C' && valOU[1] !== 'C')
-                            adapter.log.warn('different unit! ' + name + ' old: ' + fhemObjects[id].common.unit + ' / new: ' + valOU[1]);
-                        val = valOU[0];
+                    //04.04.21
+                    /*if (fhemObjects[id].common.unit && typeof val !== 'boolean' && val.indexOf('device') !== -1) { //05.02.21
+                     const valOU = val.split(' ');
+                     logDebug(fn, name, ' detect Unit (' + fhemObjects[id].common.unit + '): ' + name + ' ' + val + ' --> ' + name + ' ' + valOU[0], 'D');
+                     if (fhemObjects[id].common.unit !== valOU[1] && valOU[1] && fhemObjects[id].common.unit !== '°C' && valOU[1] !== 'C')
+                     adapter.log.warn('different unit! ' + name + ' old: ' + fhemObjects[id].common.unit + ' / new: ' + valOU[1]);
+                     val = valOU[0];
+                     }
+                     */
+                    if (fhemObjects[id].common.unit) {
+                        val = parseFloat(val);
+                        adapter.log.warn(id + ' ' + val);
                     }
 //indicator?
                     if (fhemObjects[id].native.role.startsWith('indicator')) {
@@ -2771,9 +2778,9 @@ function doJsonlist(ff, device, cb) {
 // get
 function getUnit(name) {
     name = name.toLowerCase();
-    // if (Utemperature.indexOf(name) !== -1) {
+    //if (Utemperature.indexOf(name) !== -1) {
     //    return '°C';
-    if (name.indexOf('temp') !== -1 && name.indexOf('time') === -1) {
+    if (name.indexOf('temp') !== -1 && name.indexOf('time') === -1 && name.indexOf('stat') === -1 && name.indexOf('trend') === -1) {
         return '°C';
     } else if (name.indexOf('power') !== -1) {
         return 'W';
