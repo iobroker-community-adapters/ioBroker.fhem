@@ -2643,7 +2643,7 @@ function parseEvent(ff, eventIN, cb) {
                      */
                     if (fhemObjects[id].common.unit) {
                         val = parseFloat(val);
-                        adapter.log.warn(id + ' ' + val);
+                        //adapter.log.warn(id + ' ' + val);
                     }
 //indicator?
                     if (fhemObjects[id].native.role.startsWith('indicator')) {
