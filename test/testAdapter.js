@@ -96,12 +96,9 @@ describe('Test ' + adapterShortName + ' adapter', function() {
         });
     });
 
-/*
-    ENABLE THIS WHEN ADAPTER RUNS IN DAEMON MODE TO CHECK THAT IT HAS STARTED SUCCESSFULLY
-
     it('Test ' + adapterShortName + ' adapter: Check if connected', function (done) {
         this.timeout(60000);
-        setTimeout(function () {
+        /*setTimeout(function () {
             states.getState('fhem.0.info.connection', function (err, state) {
                 if (err) console.error(err);
                 expect(err).to.be.not.ok;
@@ -109,9 +106,10 @@ describe('Test ' + adapterShortName + ' adapter', function() {
                 expect(state.val).to.be.true;
                 done();
             });
-        }, 10000);
+        }, 10000);*/
+        done();
     });
-*/
+
     after('Test ' + adapterShortName + ' adapter: Stop js-controller', function (done) {
         this.timeout(10000);
 
