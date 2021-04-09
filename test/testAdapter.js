@@ -98,16 +98,16 @@ describe('Test ' + adapterShortName + ' adapter', function() {
 
     it('Test ' + adapterShortName + ' adapter: Check if connected', function (done) {
         this.timeout(60000);
-        /*setTimeout(function () {
-            states.getState('fhem.0.info.connection', function (err, state) {
+        setTimeout(function () {
+            /*states.getState('fhem.0.info.connection', function (err, state) {
                 if (err) console.error(err);
                 expect(err).to.be.not.ok;
                 expect(state).to.be.ok;
                 expect(state.val).to.be.true;
                 done();
-            });
-        }, 10000);*/
-        done();
+            });*/
+            done();
+        }, 10000);
     });
 
     after('Test ' + adapterShortName + ' adapter: Stop js-controller', function (done) {
