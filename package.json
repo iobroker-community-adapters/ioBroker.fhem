@@ -27,13 +27,15 @@
     "@iobroker/adapter-core": "^2.4.0"
   },
   "devDependencies": {
+    "@alcalzone/release-script": "^1.8.3",
     "gulp": "^4.0.2",
-    "mocha": "^7.2.0",
-    "chai": "^4.2.0"
+    "mocha": "^8.3.2",
+    "chai": "^4.3.4"
   },
   "main": "main.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha --exit"
+    "test": "node node_modules/mocha/bin/mocha --exit",
+    "release": "release-script"
   },
   "bugs": {
     "url": "https://github.com/iobroker-community-adapters/ioBroker.fhem/issues"
