@@ -1,229 +1,240 @@
 {
-  "common": {
-    "name": "fhem",
-    "version": "1.5.9",
-    "title": "FHEM connection",
-    "desc": {
-      "en": "FHEM",
-      "de": "FHEM",
-      "ru": "FHEM"
+    "common": {
+        "name": "fhem",
+        "version": "1.6.0",
+        "title": "FHEM connection",
+        "desc": {
+            "en": "FHEM",
+            "de": "FHEM",
+            "ru": "FHEM"
+        },
+        "news": {
+            "1.6.0": {
+                "en": "Several fixes and changes",
+                "de": "Mehrere Korrekturen und Änderungen",
+                "ru": "Несколько исправлений и изменений",
+                "pt": "Várias correções e mudanças",
+                "nl": "Diverse fixes en wijzigingen",
+                "fr": "Plusieurs correctifs et modifications",
+                "it": "Diverse correzioni e modifiche",
+                "es": "Varias correcciones y cambios",
+                "pl": "Kilka poprawek i zmian",
+                "zh-cn": "若干修复和变更"
+            },
+            "1.5.3": {
+                "en": "Several fixes and changes",
+                "de": "Mehrere Korrekturen und Änderungen",
+                "ru": "Несколько исправлений и изменений",
+                "pt": "Várias correções e mudanças",
+                "nl": "Verschillende oplossingen en wijzigingen",
+                "fr": "Plusieurs corrections et changements",
+                "it": "Diverse correzioni e modifiche",
+                "es": "Varias correcciones y cambios.",
+                "pl": "Kilka poprawek i zmian",
+                "zh-cn": "几个修复和更改"
+            },
+            "1.5.2": {
+                "en": "Several fixes and changes",
+                "de": "Mehrere Korrekturen und Änderungen",
+                "ru": "Несколько исправлений и изменений",
+                "pt": "Várias correções e mudanças",
+                "nl": "Verschillende oplossingen en wijzigingen",
+                "fr": "Plusieurs corrections et changements",
+                "it": "Diverse correzioni e modifiche",
+                "es": "Varias correcciones y cambios.",
+                "pl": "Kilka poprawek i zmian",
+                "zh-cn": "几个修复和更改"
+            },
+            "1.5.0": {
+                "en": "Several fixes and changes",
+                "de": "Mehrere Korrekturen und Änderungen",
+                "ru": "Несколько исправлений и изменений",
+                "pt": "Várias correções e mudanças",
+                "nl": "Verschillende oplossingen en wijzigingen",
+                "fr": "Plusieurs corrections et changements",
+                "it": "Diverse correzioni e modifiche",
+                "es": "Varias correcciones y cambios.",
+                "pl": "Kilka poprawek i zmian",
+                "zh-cn": "几个修复和更改"
+            },
+            "1.4.3": {
+                "en": "fix compact mode",
+                "de": "Kompaktmodus korrigieren",
+                "ru": "исправить компактный режим",
+                "pt": "corrigir modo compacto",
+                "nl": "fix compacte modus",
+                "fr": "correction du mode compact",
+                "it": "correzione della modalità compatta",
+                "es": "arreglar el modo compacto",
+                "pl": "napraw tryb kompaktowy",
+                "zh-cn": "修正压缩模式"
+            },
+            "1.4.2": {
+                "en": "Running timers will be stopped by unload",
+                "de": "Laufende Timer werden durch Entladen gestoppt",
+                "ru": "Таймеры запуска будут остановлены при выгрузке",
+                "pt": "Os temporizadores em execução serão interrompidos por descarregamento",
+                "nl": "Lopende timers worden gestopt door lossen",
+                "fr": "Les minuteries en cours d'exécution seront arrêtées par déchargement",
+                "it": "I timer in esecuzione verranno arrestati allo scaricamento",
+                "es": "Los temporizadores en ejecución se detendrán al descargar",
+                "pl": "Uruchomione stopery zostaną zatrzymane przez rozładowanie",
+                "zh-cn": "正在运行的计时器将通过卸载停止"
+            },
+            "1.4.1": {
+                "en": "Several fixes and changes",
+                "de": "Mehrere Korrekturen und Änderungen",
+                "ru": "Несколько исправлений и изменений",
+                "pt": "Várias correções e mudanças",
+                "nl": "Verschillende oplossingen en wijzigingen",
+                "fr": "Plusieurs corrections et changements",
+                "it": "Diverse correzioni e modifiche",
+                "es": "Varias correcciones y cambios.",
+                "pl": "Kilka poprawek i zmian",
+                "zh-cn": "几个修复和更改"
+            },
+            "1.4.0": {
+                "en": "adapter optimized",
+                "de": "Adapter optimiert",
+                "ru": "адаптер оптимизирован",
+                "pt": "adaptador otimizado",
+                "nl": "adapter geoptimaliseerd",
+                "fr": "adaptateur optimisé",
+                "it": "adattatore ottimizzato",
+                "es": "adaptador optimizado",
+                "pl": "adapter zoptymalizowany",
+                "zh-cn": "适配器优化"
+            },
+            "1.3.0": {
+                "en": "Compact mode was added",
+                "de": "Kompaktmodus wurde hinzugefügt",
+                "ru": "Компактный режим был добавлен",
+                "pt": "Modo compacto foi adicionado",
+                "nl": "Compact-modus is toegevoegd",
+                "fr": "Le mode compact a été ajouté",
+                "it": "È stata aggiunta la modalità compatta",
+                "es": "Se agregó el modo compacto",
+                "pl": "Dodano tryb kompaktowy",
+                "zh-cn": "紧凑模式已添加"
+            },
+            "1.2.2": {
+                "en": "Several fixes and changes",
+                "de": "Mehrere Korrekturen und Änderungen",
+                "ru": "Несколько исправлений и изменений",
+                "pt": "Várias correções e mudanças",
+                "nl": "Verschillende oplossingen en wijzigingen",
+                "fr": "Plusieurs corrections et changements",
+                "it": "Diverse correzioni e modifiche",
+                "es": "Varias correcciones y cambios.",
+                "pl": "Kilka poprawek i zmian",
+                "zh-cn": "几个修复和更改"
+            },
+            "1.2.1": {
+                "en": "Several fixes and changes",
+                "de": "Mehrere Korrekturen und Änderungen",
+                "ru": "Несколько исправлений и изменений",
+                "pt": "Várias correções e mudanças",
+                "nl": "Verschillende oplossingen en wijzigingen",
+                "fr": "Plusieurs corrections et modifications",
+                "it": "Diverse correzioni e modifiche",
+                "es": "Varias correcciones y cambios",
+                "pl": "Kilka poprawek i zmian"
+            },
+            "1.2.0": {
+                "en": "Several fixes and changes",
+                "de": "Mehrere Korrekturen und Änderungen",
+                "ru": "Несколько исправлений и изменений",
+                "pt": "Várias correções e mudanças",
+                "nl": "Verschillende oplossingen en wijzigingen",
+                "fr": "Plusieurs corrections et modifications",
+                "it": "Diverse correzioni e modifiche",
+                "es": "Varias correcciones y cambios",
+                "pl": "Kilka poprawek i zmian"
+            },
+            "1.1.1": {
+                "en": "Several fixes and changes",
+                "de": "Mehrere Korrekturen und Änderungen",
+                "ru": "Несколько исправлений и изменений",
+                "pt": "Várias correções e mudanças",
+                "nl": "Verschillende oplossingen en wijzigingen",
+                "fr": "Plusieurs corrections et modifications",
+                "it": "Diverse correzioni e modifiche",
+                "es": "Varias correcciones y cambios",
+                "pl": "Kilka poprawek i zmian"
+            },
+            "1.1.0": {
+                "en": "Big changes",
+                "de": "Große veränderungen",
+                "ru": "Большие изменения",
+                "pt": "Grandes mudanças",
+                "nl": "Grote veranderingen",
+                "fr": "Grands changements",
+                "it": "Grandi cambiamenti",
+                "es": "Grandes cambios",
+                "pl": "Duże zmiany"
+            }
+        },
+        "license": "MIT",
+        "localLink": "http://%host%:8083",
+        "platform": "Javascript/Node.js",
+        "mode": "daemon",
+        "icon": "fhem.png",
+        "enabled": true,
+        "materialize": true,
+        "compact": true,
+        "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.fhem/master/admin/fhem.png",
+        "keywords": [
+            "FHEM"
+        ],
+        "readme": "https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/README.md",
+        "loglevel": "info",
+        "type": "iot-systems",
+        "authors": [
+            "bluefox <dogafox@gmail.com>"
+        ]
     },
-    "news": {
-      "1.5.3": {
-        "en": "Several fixes and changes",
-        "de": "Mehrere Korrekturen und Änderungen",
-        "ru": "Несколько исправлений и изменений",
-        "pt": "Várias correções e mudanças",
-        "nl": "Verschillende oplossingen en wijzigingen",
-        "fr": "Plusieurs corrections et changements",
-        "it": "Diverse correzioni e modifiche",
-        "es": "Varias correcciones y cambios.",
-        "pl": "Kilka poprawek i zmian",
-        "zh-cn": "几个修复和更改"
-      },
-      "1.5.2": {
-        "en": "Several fixes and changes",
-        "de": "Mehrere Korrekturen und Änderungen",
-        "ru": "Несколько исправлений и изменений",
-        "pt": "Várias correções e mudanças",
-        "nl": "Verschillende oplossingen en wijzigingen",
-        "fr": "Plusieurs corrections et changements",
-        "it": "Diverse correzioni e modifiche",
-        "es": "Varias correcciones y cambios.",
-        "pl": "Kilka poprawek i zmian",
-        "zh-cn": "几个修复和更改"
-      },
-      "1.5.0": {
-        "en": "Several fixes and changes",
-        "de": "Mehrere Korrekturen und Änderungen",
-        "ru": "Несколько исправлений и изменений",
-        "pt": "Várias correções e mudanças",
-        "nl": "Verschillende oplossingen en wijzigingen",
-        "fr": "Plusieurs corrections et changements",
-        "it": "Diverse correzioni e modifiche",
-        "es": "Varias correcciones y cambios.",
-        "pl": "Kilka poprawek i zmian",
-        "zh-cn": "几个修复和更改"
-      },
-      "1.4.3":  {
-        "en": "fix compact mode",
-        "de": "Kompaktmodus korrigieren",
-        "ru": "исправить компактный режим",
-        "pt": "corrigir modo compacto",
-        "nl": "fix compacte modus",
-        "fr": "correction du mode compact",
-        "it": "correzione della modalità compatta",
-        "es": "arreglar el modo compacto",
-        "pl": "napraw tryb kompaktowy",
-        "zh-cn": "修正压缩模式"
-      },
-      "1.4.2": {
-        "en": "Running timers will be stopped by unload",
-        "de": "Laufende Timer werden durch Entladen gestoppt",
-        "ru": "Таймеры запуска будут остановлены при выгрузке",
-        "pt": "Os temporizadores em execução serão interrompidos por descarregamento",
-        "nl": "Lopende timers worden gestopt door lossen",
-        "fr": "Les minuteries en cours d'exécution seront arrêtées par déchargement",
-        "it": "I timer in esecuzione verranno arrestati allo scaricamento",
-        "es": "Los temporizadores en ejecución se detendrán al descargar",
-        "pl": "Uruchomione stopery zostaną zatrzymane przez rozładowanie",
-        "zh-cn": "正在运行的计时器将通过卸载停止"
-      },
-      "1.4.1": {
-        "en": "Several fixes and changes",
-        "de": "Mehrere Korrekturen und Änderungen",
-        "ru": "Несколько исправлений и изменений",
-        "pt": "Várias correções e mudanças",
-        "nl": "Verschillende oplossingen en wijzigingen",
-        "fr": "Plusieurs corrections et changements",
-        "it": "Diverse correzioni e modifiche",
-        "es": "Varias correcciones y cambios.",
-        "pl": "Kilka poprawek i zmian",
-        "zh-cn": "几个修复和更改"
-      },
-      "1.4.0": {
-        "en": "adapter optimized",
-        "de": "Adapter optimiert",
-        "ru": "адаптер оптимизирован",
-        "pt": "adaptador otimizado",
-        "nl": "adapter geoptimaliseerd",
-        "fr": "adaptateur optimisé",
-        "it": "adattatore ottimizzato",
-        "es": "adaptador optimizado",
-        "pl": "adapter zoptymalizowany",
-        "zh-cn": "适配器优化"
-      },
-      "1.3.0": {
-        "en": "Compact mode was added",
-        "de": "Kompaktmodus wurde hinzugefügt",
-        "ru": "Компактный режим был добавлен",
-        "pt": "Modo compacto foi adicionado",
-        "nl": "Compact-modus is toegevoegd",
-        "fr": "Le mode compact a été ajouté",
-        "it": "È stata aggiunta la modalità compatta",
-        "es": "Se agregó el modo compacto",
-        "pl": "Dodano tryb kompaktowy",
-        "zh-cn": "紧凑模式已添加"
-      },
-      "1.2.2": {
-        "en": "Several fixes and changes",
-        "de": "Mehrere Korrekturen und Änderungen",
-        "ru": "Несколько исправлений и изменений",
-        "pt": "Várias correções e mudanças",
-        "nl": "Verschillende oplossingen en wijzigingen",
-        "fr": "Plusieurs corrections et changements",
-        "it": "Diverse correzioni e modifiche",
-        "es": "Varias correcciones y cambios.",
-        "pl": "Kilka poprawek i zmian",
-        "zh-cn": "几个修复和更改"
-      },
-      "1.2.1": {
-        "en": "Several fixes and changes",
-        "de": "Mehrere Korrekturen und Änderungen",
-        "ru": "Несколько исправлений и изменений",
-        "pt": "Várias correções e mudanças",
-        "nl": "Verschillende oplossingen en wijzigingen",
-        "fr": "Plusieurs corrections et modifications",
-        "it": "Diverse correzioni e modifiche",
-        "es": "Varias correcciones y cambios",
-        "pl": "Kilka poprawek i zmian"
-      },
-      "1.2.0": {
-        "en": "Several fixes and changes",
-        "de": "Mehrere Korrekturen und Änderungen",
-        "ru": "Несколько исправлений и изменений",
-        "pt": "Várias correções e mudanças",
-        "nl": "Verschillende oplossingen en wijzigingen",
-        "fr": "Plusieurs corrections et modifications",
-        "it": "Diverse correzioni e modifiche",
-        "es": "Varias correcciones y cambios",
-        "pl": "Kilka poprawek i zmian"
-      },
-      "1.1.1": {
-        "en": "Several fixes and changes",
-        "de": "Mehrere Korrekturen und Änderungen",
-        "ru": "Несколько исправлений и изменений",
-        "pt": "Várias correções e mudanças",
-        "nl": "Verschillende oplossingen en wijzigingen",
-        "fr": "Plusieurs corrections et modifications",
-        "it": "Diverse correzioni e modifiche",
-        "es": "Varias correcciones y cambios",
-        "pl": "Kilka poprawek i zmian"
-      },
-      "1.1.0": {
-        "en": "Big changes",
-        "de": "Große veränderungen",
-        "ru": "Большие изменения",
-        "pt": "Grandes mudanças",
-        "nl": "Grote veranderingen",
-        "fr": "Grands changements",
-        "it": "Grandi cambiamenti",
-        "es": "Grandes cambios",
-        "pl": "Duże zmiany"
-      }
+    "native": {
+        "port": 7072,
+        "host": "127.0.0.1",
+        "reconnectTimeout": 30000,
+        "password": "",
+        "prompt": "fhem>"
     },
-    "license": "MIT",
-    "localLink": "http://%host%:8083",
-    "platform": "Javascript/Node.js",
-    "mode": "daemon",
-    "icon": "fhem.png",
-    "enabled": true,
-    "materialize": true,
-    "compact": true,
-    "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.fhem/master/admin/fhem.png",
-    "keywords": [
-      "FHEM"
-    ],
-    "readme": "https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/README.md",
-    "loglevel": "info",
-    "type": "iot-systems",
-    "authors": [
-      "bluefox <dogafox@gmail.com>"
+    "objects": [],
+    "instanceObjects": [
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.connection",
+            "type": "state",
+            "common": {
+                "role": "indicator.connected",
+                "name": "If connected to FHEM server",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.resync",
+            "type": "state",
+            "common": {
+                "role": "state",
+                "name": "read all states from FHEM anew",
+                "type": "boolean",
+                "read": true,
+                "write": true,
+                "def": false
+            },
+            "native": {}
+        }
     ]
-  },
-  "native": {
-    "port": 7072,
-    "host": "127.0.0.1",
-    "reconnectTimeout": 30000,
-    "password": "",
-    "prompt": "fhem>"
-  },
-  "objects": [
-  ],
-  "instanceObjects": [
-    {
-      "_id": "info",
-      "type": "channel",
-      "common": {
-        "name": "Information"
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.connection",
-      "type": "state",
-      "common": {
-        "role": "indicator.connected",
-        "name": "If connected to FHEM server",
-        "type": "boolean",
-        "read": true,
-        "write": false,
-        "def": false
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.resync",
-      "type": "state",
-      "common": {
-        "role": "state",
-        "name": "read all states from FHEM anew",
-        "type": "boolean",
-        "read": true,
-        "write": true,
-        "def": false
-      },
-      "native": {}
-    }
-  ]
 }
