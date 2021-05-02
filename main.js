@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '05.04.21';
+const buildDate = '02.05.21';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -2687,6 +2687,16 @@ function eventOK(ff, event, id, val, ts, info, device, channel, cb) {
     } else if (id === 'unusedObjects') {
         unusedObjects(fn, val);
     } else {
+        // 02.05.21 fix use Controller 3.3.x
+        if (fhemObjects[id]) {
+            if (fhemObjects[id].common.type === 'number') {
+                val = parseFloat(val);
+            }
+            /*
+             if (fhemObjects[id].common.type === 'boolean')
+             adapter.log.warn('found boolean: ' + id + '/' + val);
+             */
+        }
         setState(fn, id, val, true, ts);
     }
     let alias = '----';
