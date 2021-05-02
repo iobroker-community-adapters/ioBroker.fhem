@@ -46,6 +46,9 @@ Actually only following attributes are supported:
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (LausiD) fix use Controller 3.3.x
+
 ### 1.6.0 (2021-04-09)
 * (LausiD) Several fixes and changes
 
