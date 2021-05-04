@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '02.05.21';
+const buildDate = '04.05.21';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -1163,9 +1163,19 @@ function parseObjects(ff, objs, cb) {
                     }
                     if (!found) {
                         objects.push(obj);
+                        //04.05.21
+                        let valEmty;
+                        if (obj.common.type === 'boolean') {
+                            valEmty = false;
+                        } else {
+                            valEmty = '.';
+                        }
+                        //
                         states.push({
                             id: obj._id,
-                            val: '.',
+                            //04.05.21
+                            //val: '.',
+                            val: valEmty,
                             ts: Date.now(),
                             ack: true
                         });
@@ -2692,10 +2702,6 @@ function eventOK(ff, event, id, val, ts, info, device, channel, cb) {
             if (fhemObjects[id].common.type === 'number') {
                 val = parseFloat(val);
             }
-            /*
-             if (fhemObjects[id].common.type === 'boolean')
-             adapter.log.warn('found boolean: ' + id + '/' + val);
-             */
         }
         setState(fn, id, val, true, ts);
     }
