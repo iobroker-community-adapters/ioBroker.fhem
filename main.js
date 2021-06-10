@@ -1157,7 +1157,7 @@ function parseObjects(ff, objs, cb) {
                         }
                         //10.06.21
                         //if (stateName === attr) {
-                        if (stateName === convertNameFHEM(fn, attr)) {
+                        if (parts[0] === attr) {
                             found = true;
                             setStates[stateName] = obj;
                             continue;
