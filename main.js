@@ -1155,7 +1155,9 @@ function parseObjects(ff, objs, cb) {
                         if (!objs[i].Readings.hasOwnProperty(attr)) {
                             continue;
                         }
-                        if (stateName === attr) {
+                        //10.06.21
+                        //if (stateName === attr) {
+                        if (stateName === convertNameFHEM(fn, attr)) {
                             found = true;
                             setStates[stateName] = obj;
                             continue;
