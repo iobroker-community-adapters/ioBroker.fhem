@@ -1321,7 +1321,7 @@ function parseObjects(ff, objs, cb) {
                             obj.common.write = true;
                             obj.common.role = 'state';
                             // detect on and off or KNX or dummy (create state_switch)
-                            if (isOff && isOn || objs[i].Internals.TYPE === 'KNX' || objs[i].Internals.TYPE === 'dummy' && (val === 'on' || val === 'off')) {
+                            if (isOff && isOn || objs[i].Internals.TYPE === 'KNX' && (val === 'on' || val === 'off') || objs[i].Internals.TYPE === 'dummy' && (val === 'on' || val === 'off')) {
                                 obj.native.onoff = true;
                                 Funktion = 'switch';
                                 let obj_switch = {
