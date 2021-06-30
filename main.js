@@ -104,7 +104,7 @@ const temperaturePossibleSets = ['desired-temp'];
 const Utemperature = ['temperature', 'measured-temp', 'desired-temp', 'degrees', 'box_cputemp', 'temp_c', 'cpu_temp', 'cpu_temp_avg'];
 const rgbPossibleSets = ['rgb'];
 const Rindicator = ['reachable', 'presence', 'battery', 'Activity', 'present', 'batteryState'];
-//const 
+//const
 function startAdapter(options) {
     options = options || {};
     Object.assign(options, {name: adapterName});
@@ -256,7 +256,7 @@ function myObjects(ff, cb) {
         {_id: 'info.Configurations.deleteUnusedObjects', type: 'state', common: {name: 'FUNCTION - delete unused objects automatically', type: 'boolean', role: 'switch', def: true}, native: {}},
         {_id: 'info.Configurations.oldState', type: 'state', common: {name: 'FUNCTION - old version of state with true/false', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
         {_id: 'info.Configurations.allowedIOBin', type: 'state', common: {name: 'SYNC - allowed objects send2FHEM', type: 'string', read: true, write: true, role: 'state'}, native: {default: '.'}},
-        {_id: 'info.Configurations.allowedIOBinExclude', type: 'state', common: {name: 'SYNC - exclude allowedIOBin', type: 'string', read: true, write: true, role: 'state'}, native: {default: '.'}}, //29.01.21   
+        {_id: 'info.Configurations.allowedIOBinExclude', type: 'state', common: {name: 'SYNC - exclude allowedIOBin', type: 'string', read: true, write: true, role: 'state'}, native: {default: '.'}}, //29.01.21
         {_id: 'info.Configurations.ignoreObjectsInternalsTYPE', type: 'state', common: {name: 'SYNC - ignore device(s) TYPE (default: ' + ignoreObjectsInternalsTYPES + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.ignoreObjectsInternalsNAME', type: 'state', common: {name: 'SYNC - ignore device(s) NAME (default: ' + ignoreObjectsInternalsNAMES + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.ignoreObjectsAttributesroom', type: 'state', common: {name: 'SYNC - ignore device(s) of room(s) (default: ' + ignoreObjectsAttributesRoomS + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
@@ -1205,7 +1205,7 @@ function parseObjects(ff, objs, cb) {
                         (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' > no sync - included in ' + adapter.namespace + '.info.Config.ignoreReadings');
                         continue;
                     }
-                    //try { 
+                    //try {
                     const stateName = convertNameFHEM(fn, attr);
                     // PossibleSets?
                     let combined = false;
@@ -2127,7 +2127,7 @@ function writeValue(ff, id, val, ts, cb) {
             return;
         }
 // info.Commands?
-        else if (id.startsWith(adapter.namespace + '.info.Commands')) {      /// prüfen     
+        else if (id.startsWith(adapter.namespace + '.info.Commands')) {      /// prüfen
             logDebug(fn, id, 'detect info.Commands - ' + id + ' ' + val, 'D');
             // sendFHEM?
             if (id === adapter.namespace + '.info.Commands.sendFHEM') {
@@ -2651,11 +2651,11 @@ function parseEvent(ff, eventIN, cb) {
                         val = parseFloat(val);
                     }
 //indicator?
-                    if (fhemObjects[id].native.role.startsWith('indicator')) {
+                    if (fhemObjects[id].common.role.startsWith('indicator')) {
                         val = convertValueBol(val);
                     }
 //rgb?
-                    if (fhemObjects[id].native.role.startsWith('level.color.rgb')) {
+                    if (fhemObjects[id].common.role.startsWith('level.color.rgb')) {
                         val = '#' + val;
                     }
                     eventOK(fn, event, id, val, ts, 'reading', device, channel);
@@ -2833,7 +2833,7 @@ function convertNameFHEM(ff, name) {
     let fn = ff + '[convertNameFHEM] ';
     let id = name.replace(/\[/g, '{');
     id = id.replace(/\]/g, '}');
-    // Device HPSU? 
+    // Device HPSU?
     if (id.startsWith('HPSU')) {
         id = id.replace(/\./g, '~');
     } else {
