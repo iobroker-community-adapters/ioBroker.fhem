@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '04.05.21';
+const buildDate = '25.06.21';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -82,6 +82,9 @@ const allowedIOBinS = [];
 let allowedIOBin = [];
 let allowedIOBinExclude = [];
 let allowedIOBinExcludeS = [];
+//25.06.21
+const logEventFHEMexcludeS = [];
+let logEventFHEMexclude = [];
 // info.Settings
 let logCheckObject;
 let logUpdateChannel;
@@ -268,6 +271,8 @@ function myObjects(ff, cb) {
         {_id: 'info.Configurations.advancedFunction', type: 'state', common: {name: 'FUNCTION - advanced', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
         {_id: 'info.Configurations.syncUpdate', type: 'state', common: {name: 'FUNCTION - sync update FHEM reading', type: 'boolean', read: true, write: true, role: 'switch', def: true}, native: {}},
         {_id: 'info.Configurations.syncUpdateIOBin', type: 'state', common: {name: 'FUNCTION - sync update allowedIOBin', type: 'boolean', read: true, write: true, role: 'switch', def: true}, native: {}}, //29.01.21
+        //25.06.21
+        {_id: 'info.Configurations.logEventFHEMexclude', type: 'state', common: {name: 'SYNC - exclude logEventFHEM', type: 'string', read: true, write: true, role: 'state'}, native: {default: '.'}},
         // info.Debug
         {_id: 'info.Debug.jsonlist2', type: 'state', common: {name: 'jsonlist2 of FHEM', type: 'string', read: true, write: true, role: 'json'}, native: {}},
         {_id: 'info.Debug.meta', type: 'state', common: {name: 'Device NAME of FHEM', type: 'string', read: true, write: true, role: 'text'}, native: {}},
@@ -405,8 +410,12 @@ function getConfigurationsSYNC(ff, cb) {  //29.01.21
                                             getConfig(fn, 'info.Configurations.onlySyncTYPE', onlySyncTYPE, () => {
                                                 onlySyncRoom = onlySyncRoomS.slice();
                                                 getConfig(fn, 'info.Configurations.onlySyncRoom', onlySyncRoom, () => {
-                                                    logDebug(fn, '', 'end', 'D');
-                                                    cb && cb();
+                                                    //25.06.21
+                                                    logEventFHEMexclude = logEventFHEMexcludeS.slice();
+                                                    getConfig(fn, 'info.Configurations.logEventFHEMexclude', logEventFHEMexclude, () => {
+                                                        logDebug(fn, '', 'end', 'D');
+                                                        cb && cb();
+                                                    });
                                                 });
                                             });
                                         });
@@ -1155,7 +1164,9 @@ function parseObjects(ff, objs, cb) {
                         if (!objs[i].Readings.hasOwnProperty(attr)) {
                             continue;
                         }
-                        if (stateName === attr) {
+                        //10.06.21
+                        //if (stateName === attr) {
+                        if (parts[0] === attr) {
                             found = true;
                             setStates[stateName] = obj;
                             continue;
@@ -1236,8 +1247,6 @@ function parseObjects(ff, objs, cb) {
                         if (attr !== 'state') {
                             val = convertAttr(attr, val);
                         }
-                        //02.04.21 fix zahl possible set & reading
-                        // obj.common.type = obj.common.type || typeof val;
                         obj.common.type = typeof val;
                         if (obj.common.type === 'number') {
                             obj.common.role = obj.common.role || 'value';
@@ -1329,7 +1338,7 @@ function parseObjects(ff, objs, cb) {
                             obj.common.write = true;
                             obj.common.role = 'state';
                             // detect on and off or KNX or dummy (create state_switch)
-                            if (isOff && isOn || objs[i].Internals.TYPE === 'KNX' || objs[i].Internals.TYPE === 'dummy' && (val === 'on' || val === 'off')) {
+                            if (isOff && isOn || objs[i].Internals.TYPE === 'KNX' && (val === 'on' || val === 'off') || objs[i].Internals.TYPE === 'dummy' && (val === 'on' || val === 'off')) {
                                 obj.native.onoff = true;
                                 Funktion = 'switch';
                                 let obj_switch = {
@@ -1592,6 +1601,14 @@ function syncObjects(objects, cb) {
             return;
         }
         const obj = objects.shift();
+        //25.06.21
+        if (logEventFHEMexclude.length > 0) {
+            logEventFHEMexclude.forEach(searchEx => {
+                if (obj._id.startsWith(adapter.namespace + '.' + searchEx)) {
+                    obj.native.LogFhemExclude = true;
+                }
+            });
+        }
         fhemObjects[obj._id] = obj;
         const parts = obj._id.split('.');
         adapter.getForeignObject(obj._id, (e, oldObj) => {
@@ -2610,18 +2627,7 @@ function parseEvent(ff, eventIN, cb) {
                         cb && cb();
                         return;
                     }
-                    /*
-                     const sensor = convertFhemSensor(fn, val, device, type);
-                     search = channel + '.state_boolean';
-                     if (fhemObjects[search] || typeof (sensor[0]) === "boolean")
-                     eventOK(fn, event, channel + '.state_boolean', sensor[0], ts, 'boolean', device, channel);
-                     search = channel + '.state_value';
-                     // state_value?
-                     if (fhemObjects[search] || typeof (sensor[3]) === "number")
-                     eventOK(fn, event, channel + '.state_value', sensor[3], ts, 'value', device, channel);
-                     */
-
-// special for ZWave dim
+                    // special for ZWave dim
                     if (parts[0] === 'ZWave' && parts[2] === 'dim') {
                         let zwave = parts[0] + ' ' + device + ' ' + parts[2] + ': ' + parts[3];
                         adapter.log.info('--- | event FHEM: ' + event + ' (Create4ZWave) > ' + zwave);
@@ -2641,19 +2647,8 @@ function parseEvent(ff, eventIN, cb) {
                 let id = channel + '.' + convertNameFHEM(fn, partsR[2]);
                 if (fhemObjects[id]) {
                     val = convertFhemValue(event.substring(partsR[0].length + partsR[1].length + partsR[2].length + 4));
-                    // unit?
-                    //04.04.21
-                    /*if (fhemObjects[id].common.unit && typeof val !== 'boolean' && val.indexOf('device') !== -1) { //05.02.21
-                     const valOU = val.split(' ');
-                     logDebug(fn, name, ' detect Unit (' + fhemObjects[id].common.unit + '): ' + name + ' ' + val + ' --> ' + name + ' ' + valOU[0], 'D');
-                     if (fhemObjects[id].common.unit !== valOU[1] && valOU[1] && fhemObjects[id].common.unit !== '°C' && valOU[1] !== 'C')
-                     adapter.log.warn('different unit! ' + name + ' old: ' + fhemObjects[id].common.unit + ' / new: ' + valOU[1]);
-                     val = valOU[0];
-                     }
-                     */
                     if (fhemObjects[id].common.unit) {
                         val = parseFloat(val);
-                        //adapter.log.warn(id + ' ' + val);
                     }
 //indicator?
                     if (fhemObjects[id].native.role.startsWith('indicator')) {
@@ -2718,14 +2713,23 @@ function eventOK(ff, event, id, val, ts, info, device, channel, cb) {
         adapter.log.info(device + ' | ' + out);
     } else {
         let check = 'off';
+        //25.06.21
         if ((info === 'state' || info === 'switch' || info === 'value' || info === 'boolean') && logEventFHEMstate)
             check = 'on';
-        if (info === 'reading' && logEventFHEMreading)
+        else if (info === 'reading' && logEventFHEMreading)
             check = 'on';
-        if (info === 'global' && logEventFHEMglobal)
+        else if (info === 'global' && logEventFHEMglobal)
             check = 'on';
         if (check === 'on') {
-            adapter.log.info(out);
+            if (fhemObjects[channel].native.Internals.TYPE !== 'readingsGroup') {
+                if (fhemObjects[id].native.LogFhemExclude) {
+                    adapter.log.debug(fn + tE + out);
+                } else {
+                    adapter.log.info(out);
+                }
+            } else {
+                adapter.log.info(out);
+            }
         } else {
             adapter.log.debug(fn + tE + out);
         }
@@ -2827,7 +2831,6 @@ function convertNameIob(ff, id) {
 }
 function convertNameFHEM(ff, name) {
     let fn = ff + '[convertNameFHEM] ';
-    //Conversion - e.g. for FHEM HPSU https://forum.fhem.de/index.php/topic,106503.0.htm HPSUVal.Betriebsart_[mode_01] ==> HPSUVal~Betriebsart_{mode_01}
     let id = name.replace(/\[/g, '{');
     id = id.replace(/\]/g, '}');
     // Device HPSU? 
