@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "fhem",
-        "version": "1.6.0",
+        "version": "1.6.1",
         "title": "FHEM connection",
         "titleLang": {
             "en": "FHEM connection",
@@ -28,6 +28,18 @@
             "zh-cn": "FHEM"
         },
         "news": {
+            "1.6.1": {
+                "en": "fix use Controller 3.3.x\njs-controller 3.3 optimizations\nAdd Sentry crash reporting",
+                "de": "Fix verwenden Controller 3.3.x\njs-Controller 3.3 Optimierungen\nSentry-Absturzberichte hinzufügen",
+                "ru": "исправить использование контроллера 3.3.x\njs-controller 3.3 оптимизации\nДобавить отчет о сбоях Sentry",
+                "pt": "corrigir usar o controlador 3.3.x\nOtimizações do js-controller 3.3\nAdicionar relatório de falha do Sentry",
+                "nl": "fix gebruik Controller 3.3.x\njs-controller 3.3 optimalisaties\nSentry-crashrapportage toevoegen",
+                "fr": "correction d'utilisation du contrôleur 3.3.x\njs-controller 3.3 optimisations\nAjouter un rapport de plantage Sentry",
+                "it": "correggere l'uso del controller 3.3.x\njs-controller 3.3 ottimizzazioni\nAggiungi segnalazione di arresto anomalo di Sentry",
+                "es": "arreglar el uso del controlador 3.3.x\nOptimizaciones de js-controller 3.3\nAgregar informe de fallas de Sentry",
+                "pl": "napraw użyj Kontrolera 3.3.x\njs-controller 3.3 optymalizacje\nDodaj raport o awariach Sentry",
+                "zh-cn": "修复使用控制器 3.3.x\njs-controller 3.3 优化\n添加哨兵崩溃报告"
+            },
             "1.6.0": {
                 "en": "Several fixes and changes",
                 "de": "Mehrere Korrekturen und Änderungen",

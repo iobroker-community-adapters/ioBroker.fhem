@@ -50,7 +50,7 @@ Actually only following attributes are supported:
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 1.6.1 (2021-06-30)
 * (LausiD) fix use Controller 3.3.x
 * (Apollon77) js-controller 3.3 optimizations
 * (Apollon77) Add Sentry crash reporting
