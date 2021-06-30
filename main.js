@@ -1174,9 +1174,19 @@ function parseObjects(ff, objs, cb) {
                     }
                     if (!found) {
                         objects.push(obj);
+                        //04.05.21
+                        let valEmty;
+                        if (obj.common.type === 'boolean') {
+                            valEmty = false;
+                        } else {
+                            valEmty = '.';
+                        }
+                        //
                         states.push({
                             id: obj._id,
-                            val: '.',
+                            //04.05.21
+                            //val: '.',
+                            val: valEmty,
                             ts: Date.now(),
                             ack: true
                         });
