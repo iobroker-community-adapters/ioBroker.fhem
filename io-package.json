@@ -3,10 +3,29 @@
         "name": "fhem",
         "version": "1.6.0",
         "title": "FHEM connection",
+        "titleLang": {
+            "en": "FHEM connection",
+            "de": "FHEM-Verbindung",
+            "ru": "Подключение FHEM",
+            "pt": "Conexão FHEM",
+            "nl": "FHEM-verbinding",
+            "fr": "Connexion FHEM",
+            "it": "Connessione FHEM",
+            "es": "Conexión FHEM",
+            "pl": "Połączenie FHEM",
+            "zh-cn": "FHEM 连接"
+        },
         "desc": {
             "en": "FHEM",
             "de": "FHEM",
-            "ru": "FHEM"
+            "ru": "FHEM",
+            "pt": "FHEM",
+            "nl": "FHEM",
+            "fr": "FHEM",
+            "it": "FHEM",
+            "es": "FHEM",
+            "pl": "FHEM",
+            "zh-cn": "FHEM"
         },
         "news": {
             "1.6.0": {
@@ -138,7 +157,8 @@
                 "fr": "Plusieurs corrections et modifications",
                 "it": "Diverse correzioni e modifiche",
                 "es": "Varias correcciones y cambios",
-                "pl": "Kilka poprawek i zmian"
+                "pl": "Kilka poprawek i zmian",
+                "zh-cn": "几个修复和更改"
             },
             "1.2.0": {
                 "en": "Several fixes and changes",
@@ -149,7 +169,8 @@
                 "fr": "Plusieurs corrections et modifications",
                 "it": "Diverse correzioni e modifiche",
                 "es": "Varias correcciones y cambios",
-                "pl": "Kilka poprawek i zmian"
+                "pl": "Kilka poprawek i zmian",
+                "zh-cn": "几个修复和更改"
             },
             "1.1.1": {
                 "en": "Several fixes and changes",
@@ -160,7 +181,8 @@
                 "fr": "Plusieurs corrections et modifications",
                 "it": "Diverse correzioni e modifiche",
                 "es": "Varias correcciones y cambios",
-                "pl": "Kilka poprawek i zmian"
+                "pl": "Kilka poprawek i zmian",
+                "zh-cn": "几个修复和更改"
             },
             "1.1.0": {
                 "en": "Big changes",
@@ -171,7 +193,8 @@
                 "fr": "Grands changements",
                 "it": "Grandi cambiamenti",
                 "es": "Grandes cambios",
-                "pl": "Duże zmiany"
+                "pl": "Duże zmiany",
+                "zh-cn": "大变化"
             }
         },
         "license": "MIT",
@@ -191,7 +214,15 @@
         "type": "iot-systems",
         "authors": [
             "bluefox <dogafox@gmail.com>"
-        ]
+        ],
+        "connectionType": "local",
+        "dataSource": "push",
+        "tier": 2,
+        "plugins": {
+            "sentry": {
+                "dsn": "https://96a190f43c434389ac4e8d291c67f18e@sentry.iobroker.net/136"
+            }
+        }
     },
     "native": {
         "port": 7072,
