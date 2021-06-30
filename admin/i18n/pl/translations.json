@@ -1,0 +1,11 @@
+{
+    "FHEM Telnet IP:": "FHEM Telnet IP",
+    "FHEM Telnet Port:": "Port Telnet FHEM",
+    "FHEM adapter settings": "Ustawienia adaptera FHEM",
+    "Password repeat:": "Powtórz hasło",
+    "Password:": "Hasło",
+    "Passwords mismatch!": "Hasło różni się!",
+    "Prompt:": "Skłonić",
+    "tooltip_password": "Opcjonalny. Tylko jeśli FHEM wymaga hasła.",
+    "tooltip_prompt": "Możesz zmienić standardowy znak zachęty z 'fhem>' na coś innego."
+}
