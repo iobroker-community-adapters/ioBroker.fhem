@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '25.06.21';
+const buildDate = '02.07.21';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -2699,39 +2699,44 @@ function eventOK(ff, event, id, val, ts, info, device, channel, cb) {
             }
         }
         setState(fn, id, val, true, ts);
-    }
-    let alias = '----';
-    if (fhemObjects[channel]) {
-        alias = fhemObjects[channel].native.Attributes.alias;
-    }
-    let tE = '';
-    if (logDevelop) {
-        tE = ' (' + Math.round((Date.now() - ts)) + ' ms) ';
-    }
-    let out = 'event FHEM: ' + tE + alias + ' | ' + event + ' | ' + info + ' > ' + id + ' ' + val;
-    if (debugNAME.indexOf(device) !== -1) {
-        adapter.log.info(device + ' | ' + out);
-    } else {
-        let check = 'off';
-        //25.06.21
-        if ((info === 'state' || info === 'switch' || info === 'value' || info === 'boolean') && logEventFHEMstate)
-            check = 'on';
-        else if (info === 'reading' && logEventFHEMreading)
-            check = 'on';
-        else if (info === 'global' && logEventFHEMglobal)
-            check = 'on';
-        if (check === 'on') {
-            if (fhemObjects[channel].native.Internals.TYPE !== 'readingsGroup') {
-                if (fhemObjects[id].native.LogFhemExclude) {
-                    adapter.log.debug(fn + tE + out);
+        //}
+        let alias = '----';
+        if (fhemObjects[channel]) {
+            alias = fhemObjects[channel].native.Attributes.alias;
+            //01.07.21
+        } else {
+            adapter.log.warn('channel not found - ' + id + ' ' + channel + ' ' + val);
+        }
+
+        let tE = '';
+        if (logDevelop) {
+            tE = ' (' + Math.round((Date.now() - ts)) + ' ms) ';
+        }
+        let out = 'event FHEM: ' + tE + alias + ' | ' + event + ' | ' + info + ' > ' + id + ' ' + val;
+        if (debugNAME.indexOf(device) !== -1) {
+            adapter.log.info(device + ' | ' + out);
+        } else {
+            let check = 'off';
+            //25.06.21
+            if ((info === 'state' || info === 'switch' || info === 'value' || info === 'boolean') && logEventFHEMstate)
+                check = 'on';
+            else if (info === 'reading' && logEventFHEMreading)
+                check = 'on';
+            else if (info === 'global' && logEventFHEMglobal)
+                check = 'on';
+            if (check === 'on') {
+                if (fhemObjects[channel].native.Internals.TYPE !== 'readingsGroup') {
+                    if (fhemObjects[id].native.LogFhemExclude) {
+                        adapter.log.debug(fn + tE + out);
+                    } else {
+                        adapter.log.info(out);
+                    }
                 } else {
                     adapter.log.info(out);
                 }
             } else {
-                adapter.log.info(out);
+                adapter.log.debug(fn + tE + out);
             }
-        } else {
-            adapter.log.debug(fn + tE + out);
         }
     }
 }
