@@ -1,6 +1,6 @@
 {
     "FHEM Telnet IP:": "FHEM Telnet IP:",
-    "FHEM Telnet Port:": "FHEM Telnet порт:",
+    "FHEM Telnet Port:": "FHEM Telnet порт",
     "FHEM adapter settings": "Настройки драйвера FHEM",
     "Password repeat:": "Подтверждение пароля:",
     "Password:": "Пароль:",
