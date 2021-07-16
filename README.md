@@ -50,7 +50,7 @@ Actually only following attributes are supported:
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 1.6.2 (2021-07-16)
 * (LausiD) fix crash case
 
 ### 1.6.1 (2021-06-30)

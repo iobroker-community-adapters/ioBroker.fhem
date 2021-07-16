@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "fhem",
-        "version": "1.6.1",
+        "version": "1.6.2",
         "title": "FHEM connection",
         "titleLang": {
             "en": "FHEM connection",
@@ -28,6 +28,18 @@
             "zh-cn": "FHEM"
         },
         "news": {
+            "1.6.2": {
+                "en": "fix crash case",
+                "de": "Crashfall beheben",
+                "ru": "исправить случай аварии",
+                "pt": "consertar caso de acidente",
+                "nl": "crashgeval repareren",
+                "fr": "réparer le cas de crash",
+                "it": "risolvere il caso di incidente",
+                "es": "arreglar caso de accidente",
+                "pl": "napraw przypadek awarii",
+                "zh-cn": "修复崩溃案例"
+            },
             "1.6.1": {
                 "en": "fix use Controller 3.3.x\njs-controller 3.3 optimizations\nAdd Sentry crash reporting",
                 "de": "Fix verwenden Controller 3.3.x\njs-Controller 3.3 Optimierungen\nSentry-Absturzberichte hinzufügen",
