@@ -50,7 +50,7 @@ Actually only following attributes are supported:
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 1.6.3 (2021-07-26)
 * (Apollon77) fix crash case
 
 ### 1.6.2 (2021-07-16)
