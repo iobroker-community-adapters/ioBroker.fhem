@@ -2492,7 +2492,7 @@ function parseEvent(ff, eventIN, cb) {
             cb && cb();
             return;
         } else {
-            eventNOK(fn, event, channel, 'Global global not proccesed!', 'warn', device, channel);
+            eventNOK(fn, event, channel, 'Global global not proccesed!', 'warn', device);
             cb && cb();
             return;
         }
