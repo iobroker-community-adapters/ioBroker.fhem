@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '02.07.21';
+const buildDate = '16.08.21';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -82,7 +82,6 @@ const allowedIOBinS = [];
 let allowedIOBin = [];
 let allowedIOBinExclude = [];
 let allowedIOBinExcludeS = [];
-//25.06.21
 const logEventFHEMexcludeS = [];
 let logEventFHEMexclude = [];
 // info.Settings
@@ -256,7 +255,7 @@ function myObjects(ff, cb) {
         {_id: 'info.Configurations.deleteUnusedObjects', type: 'state', common: {name: 'FUNCTION - delete unused objects automatically', type: 'boolean', role: 'switch', def: true}, native: {}},
         {_id: 'info.Configurations.oldState', type: 'state', common: {name: 'FUNCTION - old version of state with true/false', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
         {_id: 'info.Configurations.allowedIOBin', type: 'state', common: {name: 'SYNC - allowed objects send2FHEM', type: 'string', read: true, write: true, role: 'state'}, native: {default: '.'}},
-        {_id: 'info.Configurations.allowedIOBinExclude', type: 'state', common: {name: 'SYNC - exclude allowedIOBin', type: 'string', read: true, write: true, role: 'state'}, native: {default: '.'}}, //29.01.21
+        {_id: 'info.Configurations.allowedIOBinExclude', type: 'state', common: {name: 'SYNC - exclude allowedIOBin', type: 'string', read: true, write: true, role: 'state'}, native: {default: '.'}},
         {_id: 'info.Configurations.ignoreObjectsInternalsTYPE', type: 'state', common: {name: 'SYNC - ignore device(s) TYPE (default: ' + ignoreObjectsInternalsTYPES + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.ignoreObjectsInternalsNAME', type: 'state', common: {name: 'SYNC - ignore device(s) NAME (default: ' + ignoreObjectsInternalsNAMES + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
         {_id: 'info.Configurations.ignoreObjectsAttributesroom', type: 'state', common: {name: 'SYNC - ignore device(s) of room(s) (default: ' + ignoreObjectsAttributesRoomS + ')', type: 'string', read: true, write: true, role: 'state'}, native: {}},
@@ -270,8 +269,7 @@ function myObjects(ff, cb) {
         {_id: 'info.Configurations.logNoInfo', type: 'state', common: {name: 'FUNCTION - no LOG info', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
         {_id: 'info.Configurations.advancedFunction', type: 'state', common: {name: 'FUNCTION - advanced', type: 'boolean', read: true, write: true, role: 'switch', def: false}, native: {}},
         {_id: 'info.Configurations.syncUpdate', type: 'state', common: {name: 'FUNCTION - sync update FHEM reading', type: 'boolean', read: true, write: true, role: 'switch', def: true}, native: {}},
-        {_id: 'info.Configurations.syncUpdateIOBin', type: 'state', common: {name: 'FUNCTION - sync update allowedIOBin', type: 'boolean', read: true, write: true, role: 'switch', def: true}, native: {}}, //29.01.21
-        //25.06.21
+        {_id: 'info.Configurations.syncUpdateIOBin', type: 'state', common: {name: 'FUNCTION - sync update allowedIOBin', type: 'boolean', read: true, write: true, role: 'switch', def: true}, native: {}},
         {_id: 'info.Configurations.logEventFHEMexclude', type: 'state', common: {name: 'SYNC - exclude logEventFHEM', type: 'string', read: true, write: true, role: 'state'}, native: {default: '.'}},
         // info.Debug
         {_id: 'info.Debug.jsonlist2', type: 'state', common: {name: 'jsonlist2 of FHEM', type: 'string', read: true, write: true, role: 'json'}, native: {}},
@@ -381,7 +379,7 @@ function deleteMyObjects(ff, i, cb) {
     });
 }
 //STEP 02
-function getConfigurationsSYNC(ff, cb) {  //29.01.21
+function getConfigurationsSYNC(ff, cb) {
     let fn = ff + '[getConfigurationsSYNC] ';
     logDebug(fn, '', 'start', 'D');
     if (!firstRun)
@@ -868,7 +866,6 @@ function parseObjects(ff, objs, cb) {
             }
 // Functions
             if (Funktion !== 'no' && autoFunction && objs[i].Attributes.room) {
-//setFunction(channel, Funktion, nameIob);
                 setFunction(channel, Funktion);
             }
             objects.push(obj);
@@ -1164,8 +1161,6 @@ function parseObjects(ff, objs, cb) {
                         if (!objs[i].Readings.hasOwnProperty(attr)) {
                             continue;
                         }
-                        //10.06.21
-                        //if (stateName === attr) {
                         if (parts[0] === attr) {
                             found = true;
                             setStates[stateName] = obj;
@@ -1174,18 +1169,14 @@ function parseObjects(ff, objs, cb) {
                     }
                     if (!found) {
                         objects.push(obj);
-                        //04.05.21
                         let valEmty;
                         if (obj.common.type === 'boolean') {
                             valEmty = false;
                         } else {
                             valEmty = '.';
                         }
-                        //
                         states.push({
                             id: obj._id,
-                            //04.05.21
-                            //val: '.',
                             val: valEmty,
                             ts: Date.now(),
                             ack: true
@@ -1205,7 +1196,6 @@ function parseObjects(ff, objs, cb) {
                         (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' > no sync - included in ' + adapter.namespace + '.info.Config.ignoreReadings');
                         continue;
                     }
-                    //try {
                     const stateName = convertNameFHEM(fn, attr);
                     // PossibleSets?
                     let combined = false;
@@ -1265,7 +1255,6 @@ function parseObjects(ff, objs, cb) {
                                     if ('C °C kWh kW lh W V % km hPa mins min s'.indexOf(checkUnit[1]) !== -1) {
                                         if (checkUnit[1] === 'C')
                                             checkUnit[1] = '°C';
-                                        //val = checkUnit[0];
                                         val = parseFloat(val);
                                         obj.common.unit = checkUnit[1];
                                     } else {
@@ -1601,7 +1590,6 @@ function syncObjects(objects, cb) {
             return;
         }
         const obj = objects.shift();
-        //25.06.21
         if (logEventFHEMexclude.length > 0) {
             logEventFHEMexclude.forEach(searchEx => {
                 if (obj._id.startsWith(adapter.namespace + '.' + searchEx)) {
@@ -1999,7 +1987,6 @@ function syncStatesIOB(cb) {
                             } catch (e) {
                                 val = '???';
                             }
-
                             if (fhemIN[idFHEM]) {
                                 eventIOB.push({
                                     command: 'writeOut',
@@ -2262,7 +2249,7 @@ function writeValue(ff, id, val, ts, cb) {
             val = Math.round(val);
         }
 // bol0?
-        if (fhemObjects[id].native.bol0) {    //benötigt??????
+        if (fhemObjects[id].native.bol0) {    //benötigt?
             if (val === '1' || val === 1 || val === 'on' || val === 'true' || val === true) {
                 val = '1';
             }
@@ -2355,7 +2342,6 @@ function eventFHEM(ff, event) {
         logDebug(fn, event, 'detect !event ' + event, '');
         return;
     } else if (!parts[2]) {
-        //adapter.log.warn('eventFHEM: ' + event + ' > too short!');
         eventNOK(fn, event, parts[1], 'event too short', 'info', parts[1]);
         return;
     } else if (parts[2].indexOf('display_covertitle') !== -1) { // Sonos special
@@ -2492,6 +2478,8 @@ function parseEvent(ff, eventIN, cb) {
             cb && cb();
             return;
         } else {
+            //eventNOK(fn, event, channel, 'Global global not proccesed!', 'warn', device, channel);
+            // (Apollon77) fix crash case 1.6.3 
             eventNOK(fn, event, channel, 'Global global not proccesed!', 'warn', device);
             cb && cb();
             return;
@@ -2561,7 +2549,6 @@ function parseEvent(ff, eventIN, cb) {
                         setState = parseInt(setState);
                     if (obj.common.type === 'boolean')
                         setState = JSON.parse(setState);
-                    //eventOK(fn, event, parts[2], setState, ts, 'state', device, 'no');
                     adapter.setForeignState(parts[2], setState, false);
                 }
             });
@@ -2692,22 +2679,18 @@ function eventOK(ff, event, id, val, ts, info, device, channel, cb) {
     } else if (id === 'unusedObjects') {
         unusedObjects(fn, val);
     } else {
-        // 02.05.21 fix use Controller 3.3.x
         if (fhemObjects[id]) {
             if (fhemObjects[id].common.type === 'number') {
                 val = parseFloat(val);
             }
         }
         setState(fn, id, val, true, ts);
-        //}
         let alias = '----';
         if (fhemObjects[channel]) {
             alias = fhemObjects[channel].native.Attributes.alias;
-            //01.07.21
         } else {
             adapter.log.warn('channel not found - ' + id + ' ' + channel + ' ' + val);
         }
-
         let tE = '';
         if (logDevelop) {
             tE = ' (' + Math.round((Date.now() - ts)) + ' ms) ';
@@ -2717,7 +2700,6 @@ function eventOK(ff, event, id, val, ts, info, device, channel, cb) {
             adapter.log.info(device + ' | ' + out);
         } else {
             let check = 'off';
-            //25.06.21
             if ((info === 'state' || info === 'switch' || info === 'value' || info === 'boolean') && logEventFHEMstate)
                 check = 'on';
             else if (info === 'reading' && logEventFHEMreading)
@@ -2827,9 +2809,9 @@ function getUnit(name) {
 // convert
 function convertNameIob(ff, id) {
     let fn = ff + '[convertNameIob] ';
-    let idFHEM = id.replace(/[-#:~]/g, '_'); //29.01.21
-    idFHEM = idFHEM.replace(/\{/g, '_');
-    idFHEM = idFHEM.replace(/\}/g, '_');
+    let idFHEM = id.replace(/[-#:~{}@]/g, '_'); //16.08.21 fix @ 
+    //idFHEM = idFHEM.replace(/\{/g, '_');
+    //idFHEM = idFHEM.replace(/\}/g, '_');
     if (id !== idFHEM)
         logDebug(fn, id, 'convertNameIob: ' + id + ' --> ' + idFHEM, 'D');
     return idFHEM;
