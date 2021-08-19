@@ -6,6 +6,6 @@
     "Password:": "Kennwort",
     "Passwords mismatch!": "Kennwörter sind unterschiedlich!",
     "Prompt:": "Prompt",
-    "tooltip_password": "Optional. Nur falls in FHEM konfiguriert",
-    "tooltip_prompt": "Man kann hier ein eigenes Prompt setzen. Default ist 'fhem>'"
+    "tooltip_password": "Optional. Nur falls FHEM ein Passwort benötigt.",
+    "tooltip_prompt": "Man kann hier ein eigenes Prompt setzen. Standard ist 'fhem>'."
 }
