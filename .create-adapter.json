@@ -1,0 +1,42 @@
+{
+	"cli": true,
+	"adapterName": "wolf-smartset",
+	"title": "Wolf SmartSet",
+	"description": "Connect Wolf cloud to IoBroker",
+	"keywords": [
+		"wolf",
+		"heating",
+		"cloud"
+	],
+	"contributors": [
+		"MeisterTR"
+	],
+	"expert": "no",
+	"features": [
+		"adapter"
+	],
+	"adminFeatures": [],
+	"type": "climate-control",
+	"startMode": "daemon",
+	"connectionType": "cloud",
+	"dataSource": "poll",
+	"connectionIndicator": "no",
+	"language": "JavaScript",
+	"adminReact": "no",
+	"tools": [
+		"ESLint",
+		"type checking"
+	],
+	"indentation": "Tab",
+	"quotes": "single",
+	"es6class": "yes",
+	"authorName": "MeisterTR",
+	"authorGithub": "MeisterTR",
+	"authorEmail": "meistertr.smarthome@gmail.com",
+	"gitRemoteProtocol": "HTTPS",
+	"gitCommit": "no",
+	"license": "MIT License",
+	"ci": "gh-actions",
+	"dependabot": "no",
+	"creatorVersion": "1.31.0"
+}
