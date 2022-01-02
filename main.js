@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '16.08.21';
+const buildDate = '02.02.22';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -2342,6 +2342,10 @@ function eventFHEM(ff, event) {
         logDebug(fn, event, 'detect !event ' + event, '');
         return;
     } else if (!parts[2]) {
+        //02.01.22 info unhandled event FHEM: ---- | notify
+        if (ignoreObjectsInternalsTYPE.indexOf(parts[0]) !== -1) {
+            return;
+        }
         eventNOK(fn, event, parts[1], 'event too short', 'info', parts[1]);
         return;
     } else if (parts[2].indexOf('display_covertitle') !== -1) { // Sonos special
