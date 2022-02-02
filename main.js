@@ -2687,6 +2687,10 @@ function eventOK(ff, event, id, val, ts, info, device, channel, cb) {
             if (fhemObjects[id].common.type === 'number') {
                 val = parseFloat(val);
             }
+            //03.01.22 has to be type "boolean" but received type "string" 
+            //if (fhemObjects[id].common.type === 'boolean') {
+            //    val = JSON.parse(val);
+            //}
         }
         setState(fn, id, val, true, ts);
         let alias = '----';
@@ -2813,9 +2817,7 @@ function getUnit(name) {
 // convert
 function convertNameIob(ff, id) {
     let fn = ff + '[convertNameIob] ';
-    let idFHEM = id.replace(/[-#:~{}@]/g, '_'); //16.08.21 fix @ 
-    //idFHEM = idFHEM.replace(/\{/g, '_');
-    //idFHEM = idFHEM.replace(/\}/g, '_');
+    let idFHEM = id.replace(/[-#:~{}@/]/g, '_'); //02.02.22 fix /
     if (id !== idFHEM)
         logDebug(fn, id, 'convertNameIob: ' + id + ' --> ' + idFHEM, 'D');
     return idFHEM;
