@@ -95,6 +95,7 @@ Nach erfolgreicher Verbindung zum FHEM Server werden für alle Module aus FHEM a
 Nach der Synchronisation mit FHEM werden alle Zuständsänderungen von FHEM zum ioBroker übertragen.
 
 Möglichkeiten zur Einschränkung der angelegten Objekte im ioBroker ist die Verwendung von definierten Räumen in FHEM oder blocken von einzelnen Modulen.
+https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/SynchroFHEMconfig.md
 
 Durch die automatische Zuordnung von Rollen und Funktionen durch den Adapter werden viele Module aus FHEM (SONOSPLAYER, HUEDevice, Homematic usw) auch im Adapter `Material UI` erkannt und angezeigt.
 
