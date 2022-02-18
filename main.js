@@ -3365,8 +3365,8 @@ function main() {
                                                                         }
                                                                         adapter.getObject(id, (e, objO) => {
                                                                             e && logError(fn, e);
-                                                                            if (objO) {
-                                                                                logInfo(fn, '> ' + objO.common.name + ' = ' + obj[id].val + ' - ' + id);
+                                                                            if (objO && obj0.common) {
+                                                                                logInfo(fn, '> ' + objO.common.name + ' = ' + (obj[id] ? obj[id].val : 'null') + ' - ' + id);
                                                                             }
                                                                             end++;
                                                                             if (end === Object.keys(obj).length) {
