@@ -1,6 +1,6 @@
 ---
 title:       "FHEM-Adapter"
-lastChanged: "31.03.2020"
+lastChanged: "12.03.2022"
 editLink:    "https://github.com/ioBroker/ioBroker.fhem/blob/master/docs/de/README.md"
 ---
 
@@ -290,6 +290,7 @@ Objekt                    | Zugriff | Bescheibung | Wert
 > Internals werden aus FHEM ausgelesen und sind nur als Info zB Anzeige in VIS gedacht.
 In der Default Einstellung werden `TYPE,NAME`synchronisiert.
 Unter `fhem.x.info.Configurations.allowedInternals` können weitere Internals hinzugefügt werden.
+ACHTUNG! Internals können nur beim Start Adapter synchronisiert werden!
 
 ![alt-Objektename](media/objekte2internals.PNG "Objekte-Internals")<span style="color:grey">  
 *Objekte-Internals*</span>
