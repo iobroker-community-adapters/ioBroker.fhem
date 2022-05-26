@@ -3,7 +3,7 @@
     "FHEM Telnet Port:": "FHEM Telnet Port",
     "FHEM adapter settings": "FHEM Adapter Einstellungen",
     "Password repeat:": "Kennwort-Wiederholung",
-    "Password:": "Kennwort",
+    "Password:": "Passwort",
     "Passwords mismatch!": "Kennwörter sind unterschiedlich!",
     "Prompt:": "Prompt",
     "tooltip_password": "Optional. Nur falls FHEM ein Passwort benötigt.",
