@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '11.02.22';
+const buildDate = '06.07.22';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -3363,10 +3363,11 @@ function main() {
                                                                         if (!obj.hasOwnProperty(id)) {
                                                                             continue;
                                                                         }
+                                                                        adapter.log.warn ('CHECK id: '+id);
                                                                         adapter.getObject(id, (e, objO) => {
                                                                             e && logError(fn, e);
-                                                                            if (objO && obj0.common) {
-                                                                                logInfo(fn, '> ' + objO.common.name + ' = ' + (obj[id] ? obj[id].val : 'null') + ' - ' + id);
+                                                                            if (objO) {
+                                                                                logInfo(fn, '> ' + objO.common.name + ' = ' + obj[id].val + ' - ' + id);
                                                                             }
                                                                             end++;
                                                                             if (end === Object.keys(obj).length) {
