@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '06.07.22';
+const buildDate = '12.07.22';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -1260,6 +1260,11 @@ function parseObjects(ff, objs, cb) {
                                     } else {
                                         logDebug(fn, device, val + ' Unit: ' + checkUnit[1] + ' not found indexoF!', '');
                                     }
+                                }
+                                //12.07.22 is invalid: obj.common.min is only allowed on obj.common.type "number" or "mixed", received "string"
+                                if (obj.common.min) {
+                                    //adapter.log.warn('MIN ' + obj.common.name);
+                                    obj.common.type = 'mixed';
                                 }
                             }
                         } else {
@@ -3363,11 +3368,14 @@ function main() {
                                                                         if (!obj.hasOwnProperty(id)) {
                                                                             continue;
                                                                         }
-                                                                        adapter.log.warn ('CHECK id: '+id);
+                                                                        //06.07.22
+                                                                        adapter.log.warn('CHECK id: ' + id);
                                                                         adapter.getObject(id, (e, objO) => {
                                                                             e && logError(fn, e);
                                                                             if (objO) {
                                                                                 logInfo(fn, '> ' + objO.common.name + ' = ' + obj[id].val + ' - ' + id);
+                                                                            //if (objO && obj0.common) {
+                                                                            //    logInfo(fn, '> ' + objO.common.name + ' = ' + (obj[id] ? obj[id].val : 'null') + ' - ' + id);
                                                                             }
                                                                             end++;
                                                                             if (end === Object.keys(obj).length) {
