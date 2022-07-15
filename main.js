@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '12.07.22';
+const buildDate = '15.07.22';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -102,7 +102,8 @@ const volumePossibleSets = ['Volume', 'volume', 'GroupVolume'];
 const temperaturePossibleSets = ['desired-temp'];
 const Utemperature = ['temperature', 'measured-temp', 'desired-temp', 'degrees', 'box_cputemp', 'temp_c', 'cpu_temp', 'cpu_temp_avg'];
 const rgbPossibleSets = ['rgb'];
-const Rindicator = ['reachable', 'presence', 'battery', 'Activity', 'present', 'batteryState'];
+//15.07.22
+const Rindicator = ['reachable', 'presence', 'battery', 'Activity', 'present', 'batteryState','online'];
 //const
 function startAdapter(options) {
     options = options || {};
@@ -445,7 +446,7 @@ function getConfigurationsFUNCTION(ff, cb) {
     getSetting(fn, 'info.Configurations.deleteUnusedObjects', value => deleteUnusedObjects = value);
     getSetting(fn, 'info.Configurations.advancedFunction', value => advancedFunction = value);
     getSetting(fn, 'info.Configurations.syncUpdate', value => syncUpdate = value);
-    getSetting(fn, 'info.Configurations.syncUpdateIOBin', value => syncUpdateIOBin = value);   //29.01.21
+    getSetting(fn, 'info.Configurations.syncUpdateIOBin', value => syncUpdateIOBin = value); //29.01.21
     getSetting(fn, 'info.Configurations.oldState', value => {
         oldState = value;
         adapter.setState('info.Info.buildDate', buildDate, true);
@@ -734,7 +735,7 @@ function parseObjects(ff, objs, cb) {
         try {
 // Auto-created by ioBroker ?
             if (objs[i].Attributes.comment && objs[i].Attributes.comment.startsWith('Auto-created by ioBroker fhem')) {
-                // nicht eigene Instanz?
+// nicht eigene Instanz?
                 if (objs[i].Attributes.comment.indexOf('Auto-created by ioBroker ' + adapter.namespace)) {
                     fhemIgnore[device] = {id: device};
                     fhemIgnoreConfig[device] = {id: device};
@@ -1132,16 +1133,17 @@ function parseObjects(ff, objs, cb) {
                             obj.common.states[ssss[m]] = ssss[m];
                         }
                     }
-                    if (parts[0] === 'Mute') {
+                    //15.07.22 
+                    if (parts[0].toUpperCase() === 'MUTE') {
                         obj.common.type = 'boolean';
                         obj.common.role = 'media.mute';
                         obj.native.bol0 = true;
                     }
-                    if (parts[0] === 'Repeat') {
+                    if (parts[0].toUpperCase() === 'REPEAT') {
                         obj.common.type = 'number';
                         obj.common.role = 'media.mode.repeat';
                     }
-                    if (parts[0] === 'Shuffle') {
+                    if (parts[0].toUpperCase() === 'SHUFFLE') {
                         obj.common.type = 'boolean';
                         obj.common.role = 'media.mode.shuffle';
                         obj.native.bol0 = true;
@@ -1191,7 +1193,7 @@ function parseObjects(ff, objs, cb) {
                     if (!objs[i].Readings.hasOwnProperty(attr)) {
                         continue;
                     }
-                    // ignore Readings ?
+// ignore Readings ?
                     if (ignoreReadings.indexOf(attr) !== -1) {
                         (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.warn(debugN + ' >> ' + attr + ' = ' + objs[i].Readings[attr].Value + ' > no sync - included in ' + adapter.namespace + '.info.Config.ignoreReadings');
                         continue;
@@ -1236,13 +1238,20 @@ function parseObjects(ff, objs, cb) {
                         }
                         if (attr !== 'state') {
                             val = convertAttr(attr, val);
+                            //15.07.22 
+                            if (val === 'true')
+                                val = true;
+                            if (val === 'false')
+                                val = false;
                         }
+
                         obj.common.type = typeof val;
                         if (obj.common.type === 'number') {
                             obj.common.role = obj.common.role || 'value';
                         } else if (obj.common.type === 'boolean') {
-//obj.common.role = obj.common.role || 'text';
-                            //adapter.log.warn('found boolean?');
+                            //15.07.22
+                            obj.common.role = obj.common.role || 'indicator';
+                            adapter.log.warn('found boolean ' + obj.common.name + ' ' + attr);
                         } else if (obj.common.type === 'object') {
 //obj.common.role = obj.common.role || 'text';
                             adapter.log.warn('found object?');
@@ -1513,11 +1522,9 @@ function parseObjects(ff, objs, cb) {
                     }
                 }
                 delete objs[i].Readings;
-
             }
             setStates = null;
             (debugNAME.indexOf(device) !== -1 || debug) && adapter.log.info(debugN + ' check channel ' + channel + ' finished!');
-
         } catch (e) {
             logError(fn, 'Cannot process object: ' + obj._id + ' > ' + e + ' ' + JSON.stringify(objs[i]));
             (cb);
@@ -2347,7 +2354,7 @@ function eventFHEM(ff, event) {
         logDebug(fn, event, 'detect !event ' + event, '');
         return;
     } else if (!parts[2]) {
-        //02.01.22 info unhandled event FHEM: ---- | notify
+//02.01.22 info unhandled event FHEM: ---- | notify
         if (ignoreObjectsInternalsTYPE.indexOf(parts[0]) !== -1) {
             return;
         }
@@ -2487,8 +2494,8 @@ function parseEvent(ff, eventIN, cb) {
             cb && cb();
             return;
         } else {
-            //eventNOK(fn, event, channel, 'Global global not proccesed!', 'warn', device, channel);
-            // (Apollon77) fix crash case 1.6.3 
+//eventNOK(fn, event, channel, 'Global global not proccesed!', 'warn', device, channel);
+// (Apollon77) fix crash case 1.6.3 
             eventNOK(fn, event, channel, 'Global global not proccesed!', 'warn', device);
             cb && cb();
             return;
@@ -2623,7 +2630,7 @@ function parseEvent(ff, eventIN, cb) {
                         cb && cb();
                         return;
                     }
-                    // special for ZWave dim
+// special for ZWave dim
                     if (parts[0] === 'ZWave' && parts[2] === 'dim') {
                         let zwave = parts[0] + ' ' + device + ' ' + parts[2] + ': ' + parts[3];
                         adapter.log.info('--- | event FHEM: ' + event + ' (Create4ZWave) > ' + zwave);
@@ -2692,10 +2699,10 @@ function eventOK(ff, event, id, val, ts, info, device, channel, cb) {
             if (fhemObjects[id].common.type === 'number') {
                 val = parseFloat(val);
             }
-            //03.01.22 has to be type "boolean" but received type "string" 
-            //if (fhemObjects[id].common.type === 'boolean') {
-            //    val = JSON.parse(val);
-            //}
+//03.01.22 has to be type "boolean" but received type "string" 
+//if (fhemObjects[id].common.type === 'boolean') {
+//    val = JSON.parse(val);
+//}
         }
         setState(fn, id, val, true, ts);
         let alias = '----';
@@ -3374,8 +3381,8 @@ function main() {
                                                                             e && logError(fn, e);
                                                                             if (objO) {
                                                                                 logInfo(fn, '> ' + objO.common.name + ' = ' + obj[id].val + ' - ' + id);
-                                                                            //if (objO && obj0.common) {
-                                                                            //    logInfo(fn, '> ' + objO.common.name + ' = ' + (obj[id] ? obj[id].val : 'null') + ' - ' + id);
+                                                                                //if (objO && obj0.common) {
+                                                                                //    logInfo(fn, '> ' + objO.common.name + ' = ' + (obj[id] ? obj[id].val : 'null') + ' - ' + id);
                                                                             }
                                                                             end++;
                                                                             if (end === Object.keys(obj).length) {
