@@ -31,7 +31,7 @@ let synchro = true;
 let debug = false;
 let aktivQueue = false;
 let aktiv = false;
-const buildDate = '15.07.22';
+const buildDate = '16.07.22';
 const linkREADME = 'https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/docs/de/README.md';
 const tsStart = Date.now();
 let t = '> ';
@@ -103,7 +103,7 @@ const temperaturePossibleSets = ['desired-temp'];
 const Utemperature = ['temperature', 'measured-temp', 'desired-temp', 'degrees', 'box_cputemp', 'temp_c', 'cpu_temp', 'cpu_temp_avg'];
 const rgbPossibleSets = ['rgb'];
 //15.07.22
-const Rindicator = ['reachable', 'presence', 'battery', 'Activity', 'present', 'batteryState','online'];
+const Rindicator = ['reachable', 'presence', 'battery', 'Activity', 'present', 'batteryState', 'online'];
 //const
 function startAdapter(options) {
     options = options || {};
@@ -1054,6 +1054,13 @@ function parseObjects(ff, objs, cb) {
                                 obj.common.max = parseInt(_cp[4]);
                             }
                         }
+                        //16.07.22
+                        if (parts[1] === 'on,off') {
+                            Cstates = false;
+                            obj.common.type = 'boolean';
+                            obj.common.role = 'switch';
+                            obj.native.bol0 = true;
+                        }
                     }
                     if (temperaturePossibleSets.indexOf(parts[0]) !== -1) {
                         Cstates = false;
@@ -1139,8 +1146,12 @@ function parseObjects(ff, objs, cb) {
                         obj.common.role = 'media.mute';
                         obj.native.bol0 = true;
                     }
-                    if (parts[0].toUpperCase() === 'REPEAT') {
+                    if (parts[0] === 'Repeat') {
                         obj.common.type = 'number';
+                        obj.common.role = 'media.mode.repeat';
+                    }
+                    if (parts[0] === 'repeat') {
+                        obj.common.type = 'boolean';
                         obj.common.role = 'media.mode.repeat';
                     }
                     if (parts[0].toUpperCase() === 'SHUFFLE') {
@@ -1238,20 +1249,16 @@ function parseObjects(ff, objs, cb) {
                         }
                         if (attr !== 'state') {
                             val = convertAttr(attr, val);
-                            //15.07.22 
-                            if (val === 'true')
-                                val = true;
-                            if (val === 'false')
-                                val = false;
                         }
-
-                        obj.common.type = typeof val;
+                        //16.07.22
+                        obj.common.type = obj.common.type || typeof val;
                         if (obj.common.type === 'number') {
                             obj.common.role = obj.common.role || 'value';
                         } else if (obj.common.type === 'boolean') {
                             //15.07.22
+                            val = convertFhemValueBol(val);
                             obj.common.role = obj.common.role || 'indicator';
-                            adapter.log.warn('found boolean ' + obj.common.name + ' ' + attr);
+                            //adapter.log.warn('found boolean ' + obj.common.name + ' ' + attr);
                         } else if (obj.common.type === 'object') {
 //obj.common.role = obj.common.role || 'text';
                             adapter.log.warn('found object?');
@@ -1270,10 +1277,21 @@ function parseObjects(ff, objs, cb) {
                                         logDebug(fn, device, val + ' Unit: ' + checkUnit[1] + ' not found indexoF!', '');
                                     }
                                 }
-                                //12.07.22 is invalid: obj.common.min is only allowed on obj.common.type "number" or "mixed", received "string"
-                                if (obj.common.min) {
-                                    //adapter.log.warn('MIN ' + obj.common.name);
-                                    obj.common.type = 'mixed';
+
+                            }
+                            //12.07.22 is invalid: obj.common.min is only allowed on obj.common.type "number" or "mixed", received "string"
+                            if (obj.common.min) {
+                                //adapter.log.warn('MIN ' + obj.common.name);
+                                obj.common.type = 'mixed';
+                            }
+
+                            //16.07.22
+                            if (obj.native.Attribute !== 'state') {
+                                val = convertFhemValueBol(val);
+                                if (typeof val === 'boolean') {
+                                    //adapter.log.warn('BOL found: ' + obj.common.name + ' ' + val);
+                                    obj.common.type = 'boolean';
+                                    obj.common.role = 'indicator';
                                 }
                             }
                         } else {
@@ -2960,6 +2978,18 @@ function convertFhemValue(val) {
         return false;
     if (val.indexOf('dim') !== -1)
         return true;
+    return val;
+}
+//16.07.22
+function convertFhemValueBol(val) {
+    if (val === 'true')
+        return true;
+    if (val === 'false')
+        return false;
+    if (val === 'on')
+        return true;
+    if (val === 'off')
+        return false;
     return val;
 }
 function convertFhemSensor(ff, val, device, type) {
