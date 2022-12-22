@@ -516,22 +516,22 @@ function getSetting(ff, id, cb) {
 }
 function getConfig(ff, id, config, cb) {
     let fn = ff + '[getConfig] ';
-    adapter.log.debug(fn + id + ' (' + config + ')');
+    adapter.log.debug(`${fn + id} (${config})`);
     adapter.getObject(id, (e, obj) => {
         e && logError(fn, e);
         if (obj) {
             adapter.getState(id, (e, state) => {
                 e && logError(fn, e);
-                adapter.log.debug(fn + id + ': ' + JSON.stringify(state));
+                adapter.log.debug(`${fn + id}: ${JSON.stringify(state)}`);
                 if (state && state.val) {
                     adapter.setState(id, state.val, true);
-                    const part = state.val.split(",");
+                    const part = (state.val.toString()).split(',');
                     if (part[0]) {
                         for (const i in part) {
                             config.push(part[i].trim());
                         }
                     }
-                    config.length && logInfo(fn, '> ' + obj.common.name + ' - ' + id + ' (' + config + ')');
+                    config.length && logInfo(fn, `> ${obj.common.name} - ${id} (${config})`);
                     cb && cb();
                 } else {
                     cb && cb();
@@ -1140,7 +1140,7 @@ function parseObjects(ff, objs, cb) {
                             obj.common.states[ssss[m]] = ssss[m];
                         }
                     }
-                    //15.07.22 
+                    //15.07.22
                     if (parts[0].toUpperCase() === 'MUTE') {
                         obj.common.type = 'boolean';
                         obj.common.role = 'media.mute';
@@ -2513,7 +2513,7 @@ function parseEvent(ff, eventIN, cb) {
             return;
         } else {
 //eventNOK(fn, event, channel, 'Global global not proccesed!', 'warn', device, channel);
-// (Apollon77) fix crash case 1.6.3 
+// (Apollon77) fix crash case 1.6.3
             eventNOK(fn, event, channel, 'Global global not proccesed!', 'warn', device);
             cb && cb();
             return;
@@ -2717,7 +2717,7 @@ function eventOK(ff, event, id, val, ts, info, device, channel, cb) {
             if (fhemObjects[id].common.type === 'number') {
                 val = parseFloat(val);
             }
-//03.01.22 has to be type "boolean" but received type "string" 
+//03.01.22 has to be type "boolean" but received type "string"
 //if (fhemObjects[id].common.type === 'boolean') {
 //    val = JSON.parse(val);
 //}
