@@ -1033,8 +1033,8 @@ function parseObjects(ff, objs, cb) {
                             const _slider = parts[1].split(',');
                             obj.common.type = 'number';
                             obj.common.role = 'level';
-                            obj.common.min = parseInt(_slider[1]);
-                            obj.common.max = parseInt(_slider[3]);
+                            obj.common.min = parseFloat(_slider[1]);
+                            obj.common.max = parseFloat(_slider[3]);
                             obj.native.slider = true;
                             //special
                             if (_slider[2] !== '1') {
@@ -1050,8 +1050,8 @@ function parseObjects(ff, objs, cb) {
                             if (_cp[4]) {
                                 obj.common.type = 'number';
                                 obj.common.role = 'level';
-                                obj.common.min = parseInt(_cp[2]);
-                                obj.common.max = parseInt(_cp[4]);
+                                obj.common.min = parseFloat(_cp[2]);
+                                obj.common.max = parseFloat(_cp[4]);
                             }
                         }
                         //16.07.22
@@ -2566,7 +2566,7 @@ function parseEvent(ff, eventIN, cb) {
                 } else if (obj && obj.common.write) {
                     let setState = event.substr(parts[0].length + device.length + parts[2].length + 3);
                     if (obj.common.type === 'number')
-                        setState = parseInt(setState);
+                        setState = parseFloat(setState);
                     if (obj.common.type === 'boolean')
                         setState = JSON.parse(setState);
                     adapter.setForeignState(parts[2], setState, false);
