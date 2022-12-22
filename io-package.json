@@ -1,310 +1,191 @@
 {
-    "common": {
-        "name": "fhem",
-        "version": "1.6.3",
-        "title": "FHEM connection",
-        "titleLang": {
-            "en": "FHEM connection",
-            "de": "FHEM-Verbindung",
-            "ru": "Подключение FHEM",
-            "pt": "Conexão FHEM",
-            "nl": "FHEM-verbinding",
-            "fr": "Connexion FHEM",
-            "it": "Connessione FHEM",
-            "es": "Conexión FHEM",
-            "pl": "Połączenie FHEM",
-            "zh-cn": "FHEM 连接"
-        },
-        "desc": {
-            "en": "FHEM",
-            "de": "FHEM",
-            "ru": "FHEM",
-            "pt": "FHEM",
-            "nl": "FHEM",
-            "fr": "FHEM",
-            "it": "FHEM",
-            "es": "FHEM",
-            "pl": "FHEM",
-            "zh-cn": "FHEM"
-        },
-        "news": {
-            "1.6.3": {
-                "en": "fix crash case",
-                "de": "Crashfall beheben",
-                "ru": "исправить случай аварии",
-                "pt": "consertar caso de acidente",
-                "nl": "crashgeval repareren",
-                "fr": "réparer le cas de crash",
-                "it": "risolvere il caso di incidente",
-                "es": "arreglar caso de accidente",
-                "pl": "napraw przypadek awarii",
-                "zh-cn": "修复崩溃案例"
-            },
-            "1.6.2": {
-                "en": "fix crash case",
-                "de": "Crashfall beheben",
-                "ru": "исправить случай аварии",
-                "pt": "consertar caso de acidente",
-                "nl": "crashgeval repareren",
-                "fr": "réparer le cas de crash",
-                "it": "risolvere il caso di incidente",
-                "es": "arreglar caso de accidente",
-                "pl": "napraw przypadek awarii",
-                "zh-cn": "修复崩溃案例"
-            },
-            "1.6.1": {
-                "en": "fix use Controller 3.3.x\njs-controller 3.3 optimizations\nAdd Sentry crash reporting",
-                "de": "Fix verwenden Controller 3.3.x\njs-Controller 3.3 Optimierungen\nSentry-Absturzberichte hinzufügen",
-                "ru": "исправить использование контроллера 3.3.x\njs-controller 3.3 оптимизации\nДобавить отчет о сбоях Sentry",
-                "pt": "corrigir usar o controlador 3.3.x\nOtimizações do js-controller 3.3\nAdicionar relatório de falha do Sentry",
-                "nl": "fix gebruik Controller 3.3.x\njs-controller 3.3 optimalisaties\nSentry-crashrapportage toevoegen",
-                "fr": "correction d'utilisation du contrôleur 3.3.x\njs-controller 3.3 optimisations\nAjouter un rapport de plantage Sentry",
-                "it": "correggere l'uso del controller 3.3.x\njs-controller 3.3 ottimizzazioni\nAggiungi segnalazione di arresto anomalo di Sentry",
-                "es": "arreglar el uso del controlador 3.3.x\nOptimizaciones de js-controller 3.3\nAgregar informe de fallas de Sentry",
-                "pl": "napraw użyj Kontrolera 3.3.x\njs-controller 3.3 optymalizacje\nDodaj raport o awariach Sentry",
-                "zh-cn": "修复使用控制器 3.3.x\njs-controller 3.3 优化\n添加哨兵崩溃报告"
-            },
-            "1.6.0": {
-                "en": "Several fixes and changes",
-                "de": "Mehrere Korrekturen und Änderungen",
-                "ru": "Несколько исправлений и изменений",
-                "pt": "Várias correções e mudanças",
-                "nl": "Diverse fixes en wijzigingen",
-                "fr": "Plusieurs correctifs et modifications",
-                "it": "Diverse correzioni e modifiche",
-                "es": "Varias correcciones y cambios",
-                "pl": "Kilka poprawek i zmian",
-                "zh-cn": "若干修复和变更"
-            },
-            "1.5.3": {
-                "en": "Several fixes and changes",
-                "de": "Mehrere Korrekturen und Änderungen",
-                "ru": "Несколько исправлений и изменений",
-                "pt": "Várias correções e mudanças",
-                "nl": "Verschillende oplossingen en wijzigingen",
-                "fr": "Plusieurs corrections et changements",
-                "it": "Diverse correzioni e modifiche",
-                "es": "Varias correcciones y cambios.",
-                "pl": "Kilka poprawek i zmian",
-                "zh-cn": "几个修复和更改"
-            },
-            "1.5.2": {
-                "en": "Several fixes and changes",
-                "de": "Mehrere Korrekturen und Änderungen",
-                "ru": "Несколько исправлений и изменений",
-                "pt": "Várias correções e mudanças",
-                "nl": "Verschillende oplossingen en wijzigingen",
-                "fr": "Plusieurs corrections et changements",
-                "it": "Diverse correzioni e modifiche",
-                "es": "Varias correcciones y cambios.",
-                "pl": "Kilka poprawek i zmian",
-                "zh-cn": "几个修复和更改"
-            },
-            "1.5.0": {
-                "en": "Several fixes and changes",
-                "de": "Mehrere Korrekturen und Änderungen",
-                "ru": "Несколько исправлений и изменений",
-                "pt": "Várias correções e mudanças",
-                "nl": "Verschillende oplossingen en wijzigingen",
-                "fr": "Plusieurs corrections et changements",
-                "it": "Diverse correzioni e modifiche",
-                "es": "Varias correcciones y cambios.",
-                "pl": "Kilka poprawek i zmian",
-                "zh-cn": "几个修复和更改"
-            },
-            "1.4.3": {
-                "en": "fix compact mode",
-                "de": "Kompaktmodus korrigieren",
-                "ru": "исправить компактный режим",
-                "pt": "corrigir modo compacto",
-                "nl": "fix compacte modus",
-                "fr": "correction du mode compact",
-                "it": "correzione della modalità compatta",
-                "es": "arreglar el modo compacto",
-                "pl": "napraw tryb kompaktowy",
-                "zh-cn": "修正压缩模式"
-            },
-            "1.4.2": {
-                "en": "Running timers will be stopped by unload",
-                "de": "Laufende Timer werden durch Entladen gestoppt",
-                "ru": "Таймеры запуска будут остановлены при выгрузке",
-                "pt": "Os temporizadores em execução serão interrompidos por descarregamento",
-                "nl": "Lopende timers worden gestopt door lossen",
-                "fr": "Les minuteries en cours d'exécution seront arrêtées par déchargement",
-                "it": "I timer in esecuzione verranno arrestati allo scaricamento",
-                "es": "Los temporizadores en ejecución se detendrán al descargar",
-                "pl": "Uruchomione stopery zostaną zatrzymane przez rozładowanie",
-                "zh-cn": "正在运行的计时器将通过卸载停止"
-            },
-            "1.4.1": {
-                "en": "Several fixes and changes",
-                "de": "Mehrere Korrekturen und Änderungen",
-                "ru": "Несколько исправлений и изменений",
-                "pt": "Várias correções e mudanças",
-                "nl": "Verschillende oplossingen en wijzigingen",
-                "fr": "Plusieurs corrections et changements",
-                "it": "Diverse correzioni e modifiche",
-                "es": "Varias correcciones y cambios.",
-                "pl": "Kilka poprawek i zmian",
-                "zh-cn": "几个修复和更改"
-            },
-            "1.4.0": {
-                "en": "adapter optimized",
-                "de": "Adapter optimiert",
-                "ru": "адаптер оптимизирован",
-                "pt": "adaptador otimizado",
-                "nl": "adapter geoptimaliseerd",
-                "fr": "adaptateur optimisé",
-                "it": "adattatore ottimizzato",
-                "es": "adaptador optimizado",
-                "pl": "adapter zoptymalizowany",
-                "zh-cn": "适配器优化"
-            },
-            "1.3.0": {
-                "en": "Compact mode was added",
-                "de": "Kompaktmodus wurde hinzugefügt",
-                "ru": "Компактный режим был добавлен",
-                "pt": "Modo compacto foi adicionado",
-                "nl": "Compact-modus is toegevoegd",
-                "fr": "Le mode compact a été ajouté",
-                "it": "È stata aggiunta la modalità compatta",
-                "es": "Se agregó el modo compacto",
-                "pl": "Dodano tryb kompaktowy",
-                "zh-cn": "紧凑模式已添加"
-            },
-            "1.2.2": {
-                "en": "Several fixes and changes",
-                "de": "Mehrere Korrekturen und Änderungen",
-                "ru": "Несколько исправлений и изменений",
-                "pt": "Várias correções e mudanças",
-                "nl": "Verschillende oplossingen en wijzigingen",
-                "fr": "Plusieurs corrections et changements",
-                "it": "Diverse correzioni e modifiche",
-                "es": "Varias correcciones y cambios.",
-                "pl": "Kilka poprawek i zmian",
-                "zh-cn": "几个修复和更改"
-            },
-            "1.2.1": {
-                "en": "Several fixes and changes",
-                "de": "Mehrere Korrekturen und Änderungen",
-                "ru": "Несколько исправлений и изменений",
-                "pt": "Várias correções e mudanças",
-                "nl": "Verschillende oplossingen en wijzigingen",
-                "fr": "Plusieurs corrections et modifications",
-                "it": "Diverse correzioni e modifiche",
-                "es": "Varias correcciones y cambios",
-                "pl": "Kilka poprawek i zmian",
-                "zh-cn": "几个修复和更改"
-            },
-            "1.2.0": {
-                "en": "Several fixes and changes",
-                "de": "Mehrere Korrekturen und Änderungen",
-                "ru": "Несколько исправлений и изменений",
-                "pt": "Várias correções e mudanças",
-                "nl": "Verschillende oplossingen en wijzigingen",
-                "fr": "Plusieurs corrections et modifications",
-                "it": "Diverse correzioni e modifiche",
-                "es": "Varias correcciones y cambios",
-                "pl": "Kilka poprawek i zmian",
-                "zh-cn": "几个修复和更改"
-            },
-            "1.1.1": {
-                "en": "Several fixes and changes",
-                "de": "Mehrere Korrekturen und Änderungen",
-                "ru": "Несколько исправлений и изменений",
-                "pt": "Várias correções e mudanças",
-                "nl": "Verschillende oplossingen en wijzigingen",
-                "fr": "Plusieurs corrections et modifications",
-                "it": "Diverse correzioni e modifiche",
-                "es": "Varias correcciones y cambios",
-                "pl": "Kilka poprawek i zmian",
-                "zh-cn": "几个修复和更改"
-            },
-            "1.1.0": {
-                "en": "Big changes",
-                "de": "Große veränderungen",
-                "ru": "Большие изменения",
-                "pt": "Grandes mudanças",
-                "nl": "Grote veranderingen",
-                "fr": "Grands changements",
-                "it": "Grandi cambiamenti",
-                "es": "Grandes cambios",
-                "pl": "Duże zmiany",
-                "zh-cn": "大变化"
-            }
-        },
-        "license": "MIT",
-        "localLink": "http://%host%:8083",
-        "platform": "Javascript/Node.js",
-        "mode": "daemon",
-        "icon": "fhem.png",
-        "enabled": true,
-        "materialize": true,
-        "compact": true,
-        "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.fhem/master/admin/fhem.png",
-        "keywords": [
-            "FHEM"
-        ],
-        "readme": "https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/README.md",
-        "loglevel": "info",
-        "type": "iot-systems",
-        "authors": [
-            "bluefox <dogafox@gmail.com>"
-        ],
-        "adminUI": {
-            "config": "json"
-        },
-        "connectionType": "local",
-        "dataSource": "push",
-        "tier": 2,
-        "plugins": {
-            "sentry": {
-                "dsn": "https://96a190f43c434389ac4e8d291c67f18e@sentry.iobroker.net/136"
-            }
-        }
+  "common": {
+    "name": "fhem",
+    "version": "2.0.0",
+    "title": "FHEM connection",
+    "titleLang": {
+      "en": "FHEM connection",
+      "de": "FHEM-Verbindung",
+      "ru": "Подключение FHEM",
+      "pt": "Conexão FHEM",
+      "nl": "FHEM-verbinding",
+      "fr": "Connexion FHEM",
+      "it": "Connessione FHEM",
+      "es": "Conexión FHEM",
+      "pl": "Połączenie FHEM",
+      "zh-cn": "FHEM 连接"
     },
-    "native": {
-        "port": 7072,
-        "host": "127.0.0.1",
-        "reconnectTimeout": 30000,
-        "password": "",
-        "prompt": "fhem>"
+    "desc": {
+      "en": "FHEM",
+      "de": "FHEM",
+      "ru": "FHEM",
+      "pt": "FHEM",
+      "nl": "FHEM",
+      "fr": "FHEM",
+      "it": "FHEM",
+      "es": "FHEM",
+      "pl": "FHEM",
+      "zh-cn": "FHEM"
     },
-    "objects": [],
-    "instanceObjects": [
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "role": "indicator.connected",
-                "name": "If connected to FHEM server",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "def": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.resync",
-            "type": "state",
-            "common": {
-                "role": "state",
-                "name": "read all states from FHEM anew",
-                "type": "boolean",
-                "read": true,
-                "write": true,
-                "def": false
-            },
-            "native": {}
-        }
-    ]
+    "news": {
+      "2.0.0": {
+        "en": "Refactoring\nCorrected some GitHub issues\nAdded JSON config",
+        "de": "Herstellung\nEinige Probleme mit GitHub behoben\nJSON config",
+        "ru": "Рефакторинг\nИсправлены некоторые проблемы GitHub\nДобавлено JSON config",
+        "pt": "Refactoring\nCorrigido alguns problemas do GitHub\nAdicionado JSON config",
+        "nl": "Refactor\nVertaling:\n_",
+        "fr": "Refactoring\nCorrection de quelques problèmes GitHub\nAjouté JSON config",
+        "it": "Refactoring\nCorretto alcuni problemi GitHub\nAggiunto JSON config",
+        "es": "Refactoring\nCorregido algunos problemas de GitHub\nConfiguración JSON",
+        "pl": "Refaktor\nZalecane są niektóre GitHub\nStrona internetowa JSON",
+        "uk": "Рефакторинг\nВиправлено деякі проблеми GitHub\nДодано налаштування JSON",
+        "zh-cn": "评 注\n处理一些吉特·海布问题\n增 编"
+      },
+      "1.6.3": {
+        "en": "fix crash case",
+        "de": "Crashfall beheben",
+        "ru": "исправить случай аварии",
+        "pt": "consertar caso de acidente",
+        "nl": "crashgeval repareren",
+        "fr": "réparer le cas de crash",
+        "it": "risolvere il caso di incidente",
+        "es": "arreglar caso de accidente",
+        "pl": "napraw przypadek awarii",
+        "zh-cn": "修复崩溃案例"
+      },
+      "1.6.2": {
+        "en": "fix crash case",
+        "de": "Crashfall beheben",
+        "ru": "исправить случай аварии",
+        "pt": "consertar caso de acidente",
+        "nl": "crashgeval repareren",
+        "fr": "réparer le cas de crash",
+        "it": "risolvere il caso di incidente",
+        "es": "arreglar caso de accidente",
+        "pl": "napraw przypadek awarii",
+        "zh-cn": "修复崩溃案例"
+      },
+      "1.6.1": {
+        "en": "fix use Controller 3.3.x\njs-controller 3.3 optimizations\nAdd Sentry crash reporting",
+        "de": "Fix verwenden Controller 3.3.x\njs-Controller 3.3 Optimierungen\nSentry-Absturzberichte hinzufügen",
+        "ru": "исправить использование контроллера 3.3.x\njs-controller 3.3 оптимизации\nДобавить отчет о сбоях Sentry",
+        "pt": "corrigir usar o controlador 3.3.x\nOtimizações do js-controller 3.3\nAdicionar relatório de falha do Sentry",
+        "nl": "fix gebruik Controller 3.3.x\njs-controller 3.3 optimalisaties\nSentry-crashrapportage toevoegen",
+        "fr": "correction d'utilisation du contrôleur 3.3.x\njs-controller 3.3 optimisations\nAjouter un rapport de plantage Sentry",
+        "it": "correggere l'uso del controller 3.3.x\njs-controller 3.3 ottimizzazioni\nAggiungi segnalazione di arresto anomalo di Sentry",
+        "es": "arreglar el uso del controlador 3.3.x\nOptimizaciones de js-controller 3.3\nAgregar informe de fallas de Sentry",
+        "pl": "napraw użyj Kontrolera 3.3.x\njs-controller 3.3 optymalizacje\nDodaj raport o awariach Sentry",
+        "zh-cn": "修复使用控制器 3.3.x\njs-controller 3.3 优化\n添加哨兵崩溃报告"
+      },
+      "1.6.0": {
+        "en": "Several fixes and changes",
+        "de": "Mehrere Korrekturen und Änderungen",
+        "ru": "Несколько исправлений и изменений",
+        "pt": "Várias correções e mudanças",
+        "nl": "Diverse fixes en wijzigingen",
+        "fr": "Plusieurs correctifs et modifications",
+        "it": "Diverse correzioni e modifiche",
+        "es": "Varias correcciones y cambios",
+        "pl": "Kilka poprawek i zmian",
+        "zh-cn": "若干修复和变更"
+      },
+      "1.5.3": {
+        "en": "Several fixes and changes",
+        "de": "Mehrere Korrekturen und Änderungen",
+        "ru": "Несколько исправлений и изменений",
+        "pt": "Várias correções e mudanças",
+        "nl": "Verschillende oplossingen en wijzigingen",
+        "fr": "Plusieurs corrections et changements",
+        "it": "Diverse correzioni e modifiche",
+        "es": "Varias correcciones y cambios.",
+        "pl": "Kilka poprawek i zmian",
+        "zh-cn": "几个修复和更改"
+      },
+      "1.5.2": {
+        "en": "Several fixes and changes",
+        "de": "Mehrere Korrekturen und Änderungen",
+        "ru": "Несколько исправлений и изменений",
+        "pt": "Várias correções e mudanças",
+        "nl": "Verschillende oplossingen en wijzigingen",
+        "fr": "Plusieurs corrections et changements",
+        "it": "Diverse correzioni e modifiche",
+        "es": "Varias correcciones y cambios.",
+        "pl": "Kilka poprawek i zmian",
+        "zh-cn": "几个修复和更改"
+      }
+    },
+    "license": "MIT",
+    "localLink": "http://%host%:8083",
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "icon": "fhem.png",
+    "enabled": true,
+    "materialize": true,
+    "compact": true,
+    "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.fhem/master/admin/fhem.png",
+    "keywords": [
+      "FHEM"
+    ],
+    "readme": "https://github.com/iobroker-community-adapters/ioBroker.fhem/blob/master/README.md",
+    "loglevel": "info",
+    "type": "iot-systems",
+    "authors": [
+      "bluefox <dogafox@gmail.com>"
+    ],
+    "adminUI": {
+      "config": "json"
+    },
+    "connectionType": "local",
+    "dataSource": "push",
+    "tier": 2,
+    "plugins": {
+      "sentry": {
+        "dsn": "https://96a190f43c434389ac4e8d291c67f18e@sentry.iobroker.net/136"
+      }
+    }
+  },
+  "native": {
+    "port": 7072,
+    "host": "127.0.0.1",
+    "reconnectTimeout": 30000,
+    "password": "",
+    "prompt": "fhem>"
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "If connected to FHEM server",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.resync",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "read all states from FHEM anew",
+        "type": "boolean",
+        "read": true,
+        "write": true,
+        "def": false
+      },
+      "native": {}
+    }
+  ]
 }

@@ -1,6 +1,6 @@
 {
   "name": "iobroker.fhem",
-  "version": "1.6.3",
+  "version": "2.0.0",
   "description": "ioBroker FHEM Adapter",
   "author": {
     "name": "bluefox",
@@ -50,7 +50,6 @@
     "release-patch": "release-script patch --yes",
     "release-minor": "release-script minor --yes",
     "release-major": "release-script major --yes"
-
   },
   "bugs": {
     "url": "https://github.com/iobroker-community-adapters/ioBroker.fhem/issues"
