@@ -1957,7 +1957,7 @@ function deleteObject(ff, name, cb) {
     let fn = ff + '[deleteObject] ';
     adapter.delObject(name, e => {
         if (e) {
-            logError(fn, name + ': ' + e);
+            logError(fn, `${name}: ${e}`);
             cb && cb();
         } else {
             logDebug(fn, name, `delete object: ${name}`, '');
@@ -1968,18 +1968,20 @@ function deleteObject(ff, name, cb) {
 }
 function deleteState(ff, name, cb) {
     let fn = `${ff}[deleteState] `;
-    adapter.delState(name, e => {
-        if (e) {
-            logError(fn, `${name}: ${e}`);
-            cb && cb();
-        } else {
-            logDebug(fn, name, `delete state: ${name}`, '');
-            cb && cb();
-        }
-    });
+    if (!name.endsWith('.')) {
+        adapter.delState(name, e => {
+            if (e) {
+                logError(fn, `${name}: ${e}`);
+                cb && cb();
+            } else {
+                logDebug(fn, name, `delete state: ${name}`, '');
+                cb && cb();
+            }
+        });
+    }
 }
 function deleteChannel(ff, name, cb) {
-    let fn = ff + '[deleteChannel] ';
+    let fn = `${ff}[deleteChannel] `;
     delete fhemObjects[`${adapter.namespace}.${name}`];
     adapter.deleteChannel(name, e => {
         if (e) {
