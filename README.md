@@ -47,7 +47,16 @@ Actually only following attributes are supported:
   * `Readings "GroupVolume"` will be set `role=level.volume.group`, `min=0`, `max=100`, `unit=%`
 * `SmartName` for Cloud Adapter will be set automatically with alias or name (only `fhem.0` and objects with `role = level.temperature, level.dim, level.volume`)
 
+<!--
+	Placeholder for the next version (at the beginning of the line):
+	### **WORK IN PROGRESS**
+-->
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Refactoring
+* (bluefox) Corrected some GitHub issues
+* (bluefox) Added JSON config
+
 ### 1.6.3 (2021-07-26)
 * (Apollon77) fix crash case
 
