@@ -251,6 +251,9 @@
         "authors": [
             "bluefox <dogafox@gmail.com>"
         ],
+        "adminUI": {
+            "config": "json"
+        },
         "connectionType": "local",
         "dataSource": "push",
         "tier": 2,
