@@ -52,7 +52,7 @@ Actually only following attributes are supported:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 2.0.1 (2022-12-23)
+### **WORK IN PROGRESS**
 * (bluefox) Corrected error with `members`
 
 ### 2.0.0 (2022-12-22)

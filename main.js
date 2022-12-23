@@ -542,15 +542,16 @@ function getConfig(ff, id, config, cb) {
 }
 //STEP 05
 function getDebug(ff, cb) {
-    let fn = ff + '[getDebug] ';
+    let fn = `${ff}[getDebug] `;
     logDebug(fn, '', 'start', 'D');
-    if (!firstRun)
+    if (!firstRun) {
         logInfo(fn, `CHANGE debug ===== check ${adapter.namespace}.info.Debug - Activate Debug-Mode for channel(s)`);
+    }
     debugNAME = [];
     adapter.getState('info.Debug.activate', (e, state) => {
         e && logError(fn, e);
         if (state) {
-            const part = state.val.split(",");
+            const part = (state.val || '').toString().split(',');
             if (part[0]) {
                 for (const i in part) {
                     debugNAME.push(part[i].trim());
@@ -571,7 +572,7 @@ function getDebug(ff, cb) {
 }
 //STEP 06
 function checkSubscribe(ff, cb) {
-    let fn = ff + '[checkSubscribe] ';
+    let fn = `${ff}[checkSubscribe] `;
     logDebug(fn, '', 'start', 'D');
     if (!allowedIOBin.length) {
         logInfo(fn, `> no sync - ${adapter.namespace}.info.Configurations.allowedIOBin`);
@@ -581,7 +582,7 @@ function checkSubscribe(ff, cb) {
     }
     let end = 0;
     allowedIOBin.forEach(search => {
-        adapter.getForeignStates(search + '*', (e, states) => {
+        adapter.getForeignStates(`${search}*`, (e, states) => {
             if (e) {
                 logError(fn, `error: ${e}`);
             } else {
@@ -653,7 +654,7 @@ function syncFHEM(ff, cb) {
                 objects = JSON.parse(result);
             } catch (e) {
                 if (e.name === 'SyntaxError' && e.message.startsWith('Unexpected token')) {
-                    let stelle = Number(e.message.replace(/[^0-9]/g, ""));
+                    let stelle = Number(e.message.replace(/[^0-9]/g, ''));
                     let stelleN = result.lastIndexOf('NAME', stelle);
                     let stelleName = result.indexOf(',', stelleN);
                     logError(fn, `> SyntaxError jsonlist2 of FHEM device ${result.substr(stelleN, stelleName - stelleN)} --> stop instance ${adapter.namespace}`);
@@ -1402,8 +1403,8 @@ function parseObjects(ff, objs, cb) {
 // sensor?
                             let type = objs[i].Internals.TYPE;
                             const sensor = convertFhemSensor(fn, valOrg, device, type);
-                            if ((typeof (sensor[0]) === "boolean" || objs[i].Attributes.subType === 'motionDetector')) {
-                                logDebug(fn, device, 'detect sensor - ' + device, 'D');
+                            if ((typeof (sensor[0]) === 'boolean' || objs[i].Attributes.subType === 'motionDetector')) {
+                                logDebug(fn, device, `detect sensor - ${device}`, 'D');
                                 Funktion = 'sensor';
                                 obj.common.write = false;
                                 if (alias.toLowerCase().includes('tür') || alias.toLowerCase().includes('tuer') || alias.toLowerCase().includes('door'))
@@ -1440,14 +1441,14 @@ function parseObjects(ff, objs, cb) {
                                     ack: true
                                 });
                             }
-// create state_value
-                            if (typeof (sensor[3]) === "number") {
+                            // create state_value
+                            if (typeof (sensor[3]) === 'number') {
                                 obj.native.StateValue = true;
                                 let obj_sensor = {
-                                    _id: channel + '.state_value',
+                                    _id: `${channel}.state_value`,
                                     type: 'state',
                                     common: {
-                                        name: alias + ' ' + 'state_value',
+                                        name: `${alias} state_value`,
                                         type: 'number',
                                         role: sensor[2],
                                         read: true,
@@ -1467,7 +1468,7 @@ function parseObjects(ff, objs, cb) {
                                     ack: true
                                 });
                             }
-// create media.state
+                            // create media.state
                             if (objs[i].Internals.TYPE === 'SONOSPLAYER') {
                                 obj.native.media = true;
                                 let valMedia = false;
@@ -2677,7 +2678,7 @@ function parseEvent(ff, eventIN, cb) {
                     return;
                 } else {
                     let idS = `${channel}.state`;
-                    if (fhemObjects[idS] && "value" in fhemObjects[idS]) {
+                    if (fhemObjects[idS] && 'value' in fhemObjects[idS]) {
                         let valOld = fhemObjects[idS].value.val.split(' ');
                         if (valOld[0] === `${partsR[2]}:`) {
                             val = convertFhemValue(event.substring(partsR[0].length + partsR[1].length + 2));
@@ -3081,7 +3082,7 @@ function setStateDo(ff, command, cb) {
     if (syncUpdate) {
         setStateDoWrite(ff, command, () => cb && cb());
     } else {
-        if (fhemObjects[command.id] && "value" in fhemObjects[command.id]) {
+        if (fhemObjects[command.id] && 'value' in fhemObjects[command.id]) {
             if (fhemObjects[command.id].value.val != command.val) {
                 setStateDoWrite(ff, command, () => cb && cb());
             } else {
