@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "fhem",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "title": "FHEM connection",
     "titleLang": {
       "en": "FHEM connection",
@@ -28,6 +28,19 @@
       "zh-cn": "FHEM"
     },
     "news": {
+      "2.0.2": {
+        "en": "Corrected error with `members`",
+        "de": "Fehler behoben mit Mitgliedern",
+        "ru": "Исправлена ошибка с членами",
+        "pt": "Erro corrigido com membros",
+        "nl": "Verkeerd fout met leden",
+        "fr": "Erreur corrigée avec les membres",
+        "it": "Errore corretto con i membri",
+        "es": "Error corregido con miembros",
+        "pl": "Nieprawdopodobny błąd z członkami",
+        "uk": "Виправлена помилка з членами",
+        "zh-cn": "与成员更正的错误"
+      },
       "2.0.0": {
         "en": "Refactoring\nCorrected some GitHub issues\nAdded JSON config",
         "de": "Herstellung\nEinige Probleme mit GitHub behoben\nJSON config",
