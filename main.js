@@ -1563,7 +1563,7 @@ function parseObjects(ff, objs, cb) {
         adapter.setState('info.Info.numberObjectsIOBout', Object.keys(fhemIN).length, true);
         logInfo(fn, `> detected ${Object.keys(fhemIN).length} objects to send FHEM (ioBout)`);
         adapter.setState('info.Info.numberDevicesFHEMsync', channel, true);
-        logInfo(fn, '> check channel - ' + channel + ' Device(s) of FHEM synchronized');
+        logInfo(fn, `> check channel - ${channel} Device(s) of FHEM synchronized`);
         logInfo(fn, 'STEP 09 ===== Synchro objects, rooms, functions, states');
     }
     firstRun && logInfo(fn, `> check update/create ${objects.length} object(s) / ${channel} channel(s)  and ${state} state(s)`);
@@ -2393,7 +2393,7 @@ function eventFHEM(ff, event) {
     }
 }
 function processEvent(ff, cb) {
-    let fn = ff + '[processEvent] ';
+    let fn = `${ff}[processEvent] `;
     if (!eventQueue.length) {
         cb && cb();
         return;
@@ -3242,16 +3242,16 @@ function logError(ff, text) {
         setStateLog(fn, 'info.Info.lastError', text, true, Date.now());
 }
 function logInfo(ff, text, cb) {
-    let fn = ff + '[logInfo] ';
+    let fn = `${ff}[logInfo] `;
     if (advancedFunction) {
         setStateLog(fn, 'info.Info.lastInfo', text, true, Date.now());
     }
     if (!logNoInfo) {
         adapter.log.info(text);
-        cb && cb();
+        typeof cb === 'function' && cb();
     } else {
         adapter.log.debug(text);
-        cb && cb();
+        typeof cb === 'function' && cb();
     }
 }
 //end ==================================================================================================================================
