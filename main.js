@@ -1735,7 +1735,7 @@ function syncRoom(room, members, cb) {
                 type: 'enum',
                 common: {
                     name: room,
-                    members: members
+                    members
                 },
                 native: {}
             };
@@ -1749,7 +1749,7 @@ function syncRoom(room, members, cb) {
             obj.common.members = obj.common.members || [];
             let changed = false;
             for (let m = 0; m < members.length; m++) {
-                if (!obj.common.members.inlcudes(members[m])) {
+                if (!obj.common.members.includes(members[m])) {
                     changed = true;
                     obj.common.members.push(members[m]);
                 }
@@ -2565,10 +2565,13 @@ function parseEvent(ff, eventIN, cb) {
                     eventNOK(fn, event, channel, `object "${parts[2]}" common.write not true`, 'warn', 'unknown');
                 } else if (obj && obj.common.write) {
                     let setState = event.substr(parts[0].length + device.length + parts[2].length + 3);
-                    if (obj.common.type === 'number')
+                    if (obj.common.type === 'number') {
                         setState = parseFloat(setState);
-                    if (obj.common.type === 'boolean')
+                    }
+                    if (obj.common.type === 'boolean') {
                         setState = JSON.parse(setState);
+                    }
+
                     adapter.setForeignState(parts[2], setState, false);
                 }
             });
