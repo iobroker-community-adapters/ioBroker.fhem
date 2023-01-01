@@ -1545,6 +1545,7 @@ function parseObjects(ff, objs, cb) {
             (debugNAME.includes(device) || debug) && adapter.log.info(`${debugN} check channel ${channel} finished!`);
         } catch (e) {
             logError(fn, `Cannot process object: ${obj._id} > ${e} ${JSON.stringify(objs[i])}`);
+            logError(fn, e.stack);
             (cb);
             continue;
         }
