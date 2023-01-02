@@ -1251,7 +1251,7 @@ function parseObjects(ff, objs, cb) {
                             val = convertAttr(attr, val);
                         }
                         //16.07.22
-                        obj.common.type = obj.common.type || typeof val;
+                        obj.common.type = typeof val; // 02.01.22 obj.common.type = obj.common.type || typeof val;
                         if (obj.common.type === 'number') {
                             obj.common.role = obj.common.role || 'value';
                         } else if (obj.common.type === 'boolean') {
