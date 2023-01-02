@@ -1266,7 +1266,7 @@ function parseObjects(ff, objs, cb) {
                         } else if (obj.common.type === 'string') {
                             obj.common.role = obj.common.role || 'text';
                             if (!obj.common.states) {
-                                const checkUnit = val.split(' ');
+                                const checkUnit = (val || '').toString().split(' ');
                                 if (Number(checkUnit[0]) > -100 && checkUnit[1] && !checkUnit[2]) {
                                     if ('C °C kWh kW lh W V % km hPa mins min s'.includes(checkUnit[1])) {
                                         if (checkUnit[1] === 'C')
