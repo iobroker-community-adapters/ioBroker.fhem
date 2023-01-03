@@ -52,6 +52,10 @@ Actually only following attributes are supported:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (Apollon77/LausiD) Made sure that all objects are initialized correctly
+
 ### 2.0.2 (2022-12-23)
 * (bluefox) Corrected error with `members`
 
@@ -157,7 +161,7 @@ Actually only following attributes are supported:
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2016-2022 bluefox <dogafox@gmail.com>
+Copyright (c) 2016-2023 bluefox <dogafox@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
