@@ -3096,7 +3096,9 @@ function setStateDo(ff, command, cb) {
 }
 function setStateDoWrite(ff, command, cb) {
     let fn = `${ff}[setStateDoWrite] `;
-    adapter.setState(command.id, command.val, command.ack, command.ts, e => {
+    //25.06.23 nach js-Controller update
+    //adapter.setState(command.id, command.val, command.ack, command.ts, e => {
+    adapter.setState(command.id, command.val, command.ack, e => {
         if (e) {
             logError(fn, `${command.id}: ${e}`);
             cb && cb();
