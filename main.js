@@ -759,11 +759,12 @@ function parseObjects(ff, objs, cb) {
                     logIgnoreConfig(fn, device, `comment: ${objs[i].Attributes.comment}`, i, objs.length);
                     continue;
                 }
-                if (device.includes('send2ioB')) {
-                    fhemIgnore[device] = {id: device};
-                    logIgnoreConfig(fn, device, `comment: ${objs[i].Attributes.comment}`, i, objs.length);
-                    continue;
-                }
+                //26.06.23 test 
+                //if (device.includes('send2ioB')) {
+                //    fhemIgnore[device] = {id: device};
+                //    logIgnoreConfig(fn, device, `comment: ${objs[i].Attributes.comment}`, i, objs.length);
+                //    continue;
+                //}
             }
             if (objs[i].Attributes && iobroker) {
                 if (!objs[i].Attributes.room) {
