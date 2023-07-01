@@ -761,7 +761,7 @@ function parseObjects(ff, objs, cb) {
                 }
                 if (device.includes('send2ioB')) {
                     fhemIgnore[device] = {id: device};
-                    logIgnoreConfig(fn, device, `comment: ${objs[i].Attributes.comment}`, i, objs.length);
+                    //logIgnoreConfig(fn, device, `comment: ${objs[i].Attributes.comment}`, i, objs.length);
                     continue;
                 }
             }
