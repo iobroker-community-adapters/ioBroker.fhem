@@ -737,9 +737,10 @@ function parseObjects(ff, objs, cb) {
 // Auto-created by ioBroker ?
             if (objs[i].Attributes.comment && objs[i].Attributes.comment.startsWith('Auto-created by ioBroker fhem')) {
 // nicht eigene Instanz?
+                //01.07.23 fix send2iob
                 if (!objs[i].Attributes.comment.includes(`Auto-created by ioBroker ${adapter.namespace}`)) {
                     fhemIgnore[device] = {id: device};
-                    fhemIgnoreConfig[device] = {id: device};
+                    //fhemIgnoreConfig[device] = {id: device};
                     logIgnoreConfig(fn, device, `comment: ${objs[i].Attributes.comment}`, i, objs.length);
                     continue;
                 }
