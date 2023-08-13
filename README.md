@@ -52,7 +52,7 @@ Actually only following attributes are supported:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 2.0.4 (2023-08-13)
 * (LausiD) Several problems have been fixed (#213, #214)
 
 ### 2.0.3 (2023-01-03)

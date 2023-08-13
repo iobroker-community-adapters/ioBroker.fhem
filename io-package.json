@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "fhem",
-    "version": "2.0.3",
+    "version": "2.0.4",
     "title": "FHEM connection",
     "titleLang": {
       "en": "FHEM connection",
@@ -28,6 +28,19 @@
       "zh-cn": "FHEM"
     },
     "news": {
+      "2.0.4": {
+        "en": "Several problems have been fixed (#213, #214)",
+        "de": "Mehrere Probleme wurden behoben #(213, #214)",
+        "ru": "Исправлены несколько проблем #(213, #214)",
+        "pt": "Vários problemas foram corrigidos #(213, #214)",
+        "nl": "Verschillende problemen zijn opgelost",
+        "fr": "Plusieurs problèmes ont été corrigés #(213, #214)",
+        "it": "Diversi problemi sono stati risolti #(213, #214)",
+        "es": "Se han solucionado varios problemas #(213, #214)",
+        "pl": "Zmiany ustalono na #(213, #214)",
+        "uk": "Кілька проблем було виправлено #(213, #214)",
+        "zh-cn": "若干问题已确定为第(2)13号、第214号)"
+      },
       "2.0.3": {
         "en": "Made sure that all objects are initialized correctly",
         "de": "Vergewissern Sie sich, dass alle Objekte korrekt initialisiert werden",
@@ -102,18 +115,6 @@
         "es": "arreglar el uso del controlador 3.3.x\nOptimizaciones de js-controller 3.3\nAgregar informe de fallas de Sentry",
         "pl": "napraw użyj Kontrolera 3.3.x\njs-controller 3.3 optymalizacje\nDodaj raport o awariach Sentry",
         "zh-cn": "修复使用控制器 3.3.x\njs-controller 3.3 优化\n添加哨兵崩溃报告"
-      },
-      "1.6.0": {
-        "en": "Several fixes and changes",
-        "de": "Mehrere Korrekturen und Änderungen",
-        "ru": "Несколько исправлений и изменений",
-        "pt": "Várias correções e mudanças",
-        "nl": "Diverse fixes en wijzigingen",
-        "fr": "Plusieurs correctifs et modifications",
-        "it": "Diverse correzioni e modifiche",
-        "es": "Varias correcciones y cambios",
-        "pl": "Kilka poprawek i zmian",
-        "zh-cn": "若干修复和变更"
       }
     },
     "license": "MIT",
