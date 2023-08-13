@@ -52,6 +52,9 @@ Actually only following attributes are supported:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (LausiD) Several problems have been fixed (#213, #214)
+
 ### 2.0.3 (2023-01-03)
 * (Apollon77/LausiD) Made sure that all objects are initialized correctly
 
