@@ -52,7 +52,7 @@ Actually only following attributes are supported:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 2.0.5 (2023-08-13)
 * (mcm1957) Dependencies have been updated
 * (mcm1957) Adapter now requires node 16
 

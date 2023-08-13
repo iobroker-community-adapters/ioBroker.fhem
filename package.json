@@ -1,6 +1,6 @@
 {
   "name": "iobroker.fhem",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "ioBroker FHEM Adapter",
   "author": {
     "name": "bluefox",
