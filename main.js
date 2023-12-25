@@ -3395,7 +3395,7 @@ function main() {
                                                                             continue;
                                                                         }
                                                                         //06.07.22
-                                                                        adapter.log.warn(`CHECK id: ${id}`);
+                                                                        //25.12.23 adapter.log.warn(`CHECK id: ${id}`);
                                                                         adapter.getObject(id, (e, objO) => {
                                                                             e && logError(fn, e);
                                                                             if (objO) {
