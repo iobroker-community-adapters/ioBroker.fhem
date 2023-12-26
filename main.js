@@ -2821,7 +2821,9 @@ function getUnit(name) {
     name = name.toLowerCase();
     //if (Utemperature.includes(name)) {
     //    return '°C';
-    if (name.includes('temp') && !name.includes('time') && !name.includes('stat') && !name.includes('trend')) {
+    // 26.12.23 
+   // if (name.includes('temp') && !name.includes('time') && !name.includes('stat') && !name.includes('trend')) {
+   if (name.includes('temp') && !name.includes('time') && !name.includes('stat') && !name.includes('trend') && !name.includes('weekprofile')&& !name.includes('list')) {
         return '°C';
     } else if (name.includes('power')) {
         return 'W';
