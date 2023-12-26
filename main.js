@@ -3394,8 +3394,6 @@ function main() {
                                                                         if (!obj.hasOwnProperty(id)) {
                                                                             continue;
                                                                         }
-                                                                        //06.07.22
-                                                                        //25.12.23 adapter.log.warn(`CHECK id: ${id}`);
                                                                         adapter.getObject(id, (e, objO) => {
                                                                             e && logError(fn, e);
                                                                             if (objO) {
