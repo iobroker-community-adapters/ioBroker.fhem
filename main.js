@@ -1264,7 +1264,9 @@ function parseObjects(ff, objs, cb) {
 //obj.common.role = obj.common.role || 'text';
                             adapter.log.warn('found object?');
                             //} else if (obj.common.type === 'string' && !obj.common.role) {
-                        } else if (obj.common.type === 'string') {
+                        //26.12.23
+                        //} else if (obj.common.type === 'string') {
+                            } else if (obj.common.type === 'string' && !obj.common.name.includes('weekprofile')) {
                             obj.common.role = obj.common.role || 'text';
                             if (!obj.common.states) {
                                 const checkUnit = (val || '').toString().split(' ');
