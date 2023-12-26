@@ -1264,11 +1264,11 @@ function parseObjects(ff, objs, cb) {
 //obj.common.role = obj.common.role || 'text';
                             adapter.log.warn('found object?');
                             //} else if (obj.common.type === 'string' && !obj.common.role) {
-                        //26.12.23
-                        //} else if (obj.common.type === 'string') {
-                            } else if (obj.common.type === 'string' && !obj.common.name.includes('weekprofile')) {
+                            } else if (obj.common.type === 'string') {
                             obj.common.role = obj.common.role || 'text';
-                            if (!obj.common.states) {
+                           //26.12.23
+                            //if (!obj.common.states) {
+                            if (!obj.common.states && !obj.common.name.includes('weekprofile')) {
                                 const checkUnit = (val || '').toString().split(' ');
                                 if (Number(checkUnit[0]) > -100 && checkUnit[1] && !checkUnit[2]) {
                                     if ('C °C kWh kW lh W V % km hPa mins min s'.includes(checkUnit[1])) {
