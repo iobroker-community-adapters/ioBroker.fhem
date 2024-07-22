@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "fhem",
-    "version": "2.0.5",
+    "version": "3.0.0",
     "title": "FHEM connection",
     "titleLang": {
       "en": "FHEM connection",
@@ -28,6 +28,19 @@
       "zh-cn": "FHEM"
     },
     "news": {
+      "3.0.0": {
+        "en": "NodeJS >= 18.x and js-controller >= 5 is required\n\n* Removed warning from log\n* Updated tests and dependencies",
+        "de": "NodeJS >= 18.x und js-Controller >= 5 ist erforderlich\n\n* Warnung aus Protokoll entfernt\n* Aktualisierte Tests und Abhängigkeiten",
+        "ru": "NodeJS >= 18.x и js-контроллер >= 5 требуется\n\n* Удаление предупреждения из журнала\n* Обновленные тесты и зависимости",
+        "pt": "NodeJS >= 18.x e js-controller >= 5 é necessário\n\n* Alerta removido do registo\n* Testes e dependências atualizados",
+        "nl": "Voor de toepassing van de onderverdelingen 870190 tot en met 870290 wordt onder post 8702 verstaan: 5 is vereist\n\n* Verwijderde waarschuwing uit log\n* Bijgewerkte tests en afhankelijkheden",
+        "fr": "NodeJS >= 18.x et js-controller >= 5 est nécessaire\n\n* Retrait de l'avertissement du journal\n* Essais et dépendances actualisés",
+        "it": "NodeJS >= 18.x e js-controller 5 è richiesto\n\n* Avviso rimosso dal registro\n* Test e dipendenze aggiornate",
+        "es": "NodeJS >= 18.x y js-controller Se requiere 5\n\n* Advertencia eliminada del tronco\n* Pruebas actualizadas y dependencias",
+        "pl": "NodeJS > = 18.x i kontroler js- > = 5 jest wymagane\n\n* Usunięto ostrzeżenie z dziennika\n* Aktualizacja testów i zależności",
+        "uk": "NodeJS >= 18.x та js-controller >= 5 обов'язково\n\n* Видалити попередження з журналу\n* Оновлені тести та залежності",
+        "zh-cn": "节点JS18x和js控制器QQ 需要5个\n\n* 从日志中删除警告\n* 更新测试和依赖性"
+      },
       "2.0.5": {
         "en": "Dependencies have been updated\nAdapter now requires node 16",
         "de": "Abhängigkeiten wurden aktualisiert\nAdapter benötigt nun den Node 16",
@@ -94,18 +107,6 @@
         "zh-cn": "评 注\n处理一些吉特·海布问题\n增 编"
       },
       "1.6.3": {
-        "en": "fix crash case",
-        "de": "Crashfall beheben",
-        "ru": "исправить случай аварии",
-        "pt": "consertar caso de acidente",
-        "nl": "crashgeval repareren",
-        "fr": "réparer le cas de crash",
-        "it": "risolvere il caso di incidente",
-        "es": "arreglar caso de accidente",
-        "pl": "napraw przypadek awarii",
-        "zh-cn": "修复崩溃案例"
-      },
-      "1.6.2": {
         "en": "fix crash case",
         "de": "Crashfall beheben",
         "ru": "исправить случай аварии",

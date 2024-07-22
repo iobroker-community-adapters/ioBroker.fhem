@@ -52,7 +52,7 @@ Actually only following attributes are supported:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.0.0 (2024-07-22)
 NodeJS >= 18.x and js-controller >= 5 is required
 
 * (@LausiD) Removed warning from log
