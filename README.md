@@ -52,6 +52,11 @@ Actually only following attributes are supported:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+NodeJS >= 18.x and js-controller >= 5 is required
+
+* (LausiD) Removed warning from log
+
 ### 2.0.5 (2023-08-13)
 * (mcm1957) Dependencies have been updated
 * (mcm1957) Adapter now requires node 16

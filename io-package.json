@@ -118,7 +118,10 @@
         "zh-cn": "修复崩溃案例"
       }
     },
-    "license": "MIT",
+    "licenseInformation": {
+      "license": "MIT",
+      "type": "free"
+    },
     "localLink": "http://%host%:8083",
     "platform": "Javascript/Node.js",
     "mode": "daemon",
@@ -146,7 +149,17 @@
       "sentry": {
         "dsn": "https://96a190f43c434389ac4e8d291c67f18e@sentry.iobroker.net/136"
       }
-    }
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=5.0.0"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=6.6.0"
+      }
+    ]
   },
   "native": {
     "port": 7072,
