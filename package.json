@@ -36,7 +36,7 @@
     "@alcalzone/release-script-plugin-manual-review": "^3.7.0",
     "@iobroker/adapter-dev": "^1.4.0",
     "@iobroker/legacy-testing": "^1.0.13",
-    "axios": "^1.8.4",
+    "axios": "^1.9.0",
     "chai": "^4.3.10",
     "gulp": "^4.0.2",
     "mocha": "^10.8.2"
