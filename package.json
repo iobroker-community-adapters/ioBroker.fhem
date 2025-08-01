@@ -37,7 +37,7 @@
     "@iobroker/adapter-dev": "^1.4.0",
     "@iobroker/legacy-testing": "^1.0.13",
     "axios": "^1.11.0",
-    "chai": "^4.3.10",
+    "chai": "^5.2.1",
     "gulp": "^4.0.2",
     "mocha": "^10.8.2"
   },
