@@ -13,3 +13,6 @@ backitupl.sh
 /lib/*.sh
 /lib/restore.json
 /package-lock.json
+
+#ignore .commitinfo created by ioBroker release script
+.commitinfo
