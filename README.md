@@ -50,6 +50,9 @@ Actually only following attributes are supported:
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
+- Adapter requires js-controller 6.0.11 now
+- Adapter requires admin 7.6.17 now
+
 -->
 ## Changelog
 ### 3.0.0 (2024-07-22)
