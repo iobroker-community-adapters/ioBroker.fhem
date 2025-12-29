@@ -10,10 +10,6 @@
     {
       "name": "bluefox",
       "email": "dogafox@gmail.com"
-    },
-    {
-      "name": "iobroker-community-adapters",
-      "email": "iobroker-community-adapters@gmx.de"
     }
   ],
   "homepage": "https://github.com/iobroker-community-adapters/ioBroker.fhem",
