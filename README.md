@@ -52,6 +52,10 @@ Actually only following attributes are supported:
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+
+### **WORK IN PROGRESS**
+- (@copilot) Adapter requires js-controller 6.0.11 now
+- (@copilot) Adapter requires admin 7.6.17 now
 ### 3.0.0 (2024-07-22)
 NodeJS >= 18.x and js-controller >= 5 is required
 
