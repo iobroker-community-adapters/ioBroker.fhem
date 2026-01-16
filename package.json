@@ -42,7 +42,7 @@
     "@iobroker/legacy-testing": "^1.0.13",
     "axios": "^1.13.2",
     "chai": "^4.3.10",
-    "gulp": "^4.0.2",
+    "gulp": "^5.0.1",
     "mocha": "^10.8.2"
   },
   "main": "main.js",
