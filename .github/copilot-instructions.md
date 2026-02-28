@@ -1,9 +1,39 @@
 # ioBroker Adapter Development with GitHub Copilot
 
-**Version:** 0.4.2
+**Version:** 0.5.7  
 **Template Source:** https://github.com/DrozmotiX/ioBroker-Copilot-Instructions
 
 This file contains instructions and best practices for GitHub Copilot when working on ioBroker adapter development.
+
+---
+
+## 📑 Table of Contents
+
+1. [Project Context](#project-context)
+2. [Code Quality & Standards](#code-quality--standards)
+   - [Code Style Guidelines](#code-style-guidelines)
+   - [ESLint Configuration](#eslint-configuration)
+3. [Testing](#testing)
+   - [Unit Testing](#unit-testing)
+   - [Integration Testing](#integration-testing)
+   - [API Testing with Credentials](#api-testing-with-credentials)
+4. [Development Best Practices](#development-best-practices)
+   - [Dependency Management](#dependency-management)
+   - [HTTP Client Libraries](#http-client-libraries)
+   - [Error Handling](#error-handling)
+5. [Admin UI Configuration](#admin-ui-configuration)
+   - [JSON-Config Setup](#json-config-setup)
+   - [Translation Management](#translation-management)
+6. [Documentation](#documentation)
+   - [README Updates](#readme-updates)
+   - [Changelog Management](#changelog-management)
+7. [CI/CD & GitHub Actions](#cicd--github-actions)
+   - [Workflow Configuration](#workflow-configuration)
+   - [Testing Integration](#testing-integration)
+8. [FHEM-Specific Implementation Patterns](#fhem-specific-implementation-patterns)
+9. [Code Generation Guidelines](#code-generation-guidelines)
+
+---
 
 ## Project Context
 
@@ -33,47 +63,146 @@ Connection details:
 - Listens for FHEM events via `inform on` mechanism
 - Supports reconnection handling for network interruptions
 
+FHEM adapter configuration structure:
+```javascript
+"native": {
+    "host": "127.0.0.1",
+    "port": 7072,
+    "reconnectTimeout": 30000,
+    "password": "",
+    "prompt": "fhem>",
+    "syncOptions": {
+        "allowedAttributes": "room,alias,comment",
+        "autoRole": true,
+        "autoRoom": true
+    }
+}
+```
+
+---
+
+## Code Quality & Standards
+
+### Code Style Guidelines
+
+- Follow JavaScript/TypeScript best practices
+- Use async/await for asynchronous operations
+- Implement proper resource cleanup in `unload()` method
+- Use semantic versioning for adapter releases
+- Include proper JSDoc comments for public methods
+
+**Adapter Lifecycle:**
+- `ready()` - Initialize adapter, establish connections
+- `unload()` - Clean up resources, close connections
+- `stateChange()` - Handle state changes from ioBroker
+- `objectChange()` - Handle object definition changes
+
+**Timer and Resource Cleanup Example:**
+```javascript
+async ready() {
+    // Initialize FHEM connection
+    this.fhemConnection = new FhemConnection(this.config);
+    await this.fhemConnection.connect();
+
+    // Subscribe to required states
+    this.subscribeStates('*');
+}
+
+unload(callback) {
+    try {
+        if (this.fhemConnection) {
+            this.fhemConnection.disconnect();
+        }
+        callback();
+    } catch (e) {
+        callback();
+    }
+}
+```
+
+### ESLint Configuration
+
+**CRITICAL:** ESLint validation must run FIRST in your CI/CD pipeline, before any other tests. This "lint-first" approach catches code quality issues early.
+
+#### Setup
+```bash
+npm install --save-dev eslint @iobroker/eslint-config
+```
+
+#### Configuration (.eslintrc.json)
+```json
+{
+  "extends": "@iobroker/eslint-config",
+  "rules": {
+    // Add project-specific rule overrides here if needed
+  }
+}
+```
+
+#### Package.json Scripts
+```json
+{
+  "scripts": {
+    "lint": "eslint --max-warnings 0 .",
+    "lint:fix": "eslint . --fix"
+  }
+}
+```
+
+#### Best Practices
+1. ✅ Run ESLint before committing — fix ALL warnings, not just errors
+2. ✅ Use `lint:fix` for auto-fixable issues
+3. ✅ Don't disable rules without documentation
+4. ✅ Lint all relevant files (main code, tests, build scripts)
+5. ✅ Keep `@iobroker/eslint-config` up to date
+6. ✅ **ESLint warnings are treated as errors in CI** (`--max-warnings 0`). The `lint` script above already includes this flag — run `npm run lint` to match CI behavior locally
+
+#### Common Issues
+- **Unused variables**: Remove or prefix with underscore (`_variable`)
+- **Missing semicolons**: Run `npm run lint:fix`
+- **Indentation**: Use 4 spaces (ioBroker standard)
+- **console.log**: Replace with `adapter.log.debug()` or remove
+
+---
+
 ## Testing
 
 ### Unit Testing
+
 - Use Jest as the primary testing framework for ioBroker adapters
 - Create tests for all adapter main functions and helper methods
 - Test error handling scenarios and edge cases
 - Mock external API calls and hardware dependencies
 - For adapters connecting to APIs/devices not reachable by internet, provide example data files to allow testing of functionality without live connections
-- Example test structure:
-  ```javascript
-  describe('AdapterName', () => {
-    let adapter;
-    
-    beforeEach(() => {
-      // Setup test adapter instance
-    });
-    
-    test('should initialize correctly', () => {
-      // Test adapter initialization
-    });
+
+**Example Structure:**
+```javascript
+describe('AdapterName', () => {
+  let adapter;
+  
+  beforeEach(() => {
+    // Setup test adapter instance
   });
-  ```
+  
+  test('should initialize correctly', () => {
+    // Test adapter initialization
+  });
+});
+```
 
 ### Integration Testing
 
-**IMPORTANT**: Use the official `@iobroker/testing` framework for all integration tests. This is the ONLY correct way to test ioBroker adapters.
+**CRITICAL:** Use the official `@iobroker/testing` framework. This is the ONLY correct way to test ioBroker adapters.
 
-**Official Documentation**: https://github.com/ioBroker/testing
+**Official Documentation:** https://github.com/ioBroker/testing
 
 #### Framework Structure
-Integration tests MUST follow this exact pattern:
 
+**✅ Correct Pattern:**
 ```javascript
 const path = require('path');
 const { tests } = require('@iobroker/testing');
 
-// Define test coordinates or configuration
-const TEST_COORDINATES = '52.520008,13.404954'; // Berlin
-const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-// Use tests.integration() with defineAdditionalTests
 tests.integration(path.join(__dirname, '..'), {
     defineAdditionalTests({ suite }) {
         suite('Test adapter with specific configuration', (getHarness) => {
@@ -86,57 +215,45 @@ tests.integration(path.join(__dirname, '..'), {
             it('should configure and start adapter', function () {
                 return new Promise(async (resolve, reject) => {
                     try {
-                        harness = getHarness();
-                        
-                        // Get adapter object using promisified pattern
+                        // Get adapter object
                         const obj = await new Promise((res, rej) => {
-                            harness.objects.getObject('system.adapter.your-adapter.0', (err, o) => {
+                            harness.objects.getObject('system.adapter.fhem.0', (err, o) => {
                                 if (err) return rej(err);
                                 res(o);
                             });
                         });
-                        
-                        if (!obj) {
-                            return reject(new Error('Adapter object not found'));
-                        }
 
-                        // Configure adapter properties
+                        if (!obj) return reject(new Error('Adapter object not found'));
+
+                        // Configure adapter
                         Object.assign(obj.native, {
-                            position: TEST_COORDINATES,
-                            createCurrently: true,
-                            createHourly: true,
-                            createDaily: true,
-                            // Add other configuration as needed
+                            host: '127.0.0.1',
+                            port: 7072,
                         });
 
-                        // Set the updated configuration
                         harness.objects.setObject(obj._id, obj);
 
-                        console.log('✅ Step 1: Configuration written, starting adapter...');
-                        
-                        // Start adapter and wait
+                        // Start and wait
                         await harness.startAdapterAndWait();
-                        
-                        console.log('✅ Step 2: Adapter started');
+                        await new Promise(resolve => setTimeout(resolve, 15000));
 
-                        // Wait for adapter to process data
-                        const waitMs = 15000;
-                        await wait(waitMs);
+                        // Verify states
+                        const stateIds = await harness.dbConnection.getStateIDs('fhem.0.*');
 
-                        console.log('🔍 Step 3: Checking states after adapter run...');
-                        
-                        // Your tests here
-                        const adapterInstance = harness.getAdapterInstance();
-                        expect(adapterInstance).toBeDefined();
-
-                        resolve();
+                        if (stateIds.length > 0) {
+                            console.log('✅ Adapter successfully created states');
+                            await harness.stopAdapter();
+                            resolve(true);
+                        } else {
+                            reject(new Error('Adapter did not create any states'));
+                        }
                     } catch (error) {
                         reject(error);
                     }
                 });
-            }).timeout(60000);
+            }).timeout(40000);
         });
-    },
+    }
 });
 ```
 
@@ -167,66 +284,165 @@ const mockFhemData = {
 };
 ```
 
-#### Testing Framework Notes
-- **DO NOT** create your own test structure or try to import/require adapter files directly
-- **DO NOT** use custom test runners or frameworks like Mocha/Chai for integration tests
-- The `@iobroker/testing` framework handles all adapter lifecycle management
-- Tests should focus on adapter behavior, not internal implementation details
+#### Key Rules
 
-## Development Guidelines
+1. ✅ Use `@iobroker/testing` framework
+2. ✅ Configure via `harness.objects.setObject()`
+3. ✅ Start via `harness.startAdapterAndWait()`
+4. ✅ Verify states via `harness.states.getState()`
+5. ✅ Allow proper timeouts for async operations
+6. ❌ NEVER create your own test structure or import adapter files directly
+7. ❌ NEVER use custom test runners or frameworks like Mocha/Chai for integration tests
 
-### File Structure
-- `main.js` - Main adapter entry point
-- `lib/` - Helper modules and utilities
-- `admin/` - Web interface configuration files
-- `test/` - Test files (use `@iobroker/testing` framework)
+#### Workflow Dependencies
 
-### Coding Standards
-- Use ESLint configuration from `@iobroker/adapter-dev`
-- Follow JavaScript ES2018+ standards (Node.js 18+ requirement)
-- Use async/await for asynchronous operations
-- Implement proper error handling with try/catch blocks
+Integration tests should run ONLY after lint and adapter tests pass:
 
-### Adapter Lifecycle
-- `ready()` - Initialize adapter, establish connections
-- `unload()` - Clean up resources, close connections
-- `stateChange()` - Handle state changes from ioBroker
-- `objectChange()` - Handle object definition changes
+```yaml
+integration-tests:
+  needs: [check-and-lint, adapter-tests]
+  runs-on: ubuntu-22.04
+```
 
-For FHEM adapter specifically:
+### API Testing with Credentials
+
+For adapters connecting to external APIs requiring authentication:
+
+#### Password Encryption for Integration Tests
+
 ```javascript
-async ready() {
-    // Initialize FHEM connection
-    this.fhemConnection = new FhemConnection(this.config);
-    await this.fhemConnection.connect();
-    
-    // Subscribe to required states
-    this.subscribeStates('*');
-}
-
-async unload(callback) {
-    try {
-        // Close FHEM connection
-        if (this.fhemConnection) {
-            await this.fhemConnection.disconnect();
-        }
-        callback();
-    } catch (e) {
-        callback();
+async function encryptPassword(harness, password) {
+    const systemConfig = await harness.objects.getObjectAsync("system.config");
+    if (!systemConfig?.native?.secret) {
+        throw new Error("Could not retrieve system secret for password encryption");
     }
+
+    const secret = systemConfig.native.secret;
+    let result = '';
+    for (let i = 0; i < password.length; ++i) {
+        result += String.fromCharCode(secret[i % secret.length].charCodeAt(0) ^ password.charCodeAt(i));
+    }
+    return result;
 }
 ```
 
-### State Management
-- Use `setState()` for updating device states
-- Use `setObject()` for creating/updating device definitions
-- Implement proper ACK handling (ack=true for device feedback, ack=false for commands)
+#### Demo Credentials Testing Pattern
+
+- Create separate test file: `test/integration-demo.js`
+- Add npm script: `"test:integration-demo": "mocha test/integration-demo --exit"`
+- Implement clear success/failure criteria
+
+**Example Implementation:**
+```javascript
+const path = require("path");
+const { tests } = require("@iobroker/testing");
+
+tests.integration(path.join(__dirname, ".."), {
+    defineAdditionalTests({ suite }) {
+        suite("API Testing with Demo Credentials", (getHarness) => {
+            let harness;
+
+            before(() => {
+                harness = getHarness();
+            });
+
+            it("Should connect to API and initialize with demo credentials", async () => {
+                console.log("Setting up demo credentials...");
+
+                if (harness.isAdapterRunning()) {
+                    await harness.stopAdapter();
+                }
+
+                const encryptedPassword = await encryptPassword(harness, "demo_password");
+
+                await harness.changeAdapterConfig("your-adapter", {
+                    native: {
+                        username: "demo@provider.com",
+                        password: encryptedPassword,
+                    }
+                });
+
+                console.log("Starting adapter with demo credentials...");
+                await harness.startAdapter();
+
+                // Wait for API calls and initialization
+                await new Promise(resolve => setTimeout(resolve, 60000));
+
+                const connectionState = await harness.states.getStateAsync("your-adapter.0.info.connection");
+
+                if (connectionState?.val === true) {
+                    console.log("✅ SUCCESS: API connection established");
+                    return true;
+                } else {
+                    throw new Error("API Test Failed: Expected API connection to be established with demo credentials. " +
+                        "Check logs above for specific API errors (DNS resolution, 401 Unauthorized, network issues, etc.)");
+                }
+            }).timeout(120000);
+        });
+    }
+});
+```
+
+---
+
+## Development Best Practices
+
+### Dependency Management
+
+- Always use `npm` for dependency management
+- Use `npm ci` for installing existing dependencies (respects package-lock.json)
+- Use `npm install` only when adding or updating dependencies
+- Keep dependencies minimal and focused
+- Only update dependencies in separate Pull Requests
+
+**When modifying package.json:**
+1. Run `npm install` to sync package-lock.json
+2. Commit both package.json and package-lock.json together
+
+**Best Practices:**
+- Prefer built-in Node.js modules when possible
+- Use `@iobroker/adapter-core` for adapter base functionality
+- Avoid deprecated packages
+- Document specific version requirements
+
+### HTTP Client Libraries
+
+- **Preferred:** Use native `fetch` API (Node.js 20+ required)
+- **Avoid:** `axios` unless specific features are required
+
+**Example with fetch:**
+```javascript
+try {
+  const response = await fetch('https://api.example.com/data');
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+  const data = await response.json();
+} catch (error) {
+  this.log.error(`API request failed: ${error.message}`);
+}
+```
+
+**Other Recommendations:**
+- **Logging:** Use adapter built-in logging (`this.log.*`)
+- **Scheduling:** Use adapter built-in timers and intervals
+- **File operations:** Use Node.js `fs/promises`
+- **Configuration:** Use adapter config system
 
 ### Error Handling
-- Log errors with appropriate levels (error, warn, info, debug)
-- Implement connection retry mechanisms
-- Handle network timeouts gracefully
-- Provide meaningful error messages to users
+
+- Always catch and log errors appropriately
+- Use adapter log levels (error, warn, info, debug)
+- Provide meaningful, user-friendly error messages
+- Handle network failures gracefully
+- Implement retry mechanisms where appropriate
+- Always clean up timers, intervals, and resources in `unload()` method
+
+**Logging Best Practices:**
+- `error` - Critical errors that affect functionality
+- `warn` - Important issues that don't break functionality
+- `info` - General operational information
+- `debug` - Detailed information for troubleshooting
 
 For FHEM connection errors:
 ```javascript
@@ -238,25 +454,6 @@ try {
 }
 ```
 
-### Performance Considerations
-- Use connection pooling for multiple FHEM servers
-- Implement efficient state synchronization
-- Cache frequently accessed data
-- Use batch operations when possible
-
-### Security
-- Validate all user inputs
-- Use secure connection methods when available
-- Don't log sensitive information (passwords, tokens)
-- Implement proper access control
-
-### Logging Best Practices
-- Use appropriate log levels:
-  - `error` - Critical errors that affect functionality
-  - `warn` - Important issues that don't break functionality  
-  - `info` - General operational information
-  - `debug` - Detailed information for troubleshooting
-
 For FHEM adapter logging:
 ```javascript
 this.log.info(`Connected to FHEM server at ${this.config.host}:${this.config.port}`);
@@ -265,45 +462,191 @@ this.log.warn(`FHEM device ${deviceName} not found, creating new object`);
 this.log.error(`Failed to connect to FHEM: ${error.message}`);
 ```
 
-### Configuration
-- Use JSON configuration format (adminUI.config: "json")
-- Validate configuration parameters
-- Provide sensible defaults
-- Support both simple and advanced configurations
+---
 
-FHEM adapter configuration structure:
-```javascript
-"native": {
-    "host": "127.0.0.1",
-    "port": 7072,
-    "reconnectTimeout": 30000,
-    "password": "",
-    "prompt": "fhem>",
-    "syncOptions": {
-        "allowedAttributes": "room,alias,comment",
-        "autoRole": true,
-        "autoRoom": true
+## Admin UI Configuration
+
+### JSON-Config Setup
+
+Use JSON-Config format for modern ioBroker admin interfaces.
+
+**Example Structure:**
+```json
+{
+  "type": "panel",
+  "items": {
+    "host": {
+      "type": "text",
+      "label": "Host address",
+      "help": "IP address or hostname of the FHEM server"
     }
+  }
 }
 ```
 
-### Documentation
-- Maintain clear README.md with setup instructions
-- Document all configuration options
-- Provide troubleshooting guides
-- Include example configurations
+**Guidelines:**
+- ✅ Use consistent naming conventions
+- ✅ Provide sensible default values
+- ✅ Include validation for required fields
+- ✅ Add tooltips for complex options
+- ✅ Ensure translations for all supported languages (minimum English and German)
+- ✅ Write end-user friendly labels, avoid technical jargon
 
-### Version Management
-- Follow semantic versioning (semver)
-- Update version in both `package.json` and `io-package.json`
-- Maintain changelog with clear release notes
-- Test thoroughly before releases
+### Translation Management
 
-### Dependencies
-- Keep dependencies minimal and up-to-date
-- Use `@iobroker/adapter-core` as the primary dependency
-- Avoid deprecated packages
-- Use official ioBroker tools where available
+**CRITICAL:** Translation files must stay synchronized with `admin/jsonConfig.json`. Orphaned keys or missing translations cause UI issues and PR review delays.
+
+#### Overview
+- **Location:** `admin/i18n/{lang}/translations.json` for 11 languages (de, en, es, fr, it, nl, pl, pt, ru, uk, zh-cn)
+- **Source of truth:** `admin/jsonConfig.json` - all `label` and `help` properties must have translations
+- **Command:** `npm run translate` - auto-generates translations but does NOT remove orphaned keys
+
+#### Critical Rules
+1. ✅ Keys must match exactly with jsonConfig.json
+2. ✅ No orphaned keys in translation files
+3. ✅ All translations must be in native language (no English fallbacks)
+4. ✅ Keys must be sorted alphabetically
+
+---
+
+## Documentation
+
+### README Updates
+
+#### Required Sections
+1. **Installation** - Clear npm/ioBroker admin installation steps
+2. **Configuration** - Detailed configuration options with examples
+3. **Usage** - Practical examples and use cases
+4. **Changelog** - Version history (use "## **WORK IN PROGRESS**" for ongoing changes)
+5. **License** - License information (typically MIT for ioBroker adapters)
+6. **Support** - Links to issues, discussions, community support
+
+#### Mandatory README Updates for PRs
+
+For **every PR or new feature**, always add a user-friendly entry to README.md:
+
+- Add entries under `## **WORK IN PROGRESS**` section
+- Use format: `* (author) **TYPE**: Description of user-visible change`
+- Types: **NEW** (features), **FIXED** (bugs), **ENHANCED** (improvements), **TESTING** (test additions), **CI/CD** (automation)
+- Focus on user impact, not technical details
+
+**Example:**
+```markdown
+## **WORK IN PROGRESS**
+
+* (DutchmanNL) **FIXED**: Adapter now properly validates login credentials (fixes #25)
+* (DutchmanNL) **NEW**: Added device discovery to simplify initial setup
+```
+
+### Changelog Management
+
+Follow the [AlCalzone release-script](https://github.com/AlCalzone/release-script) standard.
+
+#### Format Requirements
+
+```markdown
+# Changelog
+
+<!--
+  Placeholder for the next version (at the beginning of the line):
+  ## **WORK IN PROGRESS**
+-->
+
+## **WORK IN PROGRESS**
+
+- (author) **NEW**: Added new feature X
+- (author) **FIXED**: Fixed bug Y (fixes #25)
+
+## v0.1.0 (2023-01-01)
+Initial release
+```
+
+#### Workflow Process
+- **During Development:** All changes go under `## **WORK IN PROGRESS**`
+- **For Every PR:** Add user-facing changes to WORK IN PROGRESS section
+- **Before Merge:** Version number and date added when merging to main
+- **Release Process:** Release-script automatically converts placeholder to actual version
+
+---
+
+## CI/CD & GitHub Actions
+
+### Workflow Configuration
+
+#### GitHub Actions Best Practices
+
+**Must use ioBroker official testing actions:**
+- `ioBroker/testing-action-check@v1` for lint and package validation
+- `ioBroker/testing-action-adapter@v1` for adapter tests
+- `ioBroker/testing-action-deploy@v1` for automated releases with Trusted Publishing (OIDC)
+
+**Configuration:**
+- **Node.js versions:** Test on 20.x, 22.x, 24.x
+- **Platform:** Use ubuntu-22.04
+- **Automated releases:** Deploy to npm on version tags (requires NPM Trusted Publishing)
+
+#### Critical: Lint-First Validation Workflow
+
+**ALWAYS run ESLint checks BEFORE other tests.**
+
+**Workflow Dependency Configuration:**
+```yaml
+jobs:
+  check-and-lint:
+    # Runs ESLint and package validation
+    # Uses: ioBroker/testing-action-check@v1
+
+  adapter-tests:
+    needs: [check-and-lint]  # Wait for linting to pass
+
+  integration-tests:
+    needs: [check-and-lint, adapter-tests]  # Wait for both
+```
+
+### Testing Integration
+
+#### API Testing in CI/CD
+
+For adapters with external API dependencies:
+
+```yaml
+demo-api-tests:
+  if: contains(github.event.head_commit.message, '[skip ci]') == false
+  runs-on: ubuntu-22.04
+
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run demo API tests
+      run: npm run test:integration-demo
+```
+
+#### Testing Best Practices
+- Run credential tests separately from main test suite
+- Don't make credential tests required for deployment
+- Provide clear failure messages for API issues
+- Use appropriate timeouts for external calls (120+ seconds)
+
+#### Package.json Integration
+```json
+{
+  "scripts": {
+    "test:integration-demo": "mocha test/integration-demo --exit"
+  }
+}
+```
+
+---
 
 ## FHEM-Specific Implementation Patterns
 
@@ -312,11 +655,11 @@ FHEM adapter configuration structure:
 // Parse FHEM jsonlist2 response
 function parseDeviceList(jsonResponse) {
     const devices = JSON.parse(jsonResponse);
-    
+
     for (const device of devices.Results) {
         // Create ioBroker objects for each FHEM device
         await this.createDeviceObjects(device);
-        
+
         // Sync current readings
         for (const [reading, data] of Object.entries(device.Readings || {})) {
             await this.setState(`${device.Name}.${reading}`, {
@@ -334,7 +677,7 @@ function parseDeviceList(jsonResponse) {
 // Handle FHEM events
 function handleFhemEvent(eventData) {
     const [timestamp, deviceName, reading, value] = eventData.split(' ');
-    
+
     const stateId = `${deviceName}.${reading}`;
     this.setState(stateId, {
         val: value,
@@ -349,7 +692,7 @@ function handleFhemEvent(eventData) {
 // Send commands to FHEM
 async function sendFhemCommand(deviceName, command, value) {
     const fhemCommand = `set ${deviceName} ${command} ${value}`;
-    
+
     try {
         await this.fhemConnection.send(fhemCommand);
         this.log.debug(`Sent FHEM command: ${fhemCommand}`);
@@ -359,6 +702,17 @@ async function sendFhemCommand(deviceName, command, value) {
     }
 }
 ```
+
+### State and Object Management
+- Use `setState()` for updating device states
+- Use `setObject()` for creating/updating device definitions
+- Implement proper ACK handling (ack=true for device feedback, ack=false for commands)
+- Consider FHEM device types and their capabilities
+- Sync Readings, Internals, and Attributes as appropriate
+- Apply room assignments and organization
+- Support automatic object creation vs. manual configuration
+
+---
 
 ## Code Generation Guidelines
 
@@ -379,7 +733,7 @@ When generating code for ioBroker adapters:
 async createDevice(deviceInfo) {
     try {
         const deviceId = this.namespace + '.' + deviceInfo.name;
-        
+
         // Create device object
         await this.setObjectAsync(deviceId, {
             type: 'device',
@@ -389,7 +743,7 @@ async createDevice(deviceInfo) {
             },
             native: deviceInfo
         });
-        
+
         // Create state objects for readings
         for (const [reading, data] of Object.entries(deviceInfo.readings || {})) {
             await this.setObjectAsync(deviceId + '.' + reading, {
@@ -404,7 +758,7 @@ async createDevice(deviceInfo) {
                 native: {}
             });
         }
-        
+
         this.log.info(`Created device: ${deviceInfo.name}`);
     } catch (error) {
         this.log.error(`Failed to create device ${deviceInfo.name}: ${error.message}`);
@@ -412,140 +766,3 @@ async createDevice(deviceInfo) {
     }
 }
 ```
-
-For FHEM adapter specifically, always consider:
-- FHEM device types and their capabilities
-- Reading/Internal/Attribute synchronization
-- Room assignments and organization
-- Automatic object creation vs. manual configuration
-- Telnet connection stability and reconnection
-- FHEM command syntax and response handling
-
-## Code Style and Standards
-
-- Follow JavaScript/TypeScript best practices
-- Use async/await for asynchronous operations
-- Implement proper resource cleanup in `unload()` method
-- Use semantic versioning for adapter releases
-- Include proper JSDoc comments for public methods
-
-## CI/CD and Testing Integration
-
-### GitHub Actions for API Testing
-For adapters with external API dependencies, implement separate CI/CD jobs:
-
-```yaml
-# Tests API connectivity with demo credentials (runs separately)
-demo-api-tests:
-  if: contains(github.event.head_commit.message, '[skip ci]') == false
-  
-  runs-on: ubuntu-22.04
-  
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Use Node.js 20.x
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20.x
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Run demo API tests
-      run: npm run test:integration-demo
-```
-
-### CI/CD Best Practices
-- Run credential tests separately from main test suite
-- Use ubuntu-22.04 for consistency
-- Don't make credential tests required for deployment
-- Provide clear failure messages for API connectivity issues
-- Use appropriate timeouts for external API calls (120+ seconds)
-
-### Package.json Script Integration
-Add dedicated script for credential testing:
-```json
-{
-  "scripts": {
-    "test:integration-demo": "mocha test/integration-demo --exit"
-  }
-}
-```
-
-### Practical Example: Complete API Testing Implementation
-Here's a complete example based on lessons learned from the Discovergy adapter:
-
-#### test/integration-demo.js
-```javascript
-const path = require("path");
-const { tests } = require("@iobroker/testing");
-
-// Helper function to encrypt password using ioBroker's encryption method
-async function encryptPassword(harness, password) {
-    const systemConfig = await harness.objects.getObjectAsync("system.config");
-    
-    if (!systemConfig || !systemConfig.native || !systemConfig.native.secret) {
-        throw new Error("Could not retrieve system secret for password encryption");
-    }
-    
-    const secret = systemConfig.native.secret;
-    let result = '';
-    for (let i = 0; i < password.length; ++i) {
-        result += String.fromCharCode(secret[i % secret.length].charCodeAt(0) ^ password.charCodeAt(i));
-    }
-    
-    return result;
-}
-
-// Run integration tests with demo credentials
-tests.integration(path.join(__dirname, ".."), {
-    defineAdditionalTests({ suite }) {
-        suite("API Testing with Demo Credentials", (getHarness) => {
-            let harness;
-            
-            before(() => {
-                harness = getHarness();
-            });
-
-            it("Should connect to API and initialize with demo credentials", async () => {
-                console.log("Setting up demo credentials...");
-                
-                if (harness.isAdapterRunning()) {
-                    await harness.stopAdapter();
-                }
-                
-                const encryptedPassword = await encryptPassword(harness, "demo_password");
-                
-                await harness.changeAdapterConfig("your-adapter", {
-                    native: {
-                        username: "demo@provider.com",
-                        password: encryptedPassword,
-                        // other config options
-                    }
-                });
-
-                console.log("Starting adapter with demo credentials...");
-                await harness.startAdapter();
-                
-                // Wait for API calls and initialization
-                await new Promise(resolve => setTimeout(resolve, 60000));
-                
-                const connectionState = await harness.states.getStateAsync("your-adapter.0.info.connection");
-                
-                if (connectionState && connectionState.val === true) {
-                    console.log("✅ SUCCESS: API connection established");
-                    return true;
-                } else {
-                    throw new Error("API Test Failed: Expected API connection to be established with demo credentials. " +
-                        "Check logs above for specific API errors (DNS resolution, 401 Unauthorized, network issues, etc.)");
-                }
-            }).timeout(120000);
-        });
-    }
-});
-```
-
-This ensures that generated code follows ioBroker best practices and integrates properly with the adapter framework.
