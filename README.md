@@ -54,6 +54,8 @@ Actually only following attributes are supported:
 ## Changelog
 
 ### **WORK IN PROGRESS**
+- (iobroker-bot) Adapter requires node.js >= 20 now.
+- (copilot) Adapter requires admin >= 7.7.22 now
 - (@copilot) Adapter requires js-controller 6.0.11 now
 - (@copilot) Adapter requires admin 7.6.17 now
 
@@ -178,7 +180,9 @@ NodeJS >= 18.x and js-controller >= 5 is required
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2016-2026 bluefox <dogafox@gmail.com>
+
+Copyright (c) 2026 iobroker-community-adapters <iobroker-community-adapters@gmx.de>  
+Copyright (c) 2016-2025 bluefox <dogafox@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
