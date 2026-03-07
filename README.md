@@ -57,7 +57,7 @@ Actually only following attributes are supported:
 - (iobroker-bot) Adapter requires node.js >= 20 now.
 - (copilot) Adapter requires admin >= 7.7.22 now
 - (@copilot) Adapter requires js-controller 6.0.11 now
-- (@copilot) Adapter requires admin 7.6.17 now
+- (mcm1957) Dependencies have been updated
 
 ### 3.0.0 (2024-07-22)
 NodeJS >= 18.x and js-controller >= 5 is required
